@@ -1,0 +1,33 @@
+{
+  "name": "bg-2-cellml",
+  "description": "Generate CellML 2.0 from BG-RDF bond graph models, in TypeScript",
+  "private": true,
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Hugh Sorby",
+    "email": "h.sorby@auckland.ac.nz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/physiomelinks/bg-2-cellml.git"
+  },
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "clean": "tsc --build --clean",
+    "typecheck": "tsc --build --noEmit",
+    "test": "yarn workspaces foreach --all --topological --parallel run test"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "yarn@4.12.0"
+}

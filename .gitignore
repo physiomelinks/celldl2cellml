@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Yarn 4 (Corepack): keep patches, plugins and versions, ignore the rest
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
+# Build output
+dist/
+*.tsbuildinfo
+coverage/
+
+# Logs
+*.log
+
+# Editors and OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.sw?
+
+# Local Claude configuration
+.claude/

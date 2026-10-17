@@ -1,0 +1,51 @@
+{
+  "name": "@physiomelinks/bg2cellml",
+  "description": "Generate CellML 2.0 from BG-RDF bond graph models, in JavaScript.",
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/physiomelinks/bg-2-cellml.git",
+    "directory": "packages/bg2cellml"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "prepack": "tsc --build",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@physiomelinks/cellml-units": "workspace:^",
+    "@physiomelinks/math-ast": "workspace:^"
+  },
+  "peerDependencies": {
+    "libcellml.js": ">=0.7.1",
+    "oxigraph": ">=0.5.9 <0.6"
+  },
+  "devDependencies": {
+    "@xmldom/xmldom": "^0.9.8",
+    "libcellml.js": "^0.7.1",
+    "oxigraph": "^0.5.9",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

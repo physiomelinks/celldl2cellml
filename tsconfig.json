@@ -1,0 +1,8 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/math-ast" },
+    { "path": "packages/cellml-units" },
+    { "path": "packages/bg2cellml" }
+  ]
+}

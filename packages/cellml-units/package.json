@@ -1,0 +1,47 @@
+{
+  "name": "@physiomelinks/cellml-units",
+  "description": "Turn UCUM unit codes into CellML 2.0 units, and compare and convert them with libCellML.",
+  "version": "0.0.0",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/physiomelinks/bg-2-cellml.git",
+    "directory": "packages/cellml-units"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc --build",
+    "prepack": "tsc --build",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@atomic-ehr/ucum": "^0.2.5"
+  },
+  "peerDependencies": {
+    "libcellml.js": ">=0.7.1"
+  },
+  "devDependencies": {
+    "libcellml.js": "^0.7.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
