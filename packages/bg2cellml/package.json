@@ -25,7 +25,8 @@
     "build": "tsc --build",
     "prepack": "tsc --build",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:parity": "BG2CELLML_PARITY=all vitest run test/parity.test.ts"
   },
   "dependencies": {
     "@physiomelinks/cellml-units": "workspace:^",
