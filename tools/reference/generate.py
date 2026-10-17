@@ -110,19 +110,30 @@ def bg_rdf_tag() -> str:
 def sha256(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
-def rounded(values) -> list[float | None]:
+# JSON has no infinities or NaN, so they're stored as these strings. Keeping
+# them distinct matters: a chemical potential RT*ln(K*q) is -Infinity when q is
+# 0, which is expected, while NaN would mean something has gone wrong.
+NON_FINITE = {math.inf: 'Infinity', -math.inf: '-Infinity'}
+
+def encode(v: float) -> float | str:
+    return NON_FINITE.get(v, 'NaN') if not math.isfinite(v) else v
+
+def decode(v: float | str) -> float:
+    return float(v.replace('Infinity', 'inf')) if isinstance(v, str) else v
+
+def rounded(values) -> list[float | str]:
     out = []
     for v in values:
         v = float(v)
         if not math.isfinite(v):
-            out.append(None)
+            out.append(encode(v))
         elif v == 0.0:
             out.append(0.0)
         else:
             out.append(float(f'{v:.{SIGNIFICANT_DIGITS}g}'))
     return out
 
-_NUMBER_ARRAY = re.compile(r'\[\s*([-+0-9.eE,\snul]*?)\s*\]')
+_NUMBER_ARRAY = re.compile(r'\[\s*((?:[-+0-9.eE,\s]|"-?Infinity"|"NaN")*?)\s*\]')
 
 def to_json(data) -> str:
     """Indented JSON, with arrays of numbers kept on one line."""
@@ -202,8 +213,9 @@ def simulate_cellml(cellml: str, end_time: float, steps: int) -> dict:
     return simulate_document(loc.SedDocument(file), end_time, steps)
 
 def close(a, b) -> bool:
-    if a is None or b is None:
-        return a is b
+    a, b = decode(a), decode(b)
+    if not (math.isfinite(a) and math.isfinite(b)):
+        return (math.isnan(a) and math.isnan(b)) or a == b
     return abs(a - b) <= ABS_TOLERANCE + REL_TOLERANCE * abs(b)
 
 def compare(actual: dict, expected: dict, groups=('states', 'rates', 'algebraics')) -> list[str]:
@@ -224,8 +236,8 @@ def compare(actual: dict, expected: dict, groups=('states', 'rates', 'algebraics
 
 def compare_states_by_index(actual: dict, expected: dict) -> list[str]:
     """For PMR models, whose variable names differ: compare sorted state trajectories."""
-    a = sorted(actual['states'].values(), key=lambda v: (v[-1] or 0.0))
-    e = sorted(expected['states'].values(), key=lambda v: (v[-1] or 0.0))
+    a = sorted(actual['states'].values(), key=lambda v: decode(v[-1]))
+    e = sorted(expected['states'].values(), key=lambda v: decode(v[-1]))
     if len(a) != len(e):
         return [f'{len(a)} states != {len(e)} states']
     problems = []

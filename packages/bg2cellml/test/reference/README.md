@@ -29,4 +29,6 @@ The prefixed-units recursion bug isn't covered here. It needs a template with pr
 
 Variables are compared by name, without the component name: `q_1`, not `main/q_1`. A value passes if `|actual - expected| <= 1e-6 + 2e-4 * |expected|`, the tolerance BG-Tools' own tests used. `test/reference.ts` has `compareResults()` for this.
 
+JSON has no infinities or NaN, so they're stored as the strings `"Infinity"`, `"-Infinity"` and `"NaN"`, and must match exactly. They occur in the chemical examples: a potential RT·ln(K·q) is `"-Infinity"` at t = 0 for a species that starts at q = 0.
+
 Numbers are rounded to 9 significant figures. Regenerating on a different platform may change the last digits; that's well within the tolerance.

@@ -11,7 +11,17 @@ export const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url))
 export const BG_RDF = `${REPO_ROOT}bg-rdf/`
 const REFERENCE_DIR = fileURLToPath(new URL('./reference/', import.meta.url))
 
-export type Trajectories = Record<string, (number | null)[]>
+/**
+ * A value in a reference file. JSON has no infinities or NaN, so they're stored
+ * as these strings. A chemical potential RT*ln(K*q) is -Infinity when q is 0.
+ */
+export type ReferenceValue = number | 'Infinity' | '-Infinity' | 'NaN'
+
+export type Trajectories = Record<string, ReferenceValue[]>
+
+export function decodeValue(value: ReferenceValue | null | undefined): number {
+  return typeof value === 'number' ? value : value == null ? Number.NaN : Number(value)
+}
 
 export interface SimulationResult {
   simulation: { start: number; end: number; steps: number; recordedEvery: number }
@@ -86,8 +96,14 @@ export function compareResults(
   tolerance: Manifest['tolerance'],
   groups: readonly ('states' | 'rates' | 'algebraics')[] = ['states', 'rates', 'algebraics'],
 ): string[] {
-  const close = (a: number | null | undefined, e: number | null | undefined): boolean =>
-    a == null || e == null ? a == e : Math.abs(a - e) <= tolerance.absolute + tolerance.relative * Math.abs(e)
+  // Infinities must match exactly, and NaN only matches NaN
+  const close = (actualValue: ReferenceValue | undefined, expectedValue: ReferenceValue): boolean => {
+    if (actualValue === undefined) return false
+    const a = decodeValue(actualValue)
+    const e = decodeValue(expectedValue)
+    if (!Number.isFinite(a) || !Number.isFinite(e)) return Object.is(a, e) || (Number.isNaN(a) && Number.isNaN(e))
+    return Math.abs(a - e) <= tolerance.absolute + tolerance.relative * Math.abs(e)
+  }
   const problems: string[] = []
   for (const group of groups) {
     for (const [name, values] of Object.entries(expected[group])) {

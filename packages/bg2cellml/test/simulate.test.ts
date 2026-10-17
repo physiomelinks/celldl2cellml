@@ -58,10 +58,31 @@ describe('simulate', () => {
     const reference = loadReference(exampleRC)
     const result = simulate(loc, pythonCellml(exampleRC), reference.simulation)
     const q = result.states['q_1']!
-    q[50] = q[50]! * 1.01
+    q[50] = (q[50] as number) * 1.01
     expect(compareResults(result, reference, manifest.tolerance)).toEqual([
       expect.stringMatching(/^states\.q_1 differs at 1 points, first at t=0\.05:/),
     ])
+  })
+})
+
+describe('every reference, from its Python CellML', () => {
+  // The JavaScript libOpenCOR, simulating what the Python bg2cellml wrote, must give
+  // what the Python libOpenCOR gave. This checks the harness before parity relies on it.
+  const examples = manifest.cases.filter((c) => c.kind === 'example')
+
+  it('covers all 14 BG-RDF examples', () => {
+    expect(examples).toHaveLength(14)
+    expect(examples.every((c) => c.pythonCellml !== undefined)).toBe(true)
+  })
+
+  it.each(examples.map((c) => [c.name, c] as const))('%s', (_name, c) => {
+    const reference = loadReference(c)
+    const result = simulate(loc, pythonCellml(c), reference.simulation)
+    for (const group of ['states', 'rates', 'algebraics'] as const) {
+      expect(Object.keys(result[group]).sort(), group).toEqual(Object.keys(reference[group]).sort())
+    }
+    expect(result.voi.values).toHaveLength(reference.voi.values.length)
+    expect(compareResults(result, reference, manifest.tolerance)).toEqual([])
   })
 })
 
@@ -70,6 +91,23 @@ describe('helpers', () => {
     expect(recordedIndices(100, 1)).toHaveLength(101)
     expect(recordedIndices(4000, 40)).toEqual(Array.from({ length: 101 }, (_, i) => i * 40))
     expect(recordedIndices(10, 3)).toEqual([0, 3, 6, 9, 10])
+  })
+
+  it('compare infinities and NaN exactly', () => {
+    const expected = loadReference(exampleRC)
+    const withValue = (value: number) => ({
+      ...expected,
+      states: { x: [value] },
+      rates: {},
+      algebraics: {},
+    })
+    const reference = { ...withValue(0), states: { x: ['-Infinity' as const] } }
+    expect(compareResults(withValue(-Infinity), reference, manifest.tolerance)).toEqual([])
+    expect(compareResults(withValue(Infinity), reference, manifest.tolerance)).toHaveLength(1)
+    expect(compareResults(withValue(Number.NaN), reference, manifest.tolerance)).toHaveLength(1)
+    expect(compareResults(withValue(-1e300), reference, manifest.tolerance)).toHaveLength(1)
+    const nanReference = { ...withValue(0), states: { x: ['NaN' as const] } }
+    expect(compareResults(withValue(Number.NaN), nanReference, manifest.tolerance)).toEqual([])
   })
 
   it('name variables as the references do', () => {
