@@ -24,6 +24,7 @@ WebAssembly modules (libcellml.js, oxigraph) are peer dependencies. The host app
 This is a Yarn 4 workspace, run through Corepack.
 
 ```sh
+git submodule update --init   # fetches bg-rdf, the BG-RDF ontology, templates and examples
 corepack enable
 yarn install
 yarn build        # tsc --build, in dependency order
@@ -32,11 +33,13 @@ yarn test         # Vitest in every package
 
 To work on one package, use `yarn workspace @physiomelinks/math-ast test:watch`.
 
+`bg-rdf` is a git submodule of [CellDL/BG-RDF](https://github.com/CellDL/BG-RDF), pinned to a release tag. Tests load the framework from `bg-rdf/schema/ontology.ttl` and `bg-rdf/templates/`, and use `bg-rdf/examples/` as test models. The packages don't bundle it: at run time the host application supplies the framework.
+
 Each package is self-contained, with its own `package.json`, `README.md` and `LICENSE`, so it can move to its own repository later.
 
 ## Plan
 
-1. **Reference outputs.** Run the Python bg2cellml on the BG-RDF examples, plus variants that trigger its known bugs, and keep the simulated states and rates as the reference. Add BG-RDF as a git submodule for this.
+1. **Reference outputs.** Run the Python bg2cellml on the BG-RDF examples in `bg-rdf/examples`, plus variants that trigger its known bugs, and keep the simulated states and rates as the reference.
 2. **math-ast.** Implement `parseMathML`, `toMathML` and `canonicalise`.
 3. **cellml-units.** Implement `unitsName`, `toCellMLUnits`, `compatible` and `convertValue`.
 4. **bg2cellml.** Port the framework loader, then the model, then the CellML writer.
