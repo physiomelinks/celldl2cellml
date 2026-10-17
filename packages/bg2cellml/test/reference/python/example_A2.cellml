@@ -1,0 +1,150 @@
+<!--
+  This CellML file was generated
+
+  by [BG-Tools](https://github.com/CellDL/BG-Tools), version 0.11.2
+
+  from https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2.ttl#example_A2
+-->
+<model xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cellml="http://www.cellml.org/cellml/1.1#" xmlns:cmeta="http://www.cellml.org/metadata/2.0#" name="BG_example_A2">
+  <units name="dim">
+    <unit units="dimensionless"/>
+  </units>
+  <units name="metre_per_second">
+    <unit units="metre" exponent="1"/>
+    <unit units="second" exponent="-1"/>
+  </units>
+  <units name="metre_squared_per_joule">
+    <unit units="metre" exponent="2"/>
+    <unit units="joule" exponent="-1"/>
+  </units>
+  <units name="joule_per_metre">
+    <unit units="joule" exponent="1"/>
+    <unit units="metre" exponent="-1"/>
+  </units>
+  <units name="joule_second_squared_per_metre_squared">
+    <unit units="joule" exponent="1"/>
+    <unit units="second" exponent="2"/>
+    <unit units="metre" exponent="-2"/>
+  </units>
+  <units name="joule_second_per_metre_squared">
+    <unit units="joule" exponent="1"/>
+    <unit units="second" exponent="1"/>
+    <unit units="metre" exponent="-2"/>
+  </units>
+  <units name="metre_per_second_squared">
+    <unit units="metre" exponent="1"/>
+    <unit units="second" exponent="-2"/>
+  </units>
+  <component name="main" cmeta:id="main">
+    <variable name="t" units="second" cmeta:id="main-t"/>
+    <variable name="v_1" units="metre_per_second" cmeta:id="main-v_1"/>
+    <variable name="C_C" units="metre_squared_per_joule" cmeta:id="main-C_C" initial_value="20.0"/>
+    <variable name="u_C" units="joule_per_metre" cmeta:id="main-u_C"/>
+    <variable name="v_C" units="metre_per_second" cmeta:id="main-v_C"/>
+    <variable name="L_L" units="joule_second_squared_per_metre_squared" cmeta:id="main-L_L" initial_value="10.0"/>
+    <variable name="u_L" units="joule_per_metre" cmeta:id="main-u_L"/>
+    <variable name="v_L" units="metre_per_second" cmeta:id="main-v_L" initial_value="0.0"/>
+    <variable name="R_R" units="joule_second_per_metre_squared" cmeta:id="main-R_R" initial_value="0.1"/>
+    <variable name="u_R" units="joule_per_metre" cmeta:id="main-u_R"/>
+    <variable name="v_R" units="metre_per_second" cmeta:id="main-v_R"/>
+    <variable name="a_L" units="metre_per_second_squared" cmeta:id="main-a_L"/>
+    <variable name="q_C" units="metre" cmeta:id="main-q_C" initial_value="1.0"/>
+    <!-- Element ODEs-->
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <apply>
+          <diff/>
+          <bvar>
+            <ci>t</ci>
+          </bvar>
+          <ci>q_C</ci>
+        </apply>
+        <ci>v_C</ci>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <apply>
+          <diff/>
+          <bvar>
+            <ci>t</ci>
+          </bvar>
+          <ci>v_L</ci>
+        </apply>
+        <ci>a_L</ci>
+      </apply>
+    </math>
+    <!-- Element algebraics-->
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>u_C</ci>
+        <apply>
+          <divide/>
+          <ci>q_C</ci>
+          <ci>C_C</ci>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>u_L</ci>
+        <apply>
+          <times/>
+          <ci>L_L</ci>
+          <ci>a_L</ci>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>u_R</ci>
+        <apply>
+          <times/>
+          <ci>R_R</ci>
+          <ci>v_R</ci>
+        </apply>
+      </apply>
+    </math>
+    <!-- Junction algebraics-->
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>u_R</ci>
+        <apply>
+          <minus/>
+          <apply>
+            <minus/>
+            <ci>u_C</ci>
+          </apply>
+          <ci>u_L</ci>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>v_1</ci>
+        <ci>v_C</ci>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>v_1</ci>
+        <ci>v_R</ci>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>v_1</ci>
+        <ci>v_L</ci>
+      </apply>
+    </math>
+  </component>
+</model>

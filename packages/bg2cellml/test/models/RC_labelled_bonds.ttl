@@ -1,0 +1,97 @@
+#===============================================================================
+#
+#  RC circuit with labelled bonds
+#
+#  Every power bond has an rdfs:label. bg2cellml 0.11.2 passes the label to
+#  BondgraphBond as its bond count and fails with int('<label>').
+#
+#  Derived from BG-RDF examples/example_RC.ttl (v2026-04-12). It should simulate
+#  exactly as example_RC does.
+#
+#===============================================================================
+
+@prefix bgf: <https://bg-rdf.org/ontologies/bondgraph-framework#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix cdt: <https://w3id.org/cdt/> .
+@prefix tpl: <https://bg-rdf.org/templates/> .
+
+@prefix : <#> .
+
+#===============================================================================
+#
+#               I_R
+#      +------- R_0 -------+  V_C
+#      |                   |
+#     V_in                C_1
+#      |                   |
+#      +-------------------+
+#
+#===============================================================================
+#
+#               R_0       q_1
+#                |         |
+#                |         |
+#     u_0 ------ v ------ u_1
+#
+#===============================================================================
+# Simulate for 0.1 sec at 1 ms steps
+#===============================================================================
+
+:RC_circuit
+    a bgf:BondgraphModel ;
+    bgf:usesTemplate tpl:electrical.ttl ;
+    bgf:hasBondElement :V_in, :R_0, :q_1 ;
+    bgf:hasJunctionStructure :I_R, :V_C .
+
+#===============================================================================
+
+:R_0
+    a bgf:ElectricalResistor ;
+    bgf:parameterValue [
+        bgf:varName "R" ;
+        bgf:hasValue "10 Ohm"^^cdt:ucum
+    ] .
+
+:q_1
+    a bgf:ElectricalCapacitor ;
+    bgf:hasValue "0 C"^^cdt:ucum ;
+    bgf:parameterValue [
+        bgf:varName "C" ;
+        bgf:hasValue "0.001 F"^^cdt:ucum
+    ] .
+
+:V_in
+    a bgf:VoltageSource ;
+    bgf:hasValue "10 V"^^cdt:ucum .
+
+#===============================================================================
+
+:I_R
+    a bgf:OneNode .
+
+:V_C
+    a bgf:ZeroNode .
+
+#===============================================================================
+
+:V_in.I_R
+    rdfs:label "source to current" ;
+    bgf:hasSource :V_in ;
+    bgf:hasTarget :I_R .
+
+:I_R.R
+    rdfs:label "current to resistor" ;
+    bgf:hasSource :I_R ;
+    bgf:hasTarget :R_0 .
+
+:I_R.V_C
+    rdfs:label "current to capacitor voltage" ;
+    bgf:hasSource :I_R ;
+    bgf:hasTarget :V_C .
+
+:V_C.q
+    rdfs:label "voltage to capacitor" ;
+    bgf:hasSource :V_C ;
+    bgf:hasTarget :q_1 .
+
+#===============================================================================

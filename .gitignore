@@ -10,6 +10,10 @@ node_modules/
 !.yarn/versions
 .pnp.*
 
+# Python (tools/reference)
+.venv/
+__pycache__/
+
 # Build output
 dist/
 *.tsbuildinfo

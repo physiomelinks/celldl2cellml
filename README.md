@@ -39,7 +39,7 @@ Each package is self-contained, with its own `package.json`, `README.md` and `LI
 
 ## Plan
 
-1. **Reference outputs.** Run the Python bg2cellml on the BG-RDF examples in `bg-rdf/examples`, plus variants that trigger its known bugs, and keep the simulated states and rates as the reference.
+1. **Reference outputs.** Done: `packages/bg2cellml/test/reference` holds the Python bg2cellml's results for the 14 BG-RDF examples and 3 bug-triggering variants. Regenerate them with `yarn reference --bg-tools ../bg-tools`; see `tools/reference/README.md`.
 2. **math-ast.** Implement `parseMathML`, `toMathML` and `canonicalise`.
 3. **cellml-units.** Implement `unitsName`, `toCellMLUnits`, `compatible` and `convertValue`.
 4. **bg2cellml.** Port the framework loader, then the model, then the CellML writer.

@@ -1,0 +1,212 @@
+<!--
+  This CellML file was generated
+
+  by [BG-Tools](https://github.com/CellDL/BG-Tools), version 0.11.2
+
+  from https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Simple_reaction
+-->
+<model xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cellml="http://www.cellml.org/cellml/1.1#" xmlns:cmeta="http://www.cellml.org/metadata/2.0#" name="BG_Simple_reaction">
+  <units name="dim">
+    <unit units="dimensionless"/>
+  </units>
+  <units name="joule_per_mole">
+    <unit units="joule" exponent="1"/>
+    <unit units="mole" exponent="-1"/>
+  </units>
+  <units name="coulomb_per_mole">
+    <unit units="coulomb" exponent="1"/>
+    <unit units="mole" exponent="-1"/>
+  </units>
+  <units name="per_mole">
+    <unit units="mole" exponent="-1"/>
+  </units>
+  <units name="mole_per_second">
+    <unit units="mole" exponent="1"/>
+    <unit units="second" exponent="-1"/>
+  </units>
+  <component name="main" cmeta:id="main">
+    <variable name="t" units="second" cmeta:id="main-t"/>
+    <variable name="RT" units="joule_per_mole" cmeta:id="main-RT" initial_value="2578.73058"/>
+    <variable name="F" units="coulomb_per_mole" cmeta:id="main-F" initial_value="96485.0"/>
+    <variable name="K_q_1" units="per_mole" cmeta:id="main-K_q_1" initial_value="1.0"/>
+    <variable name="K_q_2" units="per_mole" cmeta:id="main-K_q_2" initial_value="1.0"/>
+    <variable name="v_Re" units="mole_per_second" cmeta:id="main-v_Re"/>
+    <variable name="u_f_Re" units="joule_per_mole" cmeta:id="main-u_f_Re"/>
+    <variable name="kappa_r" units="mole_per_second" cmeta:id="main-kappa_r" initial_value="0.1"/>
+    <variable name="q_1" units="mole" cmeta:id="main-q_1" initial_value="1.0"/>
+    <variable name="u_q_1" units="joule_per_mole" cmeta:id="main-u_q_1"/>
+    <variable name="v_q_1" units="mole_per_second" cmeta:id="main-v_q_1"/>
+    <variable name="q_2" units="mole" cmeta:id="main-q_2" initial_value="0.0"/>
+    <variable name="u_q_2" units="joule_per_mole" cmeta:id="main-u_q_2"/>
+    <variable name="v_q_2" units="mole_per_second" cmeta:id="main-v_q_2"/>
+    <variable name="u_r_Re" units="joule_per_mole" cmeta:id="main-u_r_Re"/>
+    <!-- Element ODEs-->
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <apply>
+          <diff/>
+          <bvar>
+            <ci>t</ci>
+          </bvar>
+          <ci>q_1</ci>
+        </apply>
+        <ci>v_q_1</ci>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <apply>
+          <diff/>
+          <bvar>
+            <ci>t</ci>
+          </bvar>
+          <ci>q_2</ci>
+        </apply>
+        <ci>v_q_2</ci>
+      </apply>
+    </math>
+    <!-- Element algebraics-->
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>u_f_Re</ci>
+        <ci>u_q_1</ci>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>u_q_1</ci>
+        <apply>
+          <times/>
+          <ci>RT</ci>
+          <apply>
+            <ln/>
+            <apply>
+              <times/>
+              <ci>K_q_1</ci>
+              <ci>q_1</ci>
+            </apply>
+          </apply>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>u_q_2</ci>
+        <apply>
+          <times/>
+          <ci>RT</ci>
+          <apply>
+            <ln/>
+            <apply>
+              <times/>
+              <ci>K_q_2</ci>
+              <ci>q_2</ci>
+            </apply>
+          </apply>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>u_r_Re</ci>
+        <ci>u_q_2</ci>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>v_Re</ci>
+        <apply>
+          <times/>
+          <ci>kappa_r</ci>
+          <apply>
+            <minus/>
+            <apply>
+              <exp/>
+              <apply>
+                <divide/>
+                <ci>u_f_Re</ci>
+                <ci>RT</ci>
+              </apply>
+            </apply>
+            <apply>
+              <exp/>
+              <apply>
+                <divide/>
+                <ci>u_r_Re</ci>
+                <ci>RT</ci>
+              </apply>
+            </apply>
+          </apply>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>v_q_1</ci>
+        <apply>
+          <minus/>
+          <apply>
+            <times/>
+            <ci>kappa_r</ci>
+            <apply>
+              <minus/>
+              <apply>
+                <exp/>
+                <apply>
+                  <divide/>
+                  <ci>u_f_Re</ci>
+                  <ci>RT</ci>
+                </apply>
+              </apply>
+              <apply>
+                <exp/>
+                <apply>
+                  <divide/>
+                  <ci>u_r_Re</ci>
+                  <ci>RT</ci>
+                </apply>
+              </apply>
+            </apply>
+          </apply>
+        </apply>
+      </apply>
+    </math>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply>
+        <eq/>
+        <ci>v_q_2</ci>
+        <apply>
+          <times/>
+          <ci>kappa_r</ci>
+          <apply>
+            <minus/>
+            <apply>
+              <exp/>
+              <apply>
+                <divide/>
+                <ci>u_f_Re</ci>
+                <ci>RT</ci>
+              </apply>
+            </apply>
+            <apply>
+              <exp/>
+              <apply>
+                <divide/>
+                <ci>u_r_Re</ci>
+                <ci>RT</ci>
+              </apply>
+            </apply>
+          </apply>
+        </apply>
+      </apply>
+    </math>
+  </component>
+</model>

@@ -1,0 +1,109 @@
+/**
+ * Access to the reference results made by tools/reference/generate.py from the
+ * Python bg2cellml. See test/reference/README.md.
+ */
+
+import { createHash } from 'node:crypto'
+import { existsSync, readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+
+export const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url))
+export const BG_RDF = `${REPO_ROOT}bg-rdf/`
+const REFERENCE_DIR = fileURLToPath(new URL('./reference/', import.meta.url))
+
+export type Trajectories = Record<string, (number | null)[]>
+
+export interface SimulationResult {
+  simulation: { start: number; end: number; steps: number; recordedEvery: number }
+  voi: { name: string; units: string; values: number[] }
+  states: Trajectories
+  rates: Trajectories
+  algebraics: Trajectories
+}
+
+export interface ReferenceCase {
+  name: string
+  kind: 'example' | 'variant'
+  /** Relative to the repository root. */
+  source: string
+  sourceSha256: string
+  /** The base IRI the Python version used. Use the same one so model and variable names match. */
+  baseIri: string
+  /** File in test/reference/ to compare against. A variant uses its example's. */
+  reference: string
+  pythonCellml?: string
+  pmrCheck?: { model: string; agrees: boolean; problems: string[] }
+  /** What the Python bg2cellml did with a variant. */
+  python?: { status: 'matches' | 'differs' | 'error'; problems?: string[]; error?: string }
+}
+
+export interface Manifest {
+  generator: { bg2cellml: string; bgToolsCommit: string; libopencor: string }
+  bgRdf: { tag: string; commit: string; files: Record<string, string> }
+  tolerance: { relative: number; absolute: number }
+  cases: ReferenceCase[]
+}
+
+export function sha256(path: string): string {
+  return createHash('sha256').update(readFileSync(path)).digest('hex')
+}
+
+export function requireBgRdf(): void {
+  if (!existsSync(`${BG_RDF}schema/ontology.ttl`)) {
+    throw new Error('The bg-rdf submodule is missing. Run `git submodule update --init`.')
+  }
+}
+
+export function loadManifest(): Manifest {
+  return JSON.parse(readFileSync(`${REFERENCE_DIR}manifest.json`, 'utf8')) as Manifest
+}
+
+export function loadReference(c: ReferenceCase): SimulationResult {
+  return JSON.parse(readFileSync(`${REFERENCE_DIR}${c.reference}`, 'utf8')) as SimulationResult
+}
+
+export function readSource(c: ReferenceCase): string {
+  return readFileSync(`${REPO_ROOT}${c.source}`, 'utf8')
+}
+
+/** The BG-RDF ontology and templates, as `Converter.loadFramework()` takes them. */
+export function frameworkSource(manifest: Manifest = loadManifest()): { ontology: string; templates: Record<string, string> } {
+  requireBgRdf()
+  const templates: Record<string, string> = {}
+  for (const file of Object.keys(manifest.bgRdf.files)) {
+    if (file.startsWith('templates/')) templates[file.slice('templates/'.length)] = readFileSync(`${BG_RDF}${file}`, 'utf8')
+  }
+  return { ontology: readFileSync(`${BG_RDF}schema/ontology.ttl`, 'utf8'), templates }
+}
+
+/**
+ * Differences between a simulation of generated CellML and a reference,
+ * comparing variables by name. An empty list means they agree.
+ */
+export function compareResults(
+  actual: Pick<SimulationResult, 'states' | 'rates' | 'algebraics'>,
+  expected: SimulationResult,
+  tolerance: Manifest['tolerance'],
+  groups: readonly ('states' | 'rates' | 'algebraics')[] = ['states', 'rates', 'algebraics'],
+): string[] {
+  const close = (a: number | null | undefined, e: number | null | undefined): boolean =>
+    a == null || e == null ? a == e : Math.abs(a - e) <= tolerance.absolute + tolerance.relative * Math.abs(e)
+  const problems: string[] = []
+  for (const group of groups) {
+    for (const [name, values] of Object.entries(expected[group])) {
+      const got = actual[group][name]
+      if (got === undefined) {
+        problems.push(`${group}.${name} is missing`)
+        continue
+      }
+      const bad = values.flatMap((e, i) => (close(got[i], e) ? [] : [i]))
+      if (bad.length > 0) {
+        const i = bad[0]!
+        problems.push(
+          `${group}.${name} differs at ${bad.length} points, first at ${expected.voi.name}=${expected.voi.values[i]}: ${got[i]} != ${values[i]}`,
+        )
+      }
+    }
+  }
+  return problems
+}

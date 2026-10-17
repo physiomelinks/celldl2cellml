@@ -1,0 +1,93 @@
+#===============================================================================
+#
+#  RC circuit with a plain number as a parameter value
+#
+#  R is given as 10.0 (xsd:decimal), with no units, so it takes the units
+#  the template declares for R. bg2cellml 0.11.2 rejects any value that
+#  isn't a cdt:ucum literal.
+#
+#  Derived from BG-RDF examples/example_RC.ttl (v2026-04-12). It should simulate
+#  exactly as example_RC does.
+#
+#===============================================================================
+
+@prefix bgf: <https://bg-rdf.org/ontologies/bondgraph-framework#> .
+@prefix cdt: <https://w3id.org/cdt/> .
+@prefix tpl: <https://bg-rdf.org/templates/> .
+
+@prefix : <#> .
+
+#===============================================================================
+#
+#               I_R
+#      +------- R_0 -------+  V_C
+#      |                   |
+#     V_in                C_1
+#      |                   |
+#      +-------------------+
+#
+#===============================================================================
+#
+#               R_0       q_1
+#                |         |
+#                |         |
+#     u_0 ------ v ------ u_1
+#
+#===============================================================================
+# Simulate for 0.1 sec at 1 ms steps
+#===============================================================================
+
+:RC_circuit
+    a bgf:BondgraphModel ;
+    bgf:usesTemplate tpl:electrical.ttl ;
+    bgf:hasBondElement :V_in, :R_0, :q_1 ;
+    bgf:hasJunctionStructure :I_R, :V_C .
+
+#===============================================================================
+
+:R_0
+    a bgf:ElectricalResistor ;
+    bgf:parameterValue [
+        bgf:varName "R" ;
+        bgf:hasValue 10.0
+    ] .
+
+:q_1
+    a bgf:ElectricalCapacitor ;
+    bgf:hasValue "0 C"^^cdt:ucum ;
+    bgf:parameterValue [
+        bgf:varName "C" ;
+        bgf:hasValue "0.001 F"^^cdt:ucum
+    ] .
+
+:V_in
+    a bgf:VoltageSource ;
+    bgf:hasValue "10 V"^^cdt:ucum .
+
+#===============================================================================
+
+:I_R
+    a bgf:OneNode .
+
+:V_C
+    a bgf:ZeroNode .
+
+#===============================================================================
+
+:V_in.I_R
+    bgf:hasSource :V_in ;
+    bgf:hasTarget :I_R .
+
+:I_R.R
+    bgf:hasSource :I_R ;
+    bgf:hasTarget :R_0 .
+
+:I_R.V_C
+    bgf:hasSource :I_R ;
+    bgf:hasTarget :V_C .
+
+:V_C.q
+    bgf:hasSource :V_C ;
+    bgf:hasTarget :q_1 .
+
+#===============================================================================

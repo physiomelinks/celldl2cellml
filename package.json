@@ -19,7 +19,8 @@
     "build": "tsc --build",
     "clean": "tsc --build --clean",
     "typecheck": "tsc --build --noEmit",
-    "test": "yarn workspaces foreach --all --topological --parallel run test"
+    "test": "yarn workspaces foreach --all --topological --parallel run test",
+    "reference": "uv run --project tools/reference python tools/reference/generate.py"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

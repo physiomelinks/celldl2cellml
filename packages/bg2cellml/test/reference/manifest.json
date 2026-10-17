@@ -1,0 +1,207 @@
+{
+  "description": "Reference results from the Python bg2cellml. Regenerate with tools/reference/generate.py.",
+  "generator": {
+    "bg2cellml": "0.11.2",
+    "bgToolsCommit": "8b69ee76bfb5e9e7077e98c9c1a30dfb38010492",
+    "libopencor": "1.20260803.0"
+  },
+  "bgRdf": {
+    "tag": "v2026-04-12",
+    "commit": "39e4c113cca67d3ed49a24deda97ad13013fce90",
+    "files": {
+      "schema/ontology.ttl": "b88bc032a749b129fcd407dc024447613105cd4fb126036ab60f17331b286b89",
+      "templates/chemical.ttl": "c3b550c17c82ba714154d11a10b05558697486bd8de327362723e770ef5d7ebf",
+      "templates/electrical.ttl": "79ecce70cdd5ebbd49eedd86826d81b4fe115283bd04433f7471270f0adec38d",
+      "templates/hydraulic.ttl": "6df50deafd37427e7e6cc18e8c084df13dba42cd2a6974274e0028cc7e21f055",
+      "templates/mechanical.ttl": "25cf927fc3e6d738646d5f9885f3633a17df36e42164cb850b9ec0df4f8bf8f0"
+    }
+  },
+  "tolerance": {
+    "relative": 0.0002,
+    "absolute": 1e-06
+  },
+  "cases": [
+    {
+      "name": "RCR",
+      "kind": "example",
+      "source": "bg-rdf/examples/RCR.ttl",
+      "sourceSha256": "78e657c1b7b8339aa3e8706326ac5d4b5c1ca4819bedad6a834de8058cf78172",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl",
+      "reference": "RCR.json",
+      "pythonCellml": "python/RCR.cellml"
+    },
+    {
+      "name": "RCR_reduced",
+      "kind": "example",
+      "source": "bg-rdf/examples/RCR_reduced.ttl",
+      "sourceSha256": "5ea59aaf3c51e5bd4186ac9235646b0de7bbfab39fac3340429ed46990b681bb",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR_reduced.ttl",
+      "reference": "RCR_reduced.json",
+      "pythonCellml": "python/RCR_reduced.cellml"
+    },
+    {
+      "name": "example_A1",
+      "kind": "example",
+      "source": "bg-rdf/examples/example_A1.ttl",
+      "sourceSha256": "0e4fde6721350f14ff329fb7e98c92fd2295435569e2477b0fc86135fee01bb5",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1.ttl",
+      "reference": "example_A1.json",
+      "pythonCellml": "python/example_A1.cellml",
+      "pmrCheck": {
+        "model": "bg-rdf/pmr/Simple_electrical_circuit/FAIRDO BG example 3.1.cellml",
+        "agrees": true,
+        "problems": []
+      }
+    },
+    {
+      "name": "example_A1_reduced",
+      "kind": "example",
+      "source": "bg-rdf/examples/example_A1_reduced.ttl",
+      "sourceSha256": "30beed3533131181436cb82bc0a45ba638d93a47051eedbe90b16c8f1803eefd",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1_reduced.ttl",
+      "reference": "example_A1_reduced.json",
+      "pythonCellml": "python/example_A1_reduced.cellml"
+    },
+    {
+      "name": "example_A2",
+      "kind": "example",
+      "source": "bg-rdf/examples/example_A2.ttl",
+      "sourceSha256": "a5d097188268d7f42280585697c4043df4f00e6af8647cddad56469a44012752",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2.ttl",
+      "reference": "example_A2.json",
+      "pythonCellml": "python/example_A2.cellml"
+    },
+    {
+      "name": "example_A2_reduced",
+      "kind": "example",
+      "source": "bg-rdf/examples/example_A2_reduced.ttl",
+      "sourceSha256": "4a43b7b0ee7b68708b9f93262207d6e9613bd36df85a687988be779891d4bd8f",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2_reduced.ttl",
+      "reference": "example_A2_reduced.json",
+      "pythonCellml": "python/example_A2_reduced.cellml"
+    },
+    {
+      "name": "example_A3",
+      "kind": "example",
+      "source": "bg-rdf/examples/example_A3.ttl",
+      "sourceSha256": "fd150b6de11e182c904bf430f4fef8d7b64825dab63c6b602a76d869bbed0e68",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.ttl",
+      "reference": "example_A3.json",
+      "pythonCellml": "python/example_A3.cellml"
+    },
+    {
+      "name": "example_A3_reduced",
+      "kind": "example",
+      "source": "bg-rdf/examples/example_A3_reduced.ttl",
+      "sourceSha256": "a61e187229a9601504b22a4853057243eb6b94579e6e8a872e5e316bff19446b",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl",
+      "reference": "example_A3_reduced.json",
+      "pythonCellml": "python/example_A3_reduced.cellml"
+    },
+    {
+      "name": "example_B1",
+      "kind": "example",
+      "source": "bg-rdf/examples/example_B1.ttl",
+      "sourceSha256": "b82d3df485df18794eff8db2f91278866b9c7cc69967a78d94871000843d2061",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl",
+      "reference": "example_B1.json",
+      "pythonCellml": "python/example_B1.cellml",
+      "pmrCheck": {
+        "model": "bg-rdf/pmr/Simple_biochemical_reaction/FAIRDO BG example 3.4.cellml",
+        "agrees": true,
+        "problems": []
+      }
+    },
+    {
+      "name": "example_B1_reduced",
+      "kind": "example",
+      "source": "bg-rdf/examples/example_B1_reduced.ttl",
+      "sourceSha256": "b5801af3bc9914eebd4a303522d767f7b38e4ab1987eee2038298c5fb08d8262",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl",
+      "reference": "example_B1_reduced.json",
+      "pythonCellml": "python/example_B1_reduced.cellml"
+    },
+    {
+      "name": "example_B2",
+      "kind": "example",
+      "source": "bg-rdf/examples/example_B2.ttl",
+      "sourceSha256": "e023286fab676f4aaa6e8131bf47500857540c754f6b9005040cc027abe1e81f",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl",
+      "reference": "example_B2.json",
+      "pythonCellml": "python/example_B2.cellml"
+    },
+    {
+      "name": "example_B2_reduced",
+      "kind": "example",
+      "source": "bg-rdf/examples/example_B2_reduced.ttl",
+      "sourceSha256": "fa73d58dd6a5b1d87a7fd8391a4a7f0ab74802ce1a118d7b40e067e739921099",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2_reduced.ttl",
+      "reference": "example_B2_reduced.json",
+      "pythonCellml": "python/example_B2_reduced.cellml"
+    },
+    {
+      "name": "example_RC",
+      "kind": "example",
+      "source": "bg-rdf/examples/example_RC.ttl",
+      "sourceSha256": "6f7467e2f1c44fe61ef3f216e78c21d1ed9a9b495bd82dbfb47360e0ec3b0c25",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC.ttl",
+      "reference": "example_RC.json",
+      "pythonCellml": "python/example_RC.cellml"
+    },
+    {
+      "name": "example_RC_reduced",
+      "kind": "example",
+      "source": "bg-rdf/examples/example_RC_reduced.ttl",
+      "sourceSha256": "4d65420c84c0d5c187af66723b4f4ac8a9954274fc1402fb28a08f7d46ec7bfc",
+      "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC_reduced.ttl",
+      "reference": "example_RC_reduced.json",
+      "pythonCellml": "python/example_RC_reduced.cellml"
+    },
+    {
+      "name": "RC_labelled_bonds",
+      "kind": "variant",
+      "source": "packages/bg2cellml/test/models/RC_labelled_bonds.ttl",
+      "sourceSha256": "e5300bb338e62b7a334ff3083ff1bb66691b0a150dfe590cf33d06c2dfff67af",
+      "baseIri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/RC_labelled_bonds.ttl",
+      "reference": "example_RC.json",
+      "python": {
+        "status": "error",
+        "error": "ValueError: invalid literal for int() with base 10: 'source to current'"
+      }
+    },
+    {
+      "name": "RC_plain_number",
+      "kind": "variant",
+      "source": "packages/bg2cellml/test/models/RC_plain_number.ttl",
+      "sourceSha256": "07f8a162fb6e492f2513d169e865ce1b64d9f0ab89e6b14d1ccc79b034772514",
+      "baseIri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/RC_plain_number.ttl",
+      "reference": "example_RC.json",
+      "python": {
+        "status": "error",
+        "error": "TypeError: Literal value has unexpected datatype: <http://www.w3.org/2001/XMLSchema#decimal>"
+      }
+    },
+    {
+      "name": "RC_prefixed_values",
+      "kind": "variant",
+      "source": "packages/bg2cellml/test/models/RC_prefixed_values.ttl",
+      "sourceSha256": "349dd1b04ef3e014d9ed31f4e560331b668b8dba3b4212e2c49958502fdf72ca",
+      "baseIri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/RC_prefixed_values.ttl",
+      "reference": "example_RC.json",
+      "python": {
+        "status": "differs",
+        "problems": [
+          "states.q_1 differs at 100 points, first at t=0.001: 999.950002 != 0.000951748075",
+          "rates.q_1 differs at 101 points, first at t=0.0: 1000000.0 != 1.0",
+          "algebraics.v_q_1 differs at 101 points, first at t=0.0: 1000000.0 != 1.0",
+          "algebraics.u_q_1 differs at 100 points, first at t=0.001: 0.999950002 != 0.951748075",
+          "algebraics.u_R_0 differs at 101 points, first at t=0.0: 10000.0 != 10.0",
+          "algebraics.v_R_0 differs at 101 points, first at t=0.0: 1000000.0 != 1.0",
+          "algebraics.I_R differs at 101 points, first at t=0.0: 1000000.0 != 1.0",
+          "algebraics.v_V_in differs at 101 points, first at t=0.0: -1000000.0 != -1.0",
+          "algebraics.V_C differs at 100 points, first at t=0.001: 0.999950002 != 0.951748075"
+        ]
+      }
+    }
+  ]
+}
