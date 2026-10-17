@@ -30,6 +30,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@opencor/libopencor@npm:^1.20261016.1":
+  version: 1.20261016.1
+  resolution: "@opencor/libopencor@npm:1.20261016.1"
+  checksum: 10c0/30a9d0dd6a8e1929d3181f6a247022da48eb988eec6da3d0173ed74ac47821a3a40458410f19cf8239d2dc8f9aa01c235766b982650263c66cb9e955e5bde781
+  languageName: node
+  linkType: hard
+
 "@oxc-project/types@npm:=0.154.0":
   version: 0.154.0
   resolution: "@oxc-project/types@npm:0.154.0"
@@ -41,6 +48,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@physiomelinks/bg2cellml@workspace:packages/bg2cellml"
   dependencies:
+    "@opencor/libopencor": "npm:^1.20261016.1"
     "@physiomelinks/cellml-units": "workspace:^"
     "@physiomelinks/math-ast": "workspace:^"
     "@xmldom/xmldom": "npm:^0.9.8"

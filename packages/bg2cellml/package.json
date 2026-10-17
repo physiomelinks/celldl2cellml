@@ -36,6 +36,7 @@
     "oxigraph": ">=0.5.9 <0.6"
   },
   "devDependencies": {
+    "@opencor/libopencor": "^1.20261016.1",
     "@xmldom/xmldom": "^0.9.8",
     "libcellml.js": "^0.7.1",
     "oxigraph": "^0.5.9",
