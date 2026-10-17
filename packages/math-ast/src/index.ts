@@ -26,10 +26,9 @@ export {
   readMathML,
   readMathMLElement,
   toEquations,
-  toMathML,
   type DOMParserLike,
   type MathMLProblem,
   type MathMLRead,
   type ParseOptions,
-  type WriteOptions,
 } from './mathml.js'
+export { MathMLWriteError, toMathML, toMathMLFragment, type WriteOptions } from './write.js'

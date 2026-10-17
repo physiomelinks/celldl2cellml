@@ -426,24 +426,3 @@ export function toEquations(expressions: readonly AstNode[]): Equation[] {
   if (problems.length > 0) throw new MathMLError(problems)
   return result
 }
-
-//==============================================================================
-// Writing (chunk 2.2)
-
-export interface WriteOptions {
-  /**
-   * The `cellml:units` value for a `<cn>`. CellML 2.0 needs one on every
-   * number. When this isn't given, a number's own `units` is used. CellML
-   * knowledge stays out of this package: the caller decides the units.
-   */
-  cnUnits?: (cn: NumberNode) => string | undefined
-  /** Namespace for the `cellml:units` attribute. Defaults to CellML 2.0. */
-  cellmlNamespace?: string
-  /** Indent per level. Use `''` for compact output. Defaults to two spaces. */
-  indent?: string
-}
-
-/** Write expressions as one `<math>` element. The result is a string, so no DOM is needed. */
-export function toMathML(_expressions: readonly AstNode[], _options: WriteOptions = {}): string {
-  throw new Error('toMathML() is not implemented yet')
-}

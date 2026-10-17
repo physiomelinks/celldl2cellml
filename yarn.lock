@@ -80,6 +80,7 @@ __metadata:
   resolution: "@physiomelinks/math-ast@workspace:packages/math-ast"
   dependencies:
     "@xmldom/xmldom": "npm:^0.9.8"
+    libcellml.js: "npm:^0.7.1"
     typescript: "npm:^5.9.3"
     vitest: "npm:^4.0.18"
   languageName: unknown
