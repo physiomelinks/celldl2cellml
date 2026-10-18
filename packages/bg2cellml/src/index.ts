@@ -31,7 +31,16 @@ export {
   readValue,
   type CompatibleUnits,
 } from './framework/variables.js'
-export { BondgraphModel, type ModelElement } from './model/model.js'
+export {
+  BondgraphElement,
+  BondgraphModel,
+  ModelVariable,
+  type ElementPort,
+  type ModelElement,
+  type ModelRuntime,
+  type ValueAssignment,
+} from './model/model.js'
+export { LOCAL_MODEL_BASE, cleanLatex, elementVariableName, makeSymbolicName, prettyName, prettyUri } from './model/names.js'
 export { BondNetwork } from './model/network.js'
 export { IssueLog, type Issue } from './issues.js'
 export { RdfGraph, type OxigraphModule, type QuadLike, type ResultRow, type Term, type TermLike } from './rdf/graph.js'

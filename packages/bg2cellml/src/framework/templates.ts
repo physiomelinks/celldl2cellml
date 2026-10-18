@@ -98,8 +98,17 @@ function readRelation(iri: string, relation: Term | undefined, options: Template
   if (relation === undefined || relation.termType !== 'Literal') {
     throw new DeclarationError(`BondElement ${iri} has no constitutive relation`)
   }
+  return readEquations(relation.value, `<${iri}>`, options)
+}
+
+/**
+ * Equations from MathML, as a constitutive relation has them: each equation's
+ * left side must be a variable or a derivative. A problem throws a
+ * `DeclarationError` starting with `context`.
+ */
+export function readEquations(mathml: string, context: string, options: Pick<TemplateOptions, 'domParser'>): Equation[] {
   try {
-    const equations = toEquations(parseMathML(relation.value, options.domParser === undefined ? {} : { domParser: options.domParser }))
+    const equations = toEquations(parseMathML(mathml, options.domParser === undefined ? {} : { domParser: options.domParser }))
     for (const equation of equations) {
       if (equation.left.type !== 'Identifier' && equation.left.type !== 'Derivative') {
         throw new MathMLError([{ expression: equations.indexOf(equation), message: 'Unsupported form of equation: its left side must be a variable or a derivative' }])
@@ -107,7 +116,7 @@ function readRelation(iri: string, relation: Term | undefined, options: Template
     }
     return equations
   } catch (error) {
-    if (error instanceof MathMLError) throw new DeclarationError(`<${iri}>: ${error.message}`)
+    if (error instanceof MathMLError) throw new DeclarationError(`${context}: ${error.message}`)
     throw error
   }
 }

@@ -83,7 +83,7 @@ export class Converter {
     }
     try {
       const bgRdf = options.rdfSource ? source : extractBgRdf(source, this.#runtime.domParser)
-      const model = BondgraphModel.fromTurtle(this.#framework, this.#runtime.oxigraph, bgRdf, options.sourceUri)
+      const model = BondgraphModel.fromTurtle(this.#framework, this.#runtime, bgRdf, options.sourceUri)
       if (model.log.hasIssues) {
         return { issues: model.log.issues.map((issue) => issue.message) }
       }
