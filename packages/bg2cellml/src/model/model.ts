@@ -13,9 +13,12 @@
  *   (Fixed in `elements.ts`.)
  * - Plain numeric literals such as `10.0` are rejected as values. (Fixed:
  *   `readValue` reads them.)
+ * - Values are checked for compatible units but not converted, so `1000 uF`
+ *   is written as 1000 farads. (Fixed in `element-variables.ts`, and for
+ *   one and zero nodes in `junctions.ts`.)
  */
 
-import { compatible, type LibCellML } from '@physiomelinks/cellml-units'
+import { compatible, convertValue, type LibCellML } from '@physiomelinks/cellml-units'
 import type { Equation, ParseOptions } from '@physiomelinks/math-ast'
 
 import type { BondgraphFramework } from '../framework/framework.js'
@@ -24,6 +27,7 @@ import { RdfGraph, type OxigraphModule } from '../rdf/graph.js'
 import { BONDGRAPH_MODEL } from '../rdf/queries.js'
 import { buildNetwork, inferBonds, loadBonds, type BondgraphBond, type NetworkNode } from './bonds.js'
 import { assignDomains } from './domains.js'
+import { assignElementVariables } from './element-variables.js'
 import { loadElements, type BondgraphElement } from './elements.js'
 import { assignJunctionVariables, loadJunctions, type BondgraphJunction } from './junctions.js'
 import { prettyUri } from './names.js'
@@ -45,6 +49,17 @@ export interface ModelRuntime {
   readonly oxigraph: OxigraphModule
   readonly libcellml: LibCellML
   readonly domParser?: ParseOptions['domParser']
+}
+
+/**
+ * How far to load a model, for testing a stage at a time: its elements; its
+ * junctions, bonds and network; domains and junction variables; or (the
+ * default) everything, including element variables.
+ */
+export type ModelStage = 'elements' | 'network' | 'domains' | 'variables'
+
+export interface ModelLoadOptions {
+  readonly until?: ModelStage
 }
 
 export interface ModelElement {
@@ -78,9 +93,18 @@ export class BondgraphModel {
    *
    * So far this finds the model's elements (5.1), and its junctions and bonds,
    * and builds the bond network (5.2), spreads domains through it and assigns
-   * the junctions' variables (5.3). Element variables and equations come next.
+   * the junctions' variables (5.3), then the elements' variables, with
+   * values in their units and relations in their symbols (5.4). Equations
+   * come next.
    */
-  static fromTurtle(framework: BondgraphFramework, runtime: ModelRuntime, turtle: string, baseIri: string): BondgraphModel {
+  static fromTurtle(
+    framework: BondgraphFramework,
+    runtime: ModelRuntime,
+    turtle: string,
+    baseIri: string,
+    options: ModelLoadOptions = {},
+  ): BondgraphModel {
+    const until = options.until ?? 'variables'
     const model = new BondgraphModel(new RdfGraph(runtime.oxigraph))
     try {
       model.graph.load(turtle, baseIri)
@@ -91,6 +115,7 @@ export class BondgraphModel {
     if (!model.#findModel()) return model
 
     const unitsCompatible = (a: string, b: string): boolean => compatible(runtime.libcellml, a, b)
+    const convert = (value: number, from: string, to: string): number => convertValue(runtime.libcellml, value, from, to)
     const elements = loadElements(model.iri, {
       framework,
       graph: model.graph,
@@ -103,6 +128,7 @@ export class BondgraphModel {
       model.log.report(`Model ${prettyUri(model.iri)} has no valid elements`, model.iri)
       return model
     }
+    if (until === 'elements') return model
 
     for (const [iri, junction] of loadJunctions(model.iri, { framework, graph: model.graph, log: model.log })) {
       model.junctions.set(iri, junction)
@@ -111,8 +137,14 @@ export class BondgraphModel {
     inferBonds(model.iri, context)
     model.bonds.push(...loadBonds(model.iri, context))
     model.network = buildNetwork(context, model.bonds)
+    if (until === 'network') return model
+
     assignDomains(model.elements, model.network, model.log)
-    assignJunctionVariables(model.junctions, { log: model.log, compatible: unitsCompatible, network: model.network })
+    const units = { log: model.log, compatible: unitsCompatible, convert, network: model.network }
+    assignJunctionVariables(model.junctions, units)
+    if (until === 'domains') return model
+
+    assignElementVariables({ ...units, elements: model.elements, junctions: model.junctions })
     return model
   }
 

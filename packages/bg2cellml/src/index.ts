@@ -46,7 +46,9 @@ export {
   type NetworkNode,
   type PowerPort,
   type ModelElement,
+  type ModelLoadOptions,
   type ModelRuntime,
+  type ModelStage,
   type ValueAssignment,
 } from './model/model.js'
 export { LOCAL_MODEL_BASE, cleanLatex, elementVariableName, makeSymbolicName, prettyName, prettyUri } from './model/names.js'

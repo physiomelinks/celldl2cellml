@@ -46,7 +46,9 @@ beforeAll(async () => {
   framework = bgRdfFramework()
 })
 
-const loadCase = (c: ReferenceCase): BondgraphModel => BondgraphModel.fromTurtle(framework, runtime, readSource(c), c.baseIri)
+/** As loaded, before the network is built and values are assigned (5.4). */
+const loadCase = (c: ReferenceCase): BondgraphModel =>
+  BondgraphModel.fromTurtle(framework, runtime, readSource(c), c.baseIri, { until: 'elements' })
 const messages = (model: BondgraphModel): string[] => model.log.issues.map((issue) => issue.message)
 const caseNamed = (name: string): ReferenceCase => manifest.cases.find((c) => c.name === name)!
 const bgf = (name: string): string => `${NAMESPACES.bgf}${name}`
@@ -245,7 +247,7 @@ function modelFrom(elements: string, body: string): BondgraphModel {
 @prefix : <#> .
 :model a bgf:BondgraphModel ; bgf:hasBondElement ${elements} .
 ${body}`
-  return BondgraphModel.fromTurtle(framework, runtime, turtle, BASE)
+  return BondgraphModel.fromTurtle(framework, runtime, turtle, BASE, { until: 'elements' })
 }
 
 const resistor = (name: string, extra = ''): string =>
@@ -256,7 +258,7 @@ const SINE = `"""<math xmlns="http://www.w3.org/1998/Math/MathML"><apply><eq/><c
 
 describe('loading elements', () => {
   it('needs exactly one bgf:BondgraphModel', () => {
-    const none = BondgraphModel.fromTurtle(framework, runtime, '', BASE)
+    const none = BondgraphModel.fromTurtle(framework, runtime, '', BASE, { until: 'elements' })
     expect(messages(none)).toEqual(['No BondgraphModels defined in RDF source'])
     const two = BondgraphModel.fromTurtle(
       framework,

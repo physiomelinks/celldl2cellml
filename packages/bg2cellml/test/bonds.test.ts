@@ -34,7 +34,9 @@ beforeAll(async () => {
   framework = bgRdfFramework()
 })
 
-const loadCase = (c: ReferenceCase): BondgraphModel => BondgraphModel.fromTurtle(framework, runtime, readSource(c), c.baseIri)
+/** Up to the bond network, before variables are assigned. */
+const loadCase = (c: ReferenceCase): BondgraphModel =>
+  BondgraphModel.fromTurtle(framework, runtime, readSource(c), c.baseIri, { until: 'network' })
 const messages = (model: BondgraphModel): string[] => model.log.issues.map((issue) => issue.message)
 const caseNamed = (name: string): ReferenceCase => manifest.cases.find((c) => c.name === name)!
 const bgf = (name: string): string => `${NAMESPACES.bgf}${name}`

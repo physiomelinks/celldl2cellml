@@ -13,6 +13,7 @@ import type { RdfGraph } from '../rdf/graph.js'
 import { BGF, NAMESPACES, curie } from '../rdf/namespaces.js'
 import { modelJunctionsQuery } from '../rdf/queries.js'
 import type { NetworkNode } from './bonds.js'
+import { valueInUnits, type ConvertUnits } from './element-variables.js'
 import { ModelVariable, type PowerPort } from './elements.js'
 import { makeSymbolicName, prettyName, prettyUri } from './names.js'
 import type { BondNetwork } from './network.js'
@@ -152,6 +153,7 @@ export function loadJunctions(
 interface VariableContext {
   readonly log: IssueLog
   readonly compatible: CompatibleUnits
+  readonly convert: ConvertUnits
   readonly network: BondNetwork<NetworkNode>
 }
 
@@ -179,7 +181,9 @@ function assignNodeVariable(junction: BondgraphJunction, context: VariableContex
     if (value.units !== undefined && !unitsCompatible(context, variable.units, value.units)) {
       log.report(`Value for variable ${variable.name} has incompatible units (${value.units} != ${variable.units})`, junction.iri)
     } else {
-      variable.value = { units: variable.units, ...value }
+      // In the variable's units, which Python doesn't convert to
+      const converted = valueInUnits(value, variable, context, junction.iri)
+      if (converted !== undefined) variable.value = converted
     }
   }
   junction.variables.set('', variable)

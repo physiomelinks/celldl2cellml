@@ -6,7 +6,7 @@
  * is built.
  */
 
-import type { Equation, ParseOptions } from '@physiomelinks/math-ast'
+import type { AstNode, Equation, ParseOptions } from '@physiomelinks/math-ast'
 
 import {
   elementTemplateOf,
@@ -128,9 +128,13 @@ export class BondgraphElement {
   readonly potential?: ModelVariable
   /**
    * The template's, or for a source, the MathML the model gives as its value.
-   * Its names are still the template's.
+   * Once variables are assigned, its names are the variables' symbols.
    */
-  readonly constitutiveRelation?: readonly Equation[]
+  constitutiveRelation?: readonly Equation[]
+  /** Once variables are assigned, the right side of the relation's equation for the element's flow, if it has one. */
+  flowExpression?: AstNode
+  /** Once variables are assigned, the right side of the relation's equation for the element's potential, if it has one. */
+  potentialExpression?: AstNode
 
   constructor(
     iri: string,
