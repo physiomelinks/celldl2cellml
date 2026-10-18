@@ -20,6 +20,9 @@
     "relative": 0.0002,
     "absolute": 1e-06
   },
+  "framework": {
+    "reference": "framework.json"
+  },
   "cases": [
     {
       "name": "RCR",

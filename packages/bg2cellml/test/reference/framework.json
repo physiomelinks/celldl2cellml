@@ -1,0 +1,2487 @@
+{
+ "issues": [],
+ "domains": {
+  "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+   "symbol": "Chemical",
+   "label": null,
+   "name": "Chemical",
+   "flow": {
+    "name": "v",
+    "symbol": "v",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+    "units": {
+     "pint": "mole / second",
+     "scale": 1.0,
+     "base": "mol.s-1"
+    },
+    "value": null
+   },
+   "potential": {
+    "name": "u",
+    "symbol": "u",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+    "units": {
+     "pint": "joule / mole",
+     "scale": 1.0,
+     "base": "m2.kg.mol-1.s-2"
+    },
+    "value": null
+   },
+   "quantity": {
+    "name": "q",
+    "symbol": "q",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+    "units": {
+     "pint": "mole",
+     "scale": 1.0,
+     "base": "mol"
+    },
+    "value": null
+   },
+   "constants": [
+    {
+     "name": "RT",
+     "symbol": "RT",
+     "type": null,
+     "units": {
+      "pint": "joule / mole",
+      "scale": 1.0,
+      "base": "m2.kg.mol-1.s-2"
+     },
+     "value": {
+      "magnitude": 2578.73058,
+      "units": {
+       "pint": "joule / mole",
+       "scale": 1.0,
+       "base": "m2.kg.mol-1.s-2"
+      }
+     }
+    },
+    {
+     "name": "F",
+     "symbol": "F",
+     "type": null,
+     "units": {
+      "pint": "coulomb / mole",
+      "scale": 1.0,
+      "base": "A.mol-1.s"
+     },
+     "value": {
+      "magnitude": 96485.0,
+      "units": {
+       "pint": "coulomb / mole",
+       "scale": 1.0,
+       "base": "A.mol-1.s"
+      }
+     }
+    }
+   ],
+   "intrinsicSymbols": [
+    "v",
+    "u",
+    "q"
+   ]
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "symbol": "Electrical",
+   "label": null,
+   "name": "Electrical",
+   "flow": {
+    "name": "v",
+    "symbol": "v",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+    "units": {
+     "pint": "coulomb / second",
+     "scale": 1.0,
+     "base": "A"
+    },
+    "value": null
+   },
+   "potential": {
+    "name": "u",
+    "symbol": "u",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+    "units": {
+     "pint": "joule / coulomb",
+     "scale": 1.0,
+     "base": "A-1.m2.kg.s-3"
+    },
+    "value": null
+   },
+   "quantity": {
+    "name": "q",
+    "symbol": "q",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+    "units": {
+     "pint": "coulomb",
+     "scale": 1.0,
+     "base": "A.s"
+    },
+    "value": null
+   },
+   "constants": [],
+   "intrinsicSymbols": [
+    "v",
+    "u",
+    "q"
+   ]
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+   "symbol": "Hydraulic",
+   "label": null,
+   "name": "Hydraulic",
+   "flow": {
+    "name": "v",
+    "symbol": "v",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+    "units": {
+     "pint": "liter / second",
+     "scale": 0.001,
+     "base": "m3.s-1"
+    },
+    "value": null
+   },
+   "potential": {
+    "name": "u",
+    "symbol": "u",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+    "units": {
+     "pint": "joule / liter",
+     "scale": 1000.0,
+     "base": "m-1.kg.s-2"
+    },
+    "value": null
+   },
+   "quantity": {
+    "name": "q",
+    "symbol": "q",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+    "units": {
+     "pint": "liter",
+     "scale": 0.001,
+     "base": "m3"
+    },
+    "value": null
+   },
+   "constants": [
+    {
+     "name": "RT",
+     "symbol": "RT",
+     "type": null,
+     "units": {
+      "pint": "joule / mole",
+      "scale": 1.0,
+      "base": "m2.kg.mol-1.s-2"
+     },
+     "value": {
+      "magnitude": 2578.73058,
+      "units": {
+       "pint": "joule / mole",
+       "scale": 1.0,
+       "base": "m2.kg.mol-1.s-2"
+      }
+     }
+    }
+   ],
+   "intrinsicSymbols": [
+    "v",
+    "u",
+    "q"
+   ]
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "symbol": "Mechanical",
+   "label": null,
+   "name": "Mechanical",
+   "flow": {
+    "name": "v",
+    "symbol": "v",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+    "units": {
+     "pint": "meter / second",
+     "scale": 1.0,
+     "base": "m.s-1"
+    },
+    "value": null
+   },
+   "potential": {
+    "name": "u",
+    "symbol": "u",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+    "units": {
+     "pint": "joule / meter",
+     "scale": 1.0,
+     "base": "m.kg.s-2"
+    },
+    "value": null
+   },
+   "quantity": {
+    "name": "q",
+    "symbol": "q",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+    "units": {
+     "pint": "meter",
+     "scale": 1.0,
+     "base": "m"
+    },
+    "value": null
+   },
+   "constants": [],
+   "intrinsicSymbols": [
+    "v",
+    "u",
+    "q"
+   ]
+  }
+ },
+ "elementTemplates": {
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration",
+   "symbol": "Chemical concentration",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "mole / second",
+        "scale": 1.0,
+        "base": "mol.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / mole",
+        "scale": 1.0,
+        "base": "m2.kg.mol-1.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "K": {
+     "name": "K",
+     "symbol": "K",
+     "type": null,
+     "units": {
+      "pint": "1 / mole",
+      "scale": 1.0,
+      "base": "mol-1"
+     },
+     "value": null
+    }
+   },
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "q",
+    "symbol": "q",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+    "units": {
+     "pint": "mole",
+     "scale": 1.0,
+     "base": "mol"
+    },
+    "value": null
+   },
+   "constitutiveRelation": {
+    "variables": [
+     "t",
+     "q",
+     "v",
+     "u",
+     "RT",
+     "K"
+    ],
+    "equations": [
+     {
+      "text": "Derivative(q, t) = v",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>q</ci></apply><ci>v</ci></apply></math>"
+     },
+     {
+      "text": "u = RT*log(K*q)",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><times/><ci>RT</ci><apply><ln/><apply><times/><ci>K</ci><ci>q</ci></apply></apply></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalFlow": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalFlow",
+   "symbol": "ChemicalFlow",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalFlow",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "mole / second",
+        "scale": 1.0,
+        "base": "mol.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / mole",
+        "scale": 1.0,
+        "base": "m2.kg.mol-1.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {},
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "v",
+    "symbol": "v",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+    "units": {
+     "pint": "mole / second",
+     "scale": 1.0,
+     "base": "mol.s-1"
+    },
+    "value": null
+   },
+   "constitutiveRelation": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalPotential": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalPotential",
+   "symbol": "ChemicalPotential",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalPotential",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "mole / second",
+        "scale": 1.0,
+        "base": "mol.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / mole",
+        "scale": 1.0,
+        "base": "m2.kg.mol-1.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {},
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "u",
+    "symbol": "u",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+    "units": {
+     "pint": "joule / mole",
+     "scale": 1.0,
+     "base": "m2.kg.mol-1.s-2"
+    },
+    "value": null
+   },
+   "constitutiveRelation": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction",
+   "symbol": "Chemical reaction",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Reaction",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+   "ports": {
+    "f": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction_f",
+     "direction": "https://bg-rdf.org/ontologies/bondgraph-framework#InwardPort",
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "mole / second",
+        "scale": 1.0,
+        "base": "mol.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u_f",
+      "variable": {
+       "name": "u_f",
+       "symbol": "u_f",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / mole",
+        "scale": 1.0,
+        "base": "m2.kg.mol-1.s-2"
+       },
+       "value": null
+      }
+     }
+    },
+    "r": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction_r",
+     "direction": "https://bg-rdf.org/ontologies/bondgraph-framework#OutwardPort",
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "mole / second",
+        "scale": 1.0,
+        "base": "mol.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u_r",
+      "variable": {
+       "name": "u_r",
+       "symbol": "u_r",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / mole",
+        "scale": 1.0,
+        "base": "m2.kg.mol-1.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "kappa": {
+     "name": "kappa",
+     "symbol": "kappa",
+     "type": null,
+     "units": {
+      "pint": "mole / second",
+      "scale": 1.0,
+      "base": "mol.s-1"
+     },
+     "value": null
+    }
+   },
+   "variables": {},
+   "intrinsicVariable": null,
+   "constitutiveRelation": {
+    "variables": [
+     "v",
+     "kappa",
+     "u_f",
+     "RT",
+     "u_r"
+    ],
+    "equations": [
+     {
+      "text": "v = kappa*(exp(u_f/RT) - exp(u_r/RT))",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v</ci><apply><times/><ci>&#954;</ci><apply><minus/><apply><exp/><apply><divide/><ci>u_f</ci><ci>RT</ci></apply></apply><apply><exp/><apply><divide/><ci>u_r</ci><ci>RT</ci></apply></apply></apply></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#CurrentSource": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#CurrentSource",
+   "symbol": "CurrentSource",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#CurrentSource",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "coulomb / second",
+        "scale": 1.0,
+        "base": "A"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / coulomb",
+        "scale": 1.0,
+        "base": "A-1.m2.kg.s-3"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {},
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "v",
+    "symbol": "v",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+    "units": {
+     "pint": "coulomb / second",
+     "scale": 1.0,
+     "base": "A"
+    },
+    "value": null
+   },
+   "constitutiveRelation": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ElasticVessel": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElasticVessel",
+   "symbol": "Hydraulic elastic storage vessel",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElasticVessel",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "liter / second",
+        "scale": 0.001,
+        "base": "m3.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / liter",
+        "scale": 1000.0,
+        "base": "m-1.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "E": {
+     "name": "E",
+     "symbol": "E",
+     "type": null,
+     "units": {
+      "pint": "joule",
+      "scale": 1.0,
+      "base": "m2.kg.s-2"
+     },
+     "value": null
+    },
+    "q_hat": {
+     "name": "q_hat",
+     "symbol": "q_hat",
+     "type": null,
+     "units": {
+      "pint": "liter",
+      "scale": 0.001,
+      "base": "m3"
+     },
+     "value": null
+    },
+    "q_bar": {
+     "name": "q_bar",
+     "symbol": "q_bar",
+     "type": null,
+     "units": {
+      "pint": "liter",
+      "scale": 0.001,
+      "base": "m3"
+     },
+     "value": null
+    }
+   },
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "q",
+    "symbol": "q",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+    "units": {
+     "pint": "liter",
+     "scale": 0.001,
+     "base": "m3"
+    },
+    "value": null
+   },
+   "constitutiveRelation": {
+    "variables": [
+     "t",
+     "q",
+     "v",
+     "u",
+     "E",
+     "q_hat",
+     "q_bar"
+    ],
+    "equations": [
+     {
+      "text": "Derivative(q, t) = v",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>q</ci></apply><ci>v</ci></apply></math>"
+     },
+     {
+      "text": "u = E*(q - q_hat)/(-q + q_bar)**2.0",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><divide/><apply><times/><ci>E</ci><apply><minus/><ci>q</ci><ci>q_hat</ci></apply></apply><apply><power/><apply><plus/><apply><minus/><ci>q</ci></apply><ci>q_bar</ci></apply><cn>2.0</cn></apply></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor",
+   "symbol": "Electrical capacitor",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "coulomb / second",
+        "scale": 1.0,
+        "base": "A"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / coulomb",
+        "scale": 1.0,
+        "base": "A-1.m2.kg.s-3"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "C": {
+     "name": "C",
+     "symbol": "C",
+     "type": null,
+     "units": {
+      "pint": "coulomb ** 2 / joule",
+      "scale": 1.0,
+      "base": "A2.m-2.kg-1.s4"
+     },
+     "value": null
+    }
+   },
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "q",
+    "symbol": "q",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+    "units": {
+     "pint": "coulomb",
+     "scale": 1.0,
+     "base": "A.s"
+    },
+    "value": null
+   },
+   "constitutiveRelation": {
+    "variables": [
+     "t",
+     "q",
+     "v",
+     "u",
+     "C"
+    ],
+    "equations": [
+     {
+      "text": "Derivative(q, t) = v",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>q</ci></apply><ci>v</ci></apply></math>"
+     },
+     {
+      "text": "u = q/C",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><divide/><ci>q</ci><ci>C</ci></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor",
+   "symbol": "Electrical inductor",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "coulomb / second",
+        "scale": 1.0,
+        "base": "A"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / coulomb",
+        "scale": 1.0,
+        "base": "A-1.m2.kg.s-3"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "L": {
+     "name": "L",
+     "symbol": "L",
+     "type": null,
+     "units": {
+      "pint": "joule * second ** 2 / coulomb ** 2",
+      "scale": 1.0,
+      "base": "A-2.m2.kg.s-2"
+     },
+     "value": null
+    }
+   },
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "v",
+    "symbol": "v",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+    "units": {
+     "pint": "coulomb / second",
+     "scale": 1.0,
+     "base": "A"
+    },
+    "value": null
+   },
+   "constitutiveRelation": {
+    "variables": [
+     "t",
+     "v",
+     "u",
+     "L"
+    ],
+    "equations": [
+     {
+      "text": "Derivative(v, t) = u/L",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>v</ci></apply><apply><divide/><ci>u</ci><ci>L</ci></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+   "symbol": "Electrical resistor",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "coulomb / second",
+        "scale": 1.0,
+        "base": "A"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / coulomb",
+        "scale": 1.0,
+        "base": "A-1.m2.kg.s-3"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "R": {
+     "name": "R",
+     "symbol": "R",
+     "type": null,
+     "units": {
+      "pint": "joule * second / coulomb ** 2",
+      "scale": 1.0,
+      "base": "A-2.m2.kg.s-3"
+     },
+     "value": null
+    }
+   },
+   "variables": {},
+   "intrinsicVariable": null,
+   "constitutiveRelation": {
+    "variables": [
+     "v",
+     "u",
+     "R"
+    ],
+    "equations": [
+     {
+      "text": "v = u/R",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v</ci><apply><divide/><ci>u</ci><ci>R</ci></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicFlow": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicFlow",
+   "symbol": "HydraulicFlow",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicFlow",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "liter / second",
+        "scale": 0.001,
+        "base": "m3.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / liter",
+        "scale": 1000.0,
+        "base": "m-1.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {},
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "v",
+    "symbol": "v",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+    "units": {
+     "pint": "liter / second",
+     "scale": 0.001,
+     "base": "m3.s-1"
+    },
+    "value": null
+   },
+   "constitutiveRelation": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicPotential": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicPotential",
+   "symbol": "HydraulicPotential",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicPotential",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "liter / second",
+        "scale": 0.001,
+        "base": "m3.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / liter",
+        "scale": 1000.0,
+        "base": "m-1.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {},
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "u",
+    "symbol": "u",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+    "units": {
+     "pint": "joule / liter",
+     "scale": 1000.0,
+     "base": "m-1.kg.s-2"
+    },
+    "value": null
+   },
+   "constitutiveRelation": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistor": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistor",
+   "symbol": "Hydraulic resistance",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "liter / second",
+        "scale": 0.001,
+        "base": "m3.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / liter",
+        "scale": 1000.0,
+        "base": "m-1.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "k": {
+     "name": "k",
+     "symbol": "k",
+     "type": null,
+     "units": {
+      "pint": "liter ** 2 / joule / second",
+      "scale": 1e-06,
+      "base": "m4.kg-1.s"
+     },
+     "value": null
+    }
+   },
+   "variables": {},
+   "intrinsicVariable": null,
+   "constitutiveRelation": {
+    "variables": [
+     "v",
+     "k",
+     "u"
+    ],
+    "equations": [
+     {
+      "text": "v = k*u",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v</ci><apply><times/><ci>k</ci><ci>u</ci></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorage": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorage",
+   "symbol": "Hydraulic storage vessel",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorage",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "liter / second",
+        "scale": 0.001,
+        "base": "m3.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / liter",
+        "scale": 1000.0,
+        "base": "m-1.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "E": {
+     "name": "E",
+     "symbol": "E",
+     "type": null,
+     "units": {
+      "pint": "joule",
+      "scale": 1.0,
+      "base": "m2.kg.s-2"
+     },
+     "value": null
+    }
+   },
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "q",
+    "symbol": "q",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+    "units": {
+     "pint": "liter",
+     "scale": 0.001,
+     "base": "m3"
+    },
+    "value": null
+   },
+   "constitutiveRelation": {
+    "variables": [
+     "t",
+     "q",
+     "v",
+     "u",
+     "E"
+    ],
+    "equations": [
+     {
+      "text": "Derivative(q, t) = v",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>q</ci></apply><ci>v</ci></apply></math>"
+     },
+     {
+      "text": "u = E/q",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><divide/><ci>E</ci><ci>q</ci></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor",
+   "symbol": "Mechanical capacitor",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "meter / second",
+        "scale": 1.0,
+        "base": "m.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / meter",
+        "scale": 1.0,
+        "base": "m.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "C": {
+     "name": "C",
+     "symbol": "C",
+     "type": null,
+     "units": {
+      "pint": "meter ** 2 / joule",
+      "scale": 1.0,
+      "base": "kg-1.s2"
+     },
+     "value": null
+    }
+   },
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "q",
+    "symbol": "q",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+    "units": {
+     "pint": "meter",
+     "scale": 1.0,
+     "base": "m"
+    },
+    "value": null
+   },
+   "constitutiveRelation": {
+    "variables": [
+     "t",
+     "q",
+     "v",
+     "u",
+     "C"
+    ],
+    "equations": [
+     {
+      "text": "Derivative(q, t) = v",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>q</ci></apply><ci>v</ci></apply></math>"
+     },
+     {
+      "text": "u = q/C",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><divide/><ci>q</ci><ci>C</ci></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalFlow": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalFlow",
+   "symbol": "MechanicalFlow",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalFlow",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "meter / second",
+        "scale": 1.0,
+        "base": "m.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / meter",
+        "scale": 1.0,
+        "base": "m.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {},
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "v",
+    "symbol": "v",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+    "units": {
+     "pint": "meter / second",
+     "scale": 1.0,
+     "base": "m.s-1"
+    },
+    "value": null
+   },
+   "constitutiveRelation": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor",
+   "symbol": "Mechanical inductor",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "meter / second",
+        "scale": 1.0,
+        "base": "m.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / meter",
+        "scale": 1.0,
+        "base": "m.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "L": {
+     "name": "L",
+     "symbol": "L",
+     "type": null,
+     "units": {
+      "pint": "joule * second ** 2 / meter ** 2",
+      "scale": 1.0,
+      "base": "kg"
+     },
+     "value": null
+    }
+   },
+   "variables": {
+    "a": {
+     "name": "a",
+     "symbol": "a",
+     "type": null,
+     "units": {
+      "pint": "meter / second ** 2",
+      "scale": 1.0,
+      "base": "m.s-2"
+     },
+     "value": null
+    }
+   },
+   "intrinsicVariable": {
+    "name": "v",
+    "symbol": "v",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+    "units": {
+     "pint": "meter / second",
+     "scale": 1.0,
+     "base": "m.s-1"
+    },
+    "value": null
+   },
+   "constitutiveRelation": {
+    "variables": [
+     "t",
+     "v",
+     "a",
+     "u",
+     "L"
+    ],
+    "equations": [
+     {
+      "text": "Derivative(v, t) = a",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>v</ci></apply><ci>a</ci></apply></math>"
+     },
+     {
+      "text": "u = L*a",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><times/><ci>L</ci><ci>a</ci></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalPotential": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalPotential",
+   "symbol": "MechanicalPotential",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalPotential",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "meter / second",
+        "scale": 1.0,
+        "base": "m.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / meter",
+        "scale": 1.0,
+        "base": "m.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {},
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "u",
+    "symbol": "u",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+    "units": {
+     "pint": "joule / meter",
+     "scale": 1.0,
+     "base": "m.kg.s-2"
+    },
+    "value": null
+   },
+   "constitutiveRelation": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor",
+   "symbol": "Mechanical resistor",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "meter / second",
+        "scale": 1.0,
+        "base": "m.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / meter",
+        "scale": 1.0,
+        "base": "m.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "R": {
+     "name": "R",
+     "symbol": "R",
+     "type": null,
+     "units": {
+      "pint": "joule * second / meter ** 2",
+      "scale": 1.0,
+      "base": "kg.s-1"
+     },
+     "value": null
+    }
+   },
+   "variables": {},
+   "intrinsicVariable": null,
+   "constitutiveRelation": {
+    "variables": [
+     "u",
+     "v",
+     "R"
+    ],
+    "equations": [
+     {
+      "text": "u = R*v",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><times/><ci>R</ci><ci>v</ci></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporter": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporter",
+   "symbol": "NKETransporter",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Reaction",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+   "ports": {
+    "K_f": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporter_K_f",
+     "direction": "https://bg-rdf.org/ontologies/bondgraph-framework#InwardPort",
+     "bondCount": 2,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "mole / second",
+        "scale": 1.0,
+        "base": "mol.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u_K_f",
+      "variable": {
+       "name": "u_K_f",
+       "symbol": "u_K_f",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / mole",
+        "scale": 1.0,
+        "base": "m2.kg.mol-1.s-2"
+       },
+       "value": null
+      }
+     }
+    },
+    "K_r": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporter_K_r",
+     "direction": "https://bg-rdf.org/ontologies/bondgraph-framework#OutwardPort",
+     "bondCount": 2,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "mole / second",
+        "scale": 1.0,
+        "base": "mol.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u_K_r",
+      "variable": {
+       "name": "u_K_r",
+       "symbol": "u_K_r",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / mole",
+        "scale": 1.0,
+        "base": "m2.kg.mol-1.s-2"
+       },
+       "value": null
+      }
+     }
+    },
+    "Na_f": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporter_Na_f",
+     "direction": "https://bg-rdf.org/ontologies/bondgraph-framework#InwardPort",
+     "bondCount": 3,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "mole / second",
+        "scale": 1.0,
+        "base": "mol.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u_Na_f",
+      "variable": {
+       "name": "u_Na_f",
+       "symbol": "u_Na_f",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / mole",
+        "scale": 1.0,
+        "base": "m2.kg.mol-1.s-2"
+       },
+       "value": null
+      }
+     }
+    },
+    "Na_r": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporter_Na_r",
+     "direction": "https://bg-rdf.org/ontologies/bondgraph-framework#OutwardPort",
+     "bondCount": 3,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "mole / second",
+        "scale": 1.0,
+        "base": "mol.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u_Na_r",
+      "variable": {
+       "name": "u_Na_r",
+       "symbol": "u_Na_r",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / mole",
+        "scale": 1.0,
+        "base": "m2.kg.mol-1.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "k_NKE": {
+     "name": "k_NKE",
+     "symbol": "k_NKE",
+     "type": null,
+     "units": {
+      "pint": "mole / second",
+      "scale": 1.0,
+      "base": "mol.s-1"
+     },
+     "value": null
+    },
+    "K_K": {
+     "name": "K_K",
+     "symbol": "K_K",
+     "type": null,
+     "units": {
+      "pint": "liter / mole",
+      "scale": 0.001,
+      "base": "m3.mol-1"
+     },
+     "value": null
+    },
+    "K_Na": {
+     "name": "K_Na",
+     "symbol": "K_Na",
+     "type": null,
+     "units": {
+      "pint": "liter / mole",
+      "scale": 0.001,
+      "base": "m3.mol-1"
+     },
+     "value": null
+    },
+    "u_e": {
+     "name": "u_e",
+     "symbol": "u_e",
+     "type": null,
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    }
+   },
+   "variables": {
+    "q_H2O_in": {
+     "name": "q_H2O_in",
+     "symbol": "q_H2O_in",
+     "type": null,
+     "units": {
+      "pint": "liter",
+      "scale": 0.001,
+      "base": "m3"
+     },
+     "value": null
+    },
+    "q_H2O_out": {
+     "name": "q_H2O_out",
+     "symbol": "q_H2O_out",
+     "type": null,
+     "units": {
+      "pint": "liter",
+      "scale": 0.001,
+      "base": "m3"
+     },
+     "value": null
+    },
+    "q_Na_in": {
+     "name": "q_Na_in",
+     "symbol": "q_Na_in",
+     "type": null,
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     },
+     "value": null
+    },
+    "q_Na_out": {
+     "name": "q_Na_out",
+     "symbol": "q_Na_out",
+     "type": null,
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     },
+     "value": null
+    },
+    "q_K_in": {
+     "name": "q_K_in",
+     "symbol": "q_K_in",
+     "type": null,
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     },
+     "value": null
+    },
+    "q_K_out": {
+     "name": "q_K_out",
+     "symbol": "q_K_out",
+     "type": null,
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     },
+     "value": null
+    }
+   },
+   "intrinsicVariable": null,
+   "constitutiveRelation": {
+    "variables": [
+     "v",
+     "k_NKE",
+     "K_Na",
+     "q_Na_in",
+     "q_H2O_in",
+     "K_K",
+     "q_K_out",
+     "q_H2O_out",
+     "q_Na_out",
+     "q_K_in",
+     "F",
+     "u_e",
+     "RT"
+    ],
+    "equations": [
+     {
+      "text": "v = 3.0*k_NKE*(-(K_K*q_K_in/q_H2O_in)**2.0*(K_Na*q_Na_out/q_H2O_out)**3.0*exp(2.0*F*u_e/RT) + (K_K*q_K_out/q_H2O_out)**2.0*(K_Na*q_Na_in/q_H2O_in)**3.0)/(((K_K*q_K_in/q_H2O_in)**2.0 + 1.0)*((K_K*q_K_out/q_H2O_out)**2.0 + 1.0)*((K_Na*q_Na_in/q_H2O_in)**3.0 + 1.0)*((K_Na*q_Na_out/q_H2O_out)**3.0 + 1.0))",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v</ci><apply><divide/><apply><times/><cn>3.0</cn><ci>k_NKE</ci><apply><plus/><apply><minus/><apply><times/><apply><power/><apply><divide/><apply><times/><ci>K_K</ci><ci>q_K_in</ci></apply><ci>q_H2O_in</ci></apply><cn>2.0</cn></apply><apply><power/><apply><divide/><apply><times/><ci>K_Na</ci><ci>q_Na_out</ci></apply><ci>q_H2O_out</ci></apply><cn>3.0</cn></apply><apply><exp/><apply><divide/><apply><times/><cn>2.0</cn><ci>F</ci><ci>u_e</ci></apply><ci>RT</ci></apply></apply></apply></apply><apply><times/><apply><power/><apply><divide/><apply><times/><ci>K_K</ci><ci>q_K_out</ci></apply><ci>q_H2O_out</ci></apply><cn>2.0</cn></apply><apply><power/><apply><divide/><apply><times/><ci>K_Na</ci><ci>q_Na_in</ci></apply><ci>q_H2O_in</ci></apply><cn>3.0</cn></apply></apply></apply></apply><apply><times/><apply><plus/><apply><power/><apply><divide/><apply><times/><ci>K_K</ci><ci>q_K_in</ci></apply><ci>q_H2O_in</ci></apply><cn>2.0</cn></apply><cn>1.0</cn></apply><apply><plus/><apply><power/><apply><divide/><apply><times/><ci>K_K</ci><ci>q_K_out</ci></apply><ci>q_H2O_out</ci></apply><cn>2.0</cn></apply><cn>1.0</cn></apply><apply><plus/><apply><power/><apply><divide/><apply><times/><ci>K_Na</ci><ci>q_Na_in</ci></apply><ci>q_H2O_in</ci></apply><cn>3.0</cn></apply><cn>1.0</cn></apply><apply><plus/><apply><power/><apply><divide/><apply><times/><ci>K_Na</ci><ci>q_Na_out</ci></apply><ci>q_H2O_out</ci></apply><cn>3.0</cn></apply><cn>1.0</cn></apply></apply></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#OldOsmosis": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#OldOsmosis",
+   "symbol": "Osmotic transport (original)",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Reaction",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#OldOsmosis",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "liter / second",
+        "scale": 0.001,
+        "base": "m3.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / liter",
+        "scale": 1000.0,
+        "base": "m-1.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "k_membrane": {
+     "name": "k_membrane",
+     "symbol": "k_membrane",
+     "type": null,
+     "units": {
+      "pint": "liter ** 2 / joule / second",
+      "scale": 1e-06,
+      "base": "m4.kg-1.s"
+     },
+     "value": null
+    }
+   },
+   "variables": {
+    "q_solute_in": {
+     "name": "q_solute_in",
+     "symbol": "q_solute_in",
+     "type": null,
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     },
+     "value": null
+    },
+    "q_water_in": {
+     "name": "q_water_in",
+     "symbol": "q_water_in",
+     "type": null,
+     "units": {
+      "pint": "liter",
+      "scale": 0.001,
+      "base": "m3"
+     },
+     "value": null
+    },
+    "q_solute_out": {
+     "name": "q_solute_out",
+     "symbol": "q_solute_out",
+     "type": null,
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     },
+     "value": null
+    },
+    "q_water_out": {
+     "name": "q_water_out",
+     "symbol": "q_water_out",
+     "type": null,
+     "units": {
+      "pint": "liter",
+      "scale": 0.001,
+      "base": "m3"
+     },
+     "value": null
+    }
+   },
+   "intrinsicVariable": null,
+   "constitutiveRelation": {
+    "variables": [
+     "v",
+     "k_membrane",
+     "RT",
+     "q_solute_out",
+     "q_water_out",
+     "q_solute_in",
+     "q_water_in"
+    ],
+    "equations": [
+     {
+      "text": "v = RT*k_membrane*(-q_solute_in/q_water_in + q_solute_out/q_water_out)",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v</ci><apply><times/><ci>RT</ci><ci>k_membrane</ci><apply><plus/><apply><minus/><apply><divide/><ci>q_solute_in</ci><ci>q_water_in</ci></apply></apply><apply><divide/><ci>q_solute_out</ci><ci>q_water_out</ci></apply></apply></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporter": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporter",
+   "symbol": "Osmotic transport",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Reaction",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+   "ports": {
+    "water_in": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporter_water_in",
+     "direction": "https://bg-rdf.org/ontologies/bondgraph-framework#InwardPort",
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "liter / second",
+        "scale": 0.001,
+        "base": "m3.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u_water_in",
+      "variable": {
+       "name": "u_water_in",
+       "symbol": "u_water_in",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / liter",
+        "scale": 1000.0,
+        "base": "m-1.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    },
+    "water_out": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporter_water_out",
+     "direction": "https://bg-rdf.org/ontologies/bondgraph-framework#OutwardPort",
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "liter / second",
+        "scale": 0.001,
+        "base": "m3.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u_water_out",
+      "variable": {
+       "name": "u_water_out",
+       "symbol": "u_water_out",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / liter",
+        "scale": 1000.0,
+        "base": "m-1.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {
+    "k_membrane": {
+     "name": "k_membrane",
+     "symbol": "k_membrane",
+     "type": null,
+     "units": {
+      "pint": "liter ** 2 / joule / second",
+      "scale": 1e-06,
+      "base": "m4.kg-1.s"
+     },
+     "value": null
+    }
+   },
+   "variables": {
+    "q_solute_in": {
+     "name": "q_solute_in",
+     "symbol": "q_solute_in",
+     "type": null,
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     },
+     "value": null
+    },
+    "q_water_in": {
+     "name": "q_water_in",
+     "symbol": "q_water_in",
+     "type": null,
+     "units": {
+      "pint": "liter",
+      "scale": 0.001,
+      "base": "m3"
+     },
+     "value": null
+    },
+    "q_solute_out": {
+     "name": "q_solute_out",
+     "symbol": "q_solute_out",
+     "type": null,
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     },
+     "value": null
+    },
+    "q_water_out": {
+     "name": "q_water_out",
+     "symbol": "q_water_out",
+     "type": null,
+     "units": {
+      "pint": "liter",
+      "scale": 0.001,
+      "base": "m3"
+     },
+     "value": null
+    }
+   },
+   "intrinsicVariable": null,
+   "constitutiveRelation": {
+    "variables": [
+     "v",
+     "k_membrane",
+     "u_water_in",
+     "u_water_out",
+     "RT",
+     "q_solute_in",
+     "q_water_in",
+     "q_solute_out",
+     "q_water_out"
+    ],
+    "equations": [
+     {
+      "text": "v = k_membrane*(-RT*(q_solute_in/q_water_in - q_solute_out/q_water_out) + u_water_in - u_water_out)",
+      "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v</ci><apply><times/><ci>k_membrane</ci><apply><plus/><apply><minus/><apply><times/><ci>RT</ci><apply><minus/><apply><divide/><ci>q_solute_in</ci><ci>q_water_in</ci></apply><apply><divide/><ci>q_solute_out</ci><ci>q_water_out</ci></apply></apply></apply></apply><apply><minus/><ci>u_water_in</ci><ci>u_water_out</ci></apply></apply></apply></apply></math>"
+     }
+    ]
+   }
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource",
+   "symbol": "VoltageSource",
+   "label": null,
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "ports": {
+    "": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v",
+       "symbol": "v",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "coulomb / second",
+        "scale": 1.0,
+        "base": "A"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u",
+       "symbol": "u",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / coulomb",
+        "scale": 1.0,
+        "base": "A-1.m2.kg.s-3"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "parameters": {},
+   "variables": {},
+   "intrinsicVariable": {
+    "name": "u",
+    "symbol": "u",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+    "units": {
+     "pint": "joule / coulomb",
+     "scale": 1.0,
+     "base": "A-1.m2.kg.s-3"
+    },
+    "value": null
+   },
+   "constitutiveRelation": null
+  }
+ },
+ "junctions": {
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReactionNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReactionNode",
+   "symbol": "Chemical reaction with One Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode",
+   "symbol": "Chemical storage with Zero Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitiveNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitiveNode",
+   "symbol": "Electrical storage with Zero Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductiveNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductiveNode",
+   "symbol": "Electrical inductor with One Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode",
+   "symbol": "Electrical resistance with One Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicElasticStorageNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicElasticStorageNode",
+   "symbol": "Hydraulic elastic storage with Zero Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistanceNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistanceNode",
+   "symbol": "Hydraulic resistance with One Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorageNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorageNode",
+   "symbol": "Hydraulic storage with Zero Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#JunctionStructure": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#JunctionStructure",
+   "symbol": "JunctionStructure",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitiveNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitiveNode",
+   "symbol": "Mechanical storage with Zero Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductiveNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductiveNode",
+   "symbol": "Mechanical inductor with One Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistiveNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistiveNode",
+   "symbol": "Mechanical resistance with One Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporterNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporterNode",
+   "symbol": "NKE transporter with One Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#OldOsmosisNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#OldOsmosisNode",
+   "symbol": "Hydraulic osmotic transport with One Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+   "symbol": "One node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#OneReactionNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#OneReactionNode",
+   "symbol": "One reaction node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#OneResistanceNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#OneResistanceNode",
+   "symbol": "One resistance node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#OneStorageNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#OneStorageNode",
+   "symbol": "One flow store node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporterNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporterNode",
+   "symbol": "Hydraulic osmotic transport with One Node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#TransformNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#TransformNode",
+   "symbol": "Transform node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+   "symbol": "Zero node",
+   "label": null
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroStorageNode",
+   "symbol": "Zero storage node",
+   "label": null
+  }
+ },
+ "compositeTemplates": {
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReactionNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReactionNode",
+   "symbol": "Chemical reaction with One Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction"
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode",
+   "symbol": "Chemical storage with Zero Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration"
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitiveNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitiveNode",
+   "symbol": "Electrical storage with Zero Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor"
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductiveNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductiveNode",
+   "symbol": "Electrical inductor with One Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor"
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode",
+   "symbol": "Electrical resistance with One Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor"
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicElasticStorageNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicElasticStorageNode",
+   "symbol": "Hydraulic elastic storage with Zero Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElasticVessel"
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistanceNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistanceNode",
+   "symbol": "Hydraulic resistance with One Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistor"
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorageNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorageNode",
+   "symbol": "Hydraulic storage with Zero Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorage"
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitiveNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitiveNode",
+   "symbol": "Mechanical storage with Zero Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor"
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductiveNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductiveNode",
+   "symbol": "Mechanical inductor with One Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor"
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistiveNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistiveNode",
+   "symbol": "Mechanical resistance with One Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor"
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporterNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporterNode",
+   "symbol": "NKE transporter with One Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporter"
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#OldOsmosisNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#OldOsmosisNode",
+   "symbol": "Hydraulic osmotic transport with One Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#OldOsmosis"
+  },
+  "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporterNode": {
+   "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporterNode",
+   "symbol": "Hydraulic osmotic transport with One Node",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporter"
+  }
+ },
+ "elementDomains": [
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalFlow"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalPotential"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Reaction",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporter"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#CurrentSource"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorage"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicFlow"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicPotential"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistor"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalFlow"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalPotential"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Reaction",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporter"
+  },
+  {
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource"
+  }
+ ]
+}

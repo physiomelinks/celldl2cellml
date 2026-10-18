@@ -1,7 +1,16 @@
 import { existsSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
-import { BG_RDF, REPO_ROOT, compareResults, loadManifest, loadReference, requireBgRdf, sha256 } from './reference.js'
+import {
+  BG_RDF,
+  REPO_ROOT,
+  compareResults,
+  loadManifest,
+  loadPythonFramework,
+  loadReference,
+  requireBgRdf,
+  sha256,
+} from './reference.js'
 
 const manifest = loadManifest()
 
@@ -10,6 +19,16 @@ describe('reference results', () => {
     requireBgRdf()
     for (const [file, hash] of Object.entries(manifest.bgRdf.files)) {
       expect(sha256(`${BG_RDF}${file}`), `bg-rdf/${file} has changed: regenerate the references`).toBe(hash)
+    }
+  })
+
+  it('include the framework as Python loads it, with no issues', () => {
+    const framework = loadPythonFramework(manifest)
+    expect(framework.issues).toEqual([])
+    expect(Object.keys(framework.domains)).toHaveLength(4)
+    expect(Object.keys(framework.elementTemplates)).toHaveLength(22)
+    for (const composite of Object.values(framework.compositeTemplates)) {
+      expect(framework.elementTemplates, composite.iri).toHaveProperty([composite.template])
     }
   })
 

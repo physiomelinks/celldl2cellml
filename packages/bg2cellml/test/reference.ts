@@ -51,7 +51,76 @@ export interface Manifest {
   generator: { bg2cellml: string; bgToolsCommit: string; libopencor: string }
   bgRdf: { tag: string; commit: string; files: Record<string, string> }
   tolerance: { relative: number; absolute: number }
+  framework: { reference: string }
   cases: ReferenceCase[]
+}
+
+//==============================================================================
+// The framework as the Python bg2cellml loads it (framework.json)
+
+/** Python's units: pint's name, and the same units as `scale` × `base`, with `base` in SI base units written in UCUM. */
+export interface PythonUnits {
+  pint: string
+  scale: number
+  base: string
+}
+
+export interface PythonVariable {
+  name: string
+  symbol: string
+  type: string | null
+  units: PythonUnits | null
+  value: { magnitude: number; units: PythonUnits | null } | null
+}
+
+/** Python passes labels where symbols belong, so `symbol` is often a label. */
+export interface PythonLabelled {
+  iri: string
+  symbol: string
+  label: string | null
+}
+
+export interface PythonDomain extends PythonLabelled {
+  name: string
+  flow: PythonVariable
+  potential: PythonVariable
+  quantity: PythonVariable
+  constants: PythonVariable[]
+  intrinsicSymbols: string[]
+}
+
+export interface PythonPort {
+  iri: string
+  direction: string | null
+  bondCount: number
+  flow: { name: string; variable: PythonVariable }
+  potential: { name: string; variable: PythonVariable }
+}
+
+export interface PythonElementTemplate extends PythonLabelled {
+  elementClass: string
+  domain: string
+  /** By port id; a template with no ports has one, with id `''`. */
+  ports: Record<string, PythonPort>
+  parameters: Record<string, PythonVariable>
+  variables: Record<string, PythonVariable>
+  intrinsicVariable: PythonVariable | null
+  /** `variables` are in order of first appearance; each equation as sympy prints it, and as sympy's Content MathML. */
+  constitutiveRelation: { variables: string[]; equations: { text: string; mathml: string }[] } | null
+}
+
+export interface PythonFramework {
+  issues: string[]
+  domains: Record<string, PythonDomain>
+  elementTemplates: Record<string, PythonElementTemplate>
+  junctions: Record<string, PythonLabelled>
+  compositeTemplates: Record<string, PythonLabelled & { template: string }>
+  /** The template `element_template(class, domain)` gives. */
+  elementDomains: { elementClass: string; domain: string; template: string }[]
+}
+
+export function loadPythonFramework(manifest: Manifest = loadManifest()): PythonFramework {
+  return JSON.parse(readFileSync(`${REFERENCE_DIR}${manifest.framework.reference}`, 'utf8')) as PythonFramework
 }
 
 export function sha256(path: string): string {

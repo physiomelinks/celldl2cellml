@@ -8,6 +8,10 @@ For each case this:
 3. writes the CellML and the simulated states, rates and algebraic variables
    to packages/bg2cellml/test/reference/.
 
+It also writes framework.json: the BG-RDF framework as the Python version loads
+it (domains, element templates, junctions and composites), for testing the
+framework loader. `--framework-only` rewrites just that file.
+
 Example models come from the bg-rdf submodule. Variant models in
 packages/bg2cellml/test/models/ trigger bugs in the Python version; each names
 the example it should simulate exactly like. For those, the Python result is
@@ -158,6 +162,110 @@ def load_framework(bg_tools_modules):
         raise RuntimeError(f'Issues loading the BG-RDF framework: {[i.reason for i in framework.issues]}')
     return framework
 
+# ------------------------------------------------------------------------------
+
+BASE_DIMENSIONS = {
+    '[length]': 'm', '[mass]': 'kg', '[time]': 's', '[current]': 'A', '[substance]': 'mol',
+    '[temperature]': 'K', '[luminosity]': 'cd',
+}
+
+def units_fixture(units) -> dict | None:
+    """Python's units as pint names them, and as a scale and SI base units written in UCUM."""
+    if units is None:
+        return None
+    unit = units._Units__units
+    base = (1 * unit).to_base_units()
+    dimensions = {d: e for d, e in dict(base.dimensionality).items() if e}
+    unknown = set(dimensions) - set(BASE_DIMENSIONS)
+    if unknown:
+        raise RuntimeError(f'No UCUM base units for {unknown} in {unit}')
+    terms = [f'{BASE_DIMENSIONS[d]}{"" if e == 1 else int(e)}' for d, e in sorted(dimensions.items())]
+    return {'pint': str(unit), 'scale': float(f'{base.magnitude:.15g}'), 'base': '.'.join(terms) or '1'}
+
+def term_value(term):
+    """An IRI or literal as a string. Variable types can be left as named nodes."""
+    return term if term is None or isinstance(term, (str, int, float)) else term.value
+
+def variable_fixture(variable) -> dict | None:
+    if variable is None:
+        return None
+    value = variable.value
+    return {
+        'name': variable.name,
+        'symbol': variable.symbol,
+        'type': term_value(variable.type),
+        'units': units_fixture(variable.units),
+        'value': None if value is None else {'magnitude': value.value, 'units': units_fixture(value.units)},
+    }
+
+def labelled_fixture(labelled) -> dict:
+    # Python passes labels where symbols belong, and some are literals rather than strings
+    return {'iri': labelled.uri.value, 'symbol': term_value(labelled.symbol), 'label': term_value(labelled.label)}
+
+def relation_fixture(relation, sympy_to_mathml) -> dict | None:
+    if relation is None:
+        return None
+    return {
+        'variables': relation.variables,
+        'equations': [{'text': str(eq), 'mathml': sympy_to_mathml(eq.sympy_equation())} for eq in relation.equations],
+    }
+
+def framework_fixture(framework, sympy_to_mathml) -> dict:
+    """The framework as the Python version loads it, read through its private attributes."""
+    private = lambda name: getattr(framework, f'_BondgraphFramework__{name}')
+    domains = {}
+    for iri, domain in private('domains').items():
+        domains[iri] = {
+            **labelled_fixture(domain),
+            'name': domain.name,
+            'flow': variable_fixture(domain.flow),
+            'potential': variable_fixture(domain.potential),
+            'quantity': variable_fixture(domain.quantity),
+            'constants': [variable_fixture(c) for c in domain.constants],
+            'intrinsicSymbols': domain.intrinsic_symbols,
+        }
+    templates = {}
+    for iri, template in private('element_templates').items():
+        ports = {}
+        for port_id, port in template.power_ports.items():
+            direction = port.direction
+            ports[port_id] = {
+                'iri': port._PowerPort__uri.value,
+                'direction': term_value(direction),
+                'bondCount': port._PowerPort__bond_count,
+                'flow': {'name': port.flow.name, 'variable': variable_fixture(port.flow.variable)},
+                'potential': {'name': port.potential.name, 'variable': variable_fixture(port.potential.variable)},
+            }
+        templates[iri] = {
+            **labelled_fixture(template),
+            'elementClass': term_value(template.element_class),
+            'domain': template.domain.uri.value,
+            'ports': ports,
+            'parameters': {n: variable_fixture(v) for n, v in template.parameters.items()},
+            'variables': {n: variable_fixture(v) for n, v in template.variables.items()},
+            'intrinsicVariable': variable_fixture(template.intrinsic_variable),
+            'constitutiveRelation': relation_fixture(template.constitutive_relation, sympy_to_mathml),
+        }
+    return {
+        'issues': [issue.reason for issue in framework.issues],
+        'domains': domains,
+        'elementTemplates': templates,
+        'junctions': {iri: labelled_fixture(j) for iri, j in private('junctions').items()},
+        'compositeTemplates': {iri: {**labelled_fixture(c), 'template': c.template.uri.value}
+                               for iri, c in private('composite_elements').items()},
+        'elementDomains': [{'elementClass': term_value(element_class), 'domain': term_value(domain), 'template': template.uri.value}
+                           for (element_class, domain), template in private('element_domains').items()],
+    }
+
+def write_framework(framework, sympy_to_mathml) -> dict:
+    fixture = framework_fixture(framework, sympy_to_mathml)
+    (OUTPUT_DIR / 'framework.json').write_text(json.dumps(fixture, indent=1) + '\n')
+    print(f'framework: {len(fixture["domains"])} domains, {len(fixture["elementTemplates"])} element templates, '
+          f'{len(fixture["junctions"])} junctions, {len(fixture["compositeTemplates"])} composites')
+    return {'reference': 'framework.json'}
+
+# ------------------------------------------------------------------------------
+
 def python_cellml(framework, path: Path) -> str:
     model = framework.make_bondgraph_model(source_iri(path), path.read_text())
     if model.has_issues:
@@ -252,6 +360,7 @@ def compare_states_by_index(actual: dict, expected: dict) -> list[str]:
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     parser.add_argument('--bg-tools', required=True, type=Path, help='Checkout of CellDL/BG-Tools to use as the reference')
+    parser.add_argument('--framework-only', action='store_true', help='Only rewrite framework.json')
     args = parser.parse_args()
 
     bg_tools = args.bg_tools.resolve()
@@ -259,9 +368,19 @@ def main():
     from bg2cellml import __version__ as bg2cellml_version
     from bg2cellml.bondgraph.framework import (BGF_ONTOLOGY_URI, BGF_TEMPLATE_URI_PREFIX,
                                                BondgraphFramework)
+    from bg2cellml.mathml import sympy_to_mathml
     from bg2cellml.rdf import RdfGraph
 
     framework = load_framework((RdfGraph, BondgraphFramework, BGF_ONTOLOGY_URI, BGF_TEMPLATE_URI_PREFIX))
+    framework_entry = write_framework(framework, sympy_to_mathml)
+    if args.framework_only:
+        manifest_path = OUTPUT_DIR / 'manifest.json'
+        manifest = json.loads(manifest_path.read_text())
+        if manifest['generator']['bgToolsCommit'] != git(bg_tools, 'rev-parse', 'HEAD'):
+            raise RuntimeError('--framework-only needs the BG-Tools commit the other references came from')
+        manifest['framework'] = framework_entry
+        manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
+        return
 
     (OUTPUT_DIR / 'python').mkdir(parents=True, exist_ok=True)
     results: dict[str, dict] = {}
@@ -326,6 +445,7 @@ def main():
             'files': {f: sha256(BG_RDF / f) for f in bg_rdf_files},
         },
         'tolerance': {'relative': REL_TOLERANCE, 'absolute': ABS_TOLERANCE},
+        'framework': framework_entry,
         'cases': cases,
     }
     (OUTPUT_DIR / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')

@@ -1,3 +1,5 @@
+import { compatible, convertValue, type LibCellML } from '@physiomelinks/cellml-units'
+import createLibCellML from 'libcellml.js'
 import * as oxigraph from 'oxigraph'
 import { beforeAll, describe, expect, it } from 'vitest'
 
@@ -13,7 +15,19 @@ import {
   type Domain,
 } from '../src/index.js'
 import { BGF_ONTOLOGY_IRI, BGF_TEMPLATE_IRI_PREFIX, CDT, bgf, xsd } from '../src/rdf/namespaces.js'
-import { frameworkSource } from './reference.js'
+import { frameworkSource, loadPythonFramework, type PythonUnits } from './reference.js'
+
+let libcellml: LibCellML
+
+beforeAll(async () => {
+  libcellml = (await createLibCellML()) as unknown as LibCellML
+})
+
+/** Our UCUM code is the units Python has: `scale` × its SI base units. */
+function expectSameUnits(code: string, python: PythonUnits): void {
+  expect(compatible(libcellml, code, python.base), `${code} is ${python.pint}`).toBe(true)
+  expect(convertValue(libcellml, 1, code, python.base), `${code} is ${python.pint}`).toBe(python.scale)
+}
 
 /** The framework from the BG-RDF ontology and templates in the bg-rdf submodule. */
 function bgRdfFramework(): BondgraphFramework {
@@ -76,24 +90,28 @@ describe('BG-RDF domains', () => {
     ])
   })
 
-  // As the Python bg2cellml 0.11.2 loads them, with its pint units written as UCUM
-  it.each([
-    ['Chemical', 'mol/s', 'J/mol', 'mol', ['F', 'RT']],
-    ['Electrical', 'C/s', 'J/C', 'C', []],
-    ['Hydraulic', 'L/s', 'J/L', 'L', ['RT']],
-    ['Mechanical', 'm/s', 'J/m', 'm', []],
-  ])('give %s its flow, potential and quantity as Python does', (name, flowUnits, potentialUnits, quantityUnits, constants) => {
-    const loaded = domain(name)
-    expect(loaded).toMatchObject({
-      iri: bgf(name),
-      name,
-      flow: { name: 'v', units: flowUnits, type: BGF.FlowVariable },
-      potential: { name: 'u', units: potentialUnits, type: BGF.PotentialVariable },
-      quantity: { name: 'q', units: quantityUnits, type: BGF.QuantityVariable },
-      intrinsicSymbols: ['v', 'u', 'q'],
+  // framework.json: the domains as the Python bg2cellml loads them
+  it.each(Object.values(loadPythonFramework().domains))('give $name what Python gives it', (python) => {
+    const loaded = framework.domains.get(python.iri)!
+    expect(loaded).toMatchObject({ iri: python.iri, name: python.name, intrinsicSymbols: python.intrinsicSymbols })
+    expect(loaded.label ?? null).toBe(python.label)
+    for (const kind of ['flow', 'potential', 'quantity'] as const) {
+      expect(loaded[kind], kind).toMatchObject({ name: python[kind].name, type: python[kind].type })
+      expectSameUnits(loaded[kind].units, python[kind].units!)
+    }
+    const constants = [...python.constants].sort((a, b) => a.name.localeCompare(b.name))
+    expect(loaded.constants.map((c) => c.name)).toEqual(constants.map((c) => c.name))
+    loaded.constants.forEach((constant, index) => {
+      const expected = constants[index]!
+      expect(constant.type).toBeUndefined()
+      expectSameUnits(constant.units, expected.units!)
+      expect(constant.value!.magnitude).toBe(expected.value!.magnitude)
+      expectSameUnits(constant.value!.units!, expected.value!.units!)
     })
-    expect(loaded.label).toBeUndefined()
-    expect(loaded.constants.map((constant) => constant.name)).toEqual(constants)
+  })
+
+  it('cover every domain Python loads, and no others', () => {
+    expect([...framework.domains.keys()]).toEqual(Object.keys(loadPythonFramework().domains))
   })
 
   it('give Hydraulic the same RT as Chemical', () => {

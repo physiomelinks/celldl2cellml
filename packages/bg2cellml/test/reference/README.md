@@ -11,6 +11,7 @@ Results from the Python [bg2cellml](https://github.com/CellDL/BG-Tools) 0.11.2, 
 | `manifest.json` | Generator versions, the bg-rdf tag, commit and file hashes, tolerances, and every case |
 | `<example>.json` | Simulation settings, and the states, rates and algebraic variables by name, at up to 101 time points |
 | `python/<example>.cellml` | The CellML 1.1 the Python version generated, for inspection |
+| `framework.json` | The BG-RDF framework as the Python version loads it: domains, element templates with their ports, parameters, variables and constitutive relations, junctions, composites, and which template each element class and domain gives |
 
 ## Cases
 
@@ -32,3 +33,12 @@ Variables are compared by name, without the component name: `q_1`, not `main/q_1
 JSON has no infinities or NaN, so they're stored as the strings `"Infinity"`, `"-Infinity"` and `"NaN"`, and must match exactly. They occur in the chemical examples: a potential RT·ln(K·q) is `"-Infinity"` at t = 0 for a species that starts at q = 0.
 
 Numbers are rounded to 9 significant figures. Regenerating on a different platform may change the last digits; that's well within the tolerance.
+
+## The framework
+
+`framework.json` is read from the Python objects' attributes, some of them private, so it shows what Python actually holds:
+
+- **Units** are given as pint names them (`joule / mole`), and as a scale and SI base units in UCUM (`1`, `m2.kg.mol-1.s-2`). The tests check a UCUM code against these with libCellML, so `J/L` and `kPa` both match pint's `joule / liter`.
+- **Constitutive relations** list their variables in order of first appearance, and each equation as sympy prints it and as sympy's Content MathML.
+- **Symbols and labels** are as Python has them. Python passes a template's or junction's `rdfs:label` where its symbol belongs, so `symbol` is often a label such as `Chemical concentration`.
+
