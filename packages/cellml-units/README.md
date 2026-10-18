@@ -5,12 +5,12 @@ Turns [UCUM](https://ucum.org/) units expressions into CellML 2.0 units, names t
 It replaces pint and ucumvert in the Python [bg2cellml](https://github.com/CellDL/BG-Tools). Reading and naming units is ported from [PhLynx](https://github.com/physiomelinks/PhLynx) (`src/utils/unitExpression.js`), so units read and named here match PhLynx's. Compatibility and scaling come from libCellML, so mole is a base unit, as CellML has it; strict UCUM treats mol as a dimensionless count. It has no runtime dependencies; libcellml.js is a peer dependency.
 
 > [!WARNING]
-> Work in progress: reading and naming work. `toCellMLUnits` (3.2), and `compatible` and `convertValue` (3.3), aren't implemented yet.
+> Work in progress: unsupported units (3.4) don't all give clear errors yet.
 
 ## Usage
 
 ```js
-import { parseUcum, unitsName } from '@physiomelinks/cellml-units'
+import { compatible, convertValue, parseUcum, toCellMLUnits, unitsName } from '@physiomelinks/cellml-units'
 
 unitsName('mol/s')        // 'mol_per_s'
 unitsName('L2.s-1.J-1')   // 'L2_per_s_per_J'
@@ -18,6 +18,12 @@ unitsName('mm[Hg]')       // 'mmHg'
 unitsName('10*9/L')       // 'giga_per_L'
 
 parseUcum('mL/s')         // { code, factor: 1, symbols: [{ label: 'mL', exponent: 1, atom: { units: 'litre', … }, prefix: -3 }, …] }
+
+// libcellml is the loaded libcellml.js module
+toCellMLUnits(libcellml, 'mmol/s')          // Units mmol_per_s: milli mole, second^-1
+toCellMLUnits(libcellml, 'F')               // undefined: farad is built in
+compatible(libcellml, 'mol/s', '/s')        // false
+convertValue(libcellml, 1000, 'uF', 'F')    // 0.001
 ```
 
 ## What it covers
@@ -27,8 +33,8 @@ parseUcum('mL/s')         // { code, factor: 1, symbols: [{ label: 'mL', exponen
 | Reading UCUM | `parseUnitExpression`, `resolveSymbol` (PhLynx's), `parseUcum` (throws a `UcumError`) | Done |
 | Symbols | `UCUM_ATOMS`, `UCUM_PREFIXES`, `PREFIX_POWERS`, `AFFINE_SYMBOLS`, `CELLML_BUILT_IN_UNITS` | Done |
 | Naming | `unitsName`, `builtInUnits`, `nameUnits`, `sanitiseName`, `uniqueName` | Done |
-| Building units | `toCellMLUnits` | To do (3.2) |
-| Comparing and converting | `compatible`, `convertValue` | To do (3.3) |
+| Building units | `toCellMLUnits` | Done |
+| Comparing and converting | `compatible`, `convertValue` | Done |
 
 ## Reading
 
@@ -61,6 +67,29 @@ As PhLynx reads them:
 Every name is a valid CellML identifier, and equal expressions get equal names. `uniqueName` adds `_1`, `_2`, ... when a name is already taken in a model.
 
 A test checks `unitsName` against PhLynx's own output for every BG-RDF units code and 15 harder cases (`test/fixtures/phlynx-names.json`, from PhLynx commit 68bf007), except the 11 codes that are built-in units.
+
+## Building units
+
+`toCellMLUnits` gives the libCellML `Units` to add to a model, named `unitsName(code)` unless given a name.
+
+- Each symbol is a CellML built-in units with its prefix and exponent: `mmol/s` is milli `mole` and `second` to the -1.
+- Every factor, from `10*n`, integers and symbols such as `min` and `mm[Hg]`, goes in the first unit's multiplier. CellML applies a prefix before the exponent and the multiplier after it.
+- A factor with no symbols (`10*3`) is a scaled `dimensionless`.
+- A code that is a built-in units (`F`, `kg`) or dimensionless (`1`, `m/m`) gives `undefined`: there is nothing to define, and the variable uses `unitsName(code)`.
+- A symbol named in `names` refers to those units by name.
+- Affine temperatures (`Cel`) throw a `UcumError`.
+
+A test builds a model with the units for every BG-RDF code, and for `mmol/s`, `mL`, `uF` and other harder codes, and libCellML's Validator finds no issues.
+
+## Comparing and converting
+
+`compatible` and `convertValue` use libCellML's `Units.compatible` and `Units.scalingFactor`, so units are compared by what they are, not by name: `C/s` is compatible with `A`, and `mol/s` isn't with `/s`.
+
+- `convertValue(libcellml, value, from, to)` gives the value in `to`: 1000 `uF` is 0.001 `F`, 0.01 `kOhm` is 10 `Ohm`, 10000 `mV` is 10 `V`. Incompatible codes throw a `UcumError`.
+- Results are rounded to 15 significant figures, so floating-point noise (0.29 × 100 = 28.999999999999996) doesn't reach the CellML.
+- `scalingFactor(a, b)` is the factor that takes a value in `b` to `a`; a test pins this down.
+- libCellML 0.7.1 gives a scaling factor of 1 between bare `kilogram` and bare `gram`, so both sides are always built as definitions that refer to the built-in units.
+- Codes are read as UCUM only. Units from a library can't be resolved here, so a `UcumUnits` holding one throws.
 
 ## Bugs in the Python version that this package fixes
 

@@ -20,7 +20,10 @@ export interface UnitsConstructor {
   new (name?: string): Units
   compatible(a: Units, b: Units): boolean
   equivalent(a: Units, b: Units): boolean
-  /** The factor to multiply a value in `a` by to get it in `b`. Check the direction against the tests. */
+  /**
+   * The factor to multiply a value in `b` by to get it in `a`: `scalingFactor(uF, F)` is 1e6.
+   * 0 when `checkCompatibility` is true and the units aren't compatible.
+   */
   scalingFactor(a: Units, b: Units, checkCompatibility: boolean): number
 }
 

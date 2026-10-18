@@ -14,12 +14,7 @@ import {
   unitsName,
 } from '../src/index.js'
 
-// Every units code in the BG-RDF templates and examples
-const BG_RDF_CODES = [
-  'mol', 'L', 'mol-1', 'mol/s', 'Ohm', 'F', 'C', 'A', 'm/s', 'L2.s-1.J-1', 'L/mol', 'J/C', 'J',
-  'J.s.C-1.m-1', 'J/mol', 'm2.J-1', 'V', 'J.s2.m-2', 'H', 'm', 'J.s.m-2', 'm2/J', 'm/s2', 'L/s',
-  'J/m', 'J/L', 'J.s2.C-2', 'J.s.C-2', 'C2/J', 'C/s', 'C/mol', 's',
-]
+import { BG_RDF_CODES } from './codes.js'
 
 /** A small units library, as in PhLynx's tests. */
 const LIBRARY = new Set([...CELLML_BUILT_IN_UNITS, 'celsius', 'fahrenheit', 'mM', 'Hz2', 'widget', 'per_widget'])
