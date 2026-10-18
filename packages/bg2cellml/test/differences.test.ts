@@ -61,12 +61,13 @@ let constantNames: Set<string>
 /** The kinds of difference found in each case, and anything that fits none of them. */
 const found = new Map<string, { kinds: Set<Kind>; unexplained: string[] }>()
 
+// Converts and compares every case, which can take just over Vitest's default 10 s hook timeout during CI runs.
 beforeAll(async () => {
   runtime = { ...(await frameworkRuntime()), oxigraph }
   framework = bgRdfFramework()
   constantNames = new Set([...framework.domains.values()].flatMap((domain) => domain.constants.map((constant) => constant.name)))
   for (const c of manifest.cases) found.set(c.name, compare(c))
-})
+}, 60_000)
 
 //==============================================================================
 // Reading a CellML document
@@ -269,7 +270,7 @@ function compare(c: ReferenceCase): { kinds: Set<Kind>; unexplained: string[] } 
 
 //==============================================================================
 
-describe("our CellML and Python's", { timeout: 30_000 }, () => {
+describe("our CellML and Python's", () => {
   it.each(manifest.cases.map((c) => c.name))('%s differ only as the README explains', (name) => {
     expect(found.get(name)!.unexplained).toEqual([])
   })
