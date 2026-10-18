@@ -104,13 +104,14 @@ describe('the reference cases', () => {
     })
   })
 
+  // Generates every consistent case: about 10 s on a 2-core machine, past Vitest's default 5 s
   it('include ODE and DAE models', () => {
     const types = new Map(consistent.map((c) => [c.name, generate(c).modelType]))
     expect(types.get('example_RC')).toBe('ode')
     expect(types.get('example_B1_reduced')).toBe('ode')
     expect(types.get('example_A1')).toBe('dae')
     expect(types.get('A3_numbers_with_units')).toBe('dae')
-  })
+  }, 60_000)
 })
 
 describe('Converter', () => {
