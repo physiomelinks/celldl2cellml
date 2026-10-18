@@ -1,4 +1,24 @@
 export type { LibCellML, Units, UnitsConstructor } from './libcellml.js'
-export { UCUM_TO_CELLML_PREFIX, UCUM_TO_CELLML_UNIT } from './tables.js'
-export { UcumError, parseUcum, type UcumTerm } from './ucum.js'
+export {
+  AFFINE_SYMBOLS,
+  CELLML_BUILT_IN_UNITS,
+  PREFIX_NAMES,
+  PREFIX_POWERS,
+  UCUM_ATOMS,
+  UCUM_PREFIXES,
+  type UcumAtom,
+} from './tables.js'
+export {
+  UcumError,
+  nameUnits,
+  parseUcum,
+  parseUnitExpression,
+  resolveSymbol,
+  sanitiseName,
+  uniqueName,
+  type ParsedExpression,
+  type ResolvedSymbol,
+  type UcumUnits,
+  type WrittenSymbol,
+} from './ucum.js'
 export { compatible, convertValue, toCellMLUnits, unitsName } from './units.js'

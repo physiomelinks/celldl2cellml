@@ -1,35 +1,65 @@
 # @physiomelinks/cellml-units
 
-Turns [UCUM](https://ucum.org/) unit codes into CellML 2.0 units, and compares and converts them with [libCellML](https://libcellml.org/).
+Turns [UCUM](https://ucum.org/) units expressions into CellML 2.0 units, names them, and compares and converts them with [libCellML](https://libcellml.org/).
 
-It replaces pint and ucumvert in the Python [bg2cellml](https://github.com/CellDL/BG-Tools). Parsing UCUM is done by [`@atomic-ehr/ucum`](https://www.npmjs.com/package/@atomic-ehr/ucum). Compatibility and scaling come from libCellML's `Units.compatible` and `Units.scalingFactor`, so mole is treated as a base unit, as CellML does. Strict UCUM treats mol as a dimensionless count.
+It replaces pint and ucumvert in the Python [bg2cellml](https://github.com/CellDL/BG-Tools). Reading and naming units is ported from [PhLynx](https://github.com/physiomelinks/PhLynx) (`src/utils/unitExpression.js`), so units read and named here match PhLynx's. Compatibility and scaling come from libCellML, so mole is a base unit, as CellML has it; strict UCUM treats mol as a dimensionless count. It has no runtime dependencies; libcellml.js is a peer dependency.
 
 > [!WARNING]
-> This is an early skeleton. `parseUcum` and the unit tables work. `unitsName`, `toCellMLUnits`, `compatible` and `convertValue` aren't implemented yet.
+> Work in progress: reading and naming work. `toCellMLUnits` (3.2), and `compatible` and `convertValue` (3.3), aren't implemented yet.
 
 ## Usage
 
-libcellml.js is a peer dependency. The host application loads it once and passes the instance in.
-
 ```js
-import createLibCellML from 'libcellml.js'
-import { convertValue, parseUcum, toCellMLUnits } from '@physiomelinks/cellml-units'
+import { parseUcum, unitsName } from '@physiomelinks/cellml-units'
 
-const libcellml = await createLibCellML()
+unitsName('mol/s')        // 'mol_per_s'
+unitsName('L2.s-1.J-1')   // 'L2_per_s_per_J'
+unitsName('mm[Hg]')       // 'mmHg'
+unitsName('10*9/L')       // 'giga_per_L'
 
-parseUcum('mL/s')                                   // [{ atom: 'L', prefix: 'm', exponent: 1 }, { atom: 's', exponent: -1 }]
-const units = toCellMLUnits(libcellml, 'mmol/s')     // libCellML Units: millimole^1 . second^-1
-convertValue(libcellml, 1000, 'uF', 'C2/J')          // 0.001
+parseUcum('mL/s')         // { code, factor: 1, symbols: [{ label: 'mL', exponent: 1, atom: { units: 'litre', … }, prefix: -3 }, …] }
 ```
 
 ## What it covers
 
 | Area | Functions | Status |
 |---|---|---|
-| Parsing UCUM | `parseUcum`, giving atom, prefix, exponent and annotation | Done |
-| Mapping to CellML | `UCUM_TO_CELLML_UNIT`, `UCUM_TO_CELLML_PREFIX` | Done |
-| Building units | `toCellMLUnits`, `unitsName` | To do |
-| Comparing and converting | `compatible`, `convertValue` | To do |
+| Reading UCUM | `parseUnitExpression`, `resolveSymbol` (PhLynx's), `parseUcum` (throws a `UcumError`) | Done |
+| Symbols | `UCUM_ATOMS`, `UCUM_PREFIXES`, `PREFIX_POWERS`, `AFFINE_SYMBOLS`, `CELLML_BUILT_IN_UNITS` | Done |
+| Naming | `unitsName`, `nameUnits`, `sanitiseName`, `uniqueName` | Done |
+| Building units | `toCellMLUnits` | To do (3.2) |
+| Comparing and converting | `compatible`, `convertValue` | To do (3.3) |
+
+## Reading
+
+As PhLynx reads them:
+
+- **Operators:** `.` multiplies and `/` divides, left to right, so `mmol/L.s` is (mmol/L)·s. Brackets group, and a leading `/` is one over.
+- **Exponents** follow their symbol: `m2`, `s-1`. `10*3` and plain integers are factors.
+- **Annotations** such as `{RBC}` are dropped; one on its own counts as 1, as in `{cells}/mL`.
+- **Symbols:** the SI units, `L`, `eq` and `osm`, and the non-SI units `min`, `h`, `d`, `mm[Hg]`, `cm[H2O]`, `cal`, `bar`, `atm`, `%` and `[ppm]`, each with its factor in CellML's built-in units. Bracketed symbols also work without brackets (`mmHg`). Only metric symbols take a prefix.
+- **Known names:** a units name the caller already has, such as one from a units library, is passed in `names` and takes precedence over UCUM.
+- **Affine temperatures:** `Cel` and `[degF]` are recognised, but CellML 2.0 has no built-in units for them.
+
+## Naming
+
+`unitsName` names units as PhLynx does: the symbols as written, positive powers first, then `per_` and each negative power.
+
+| Code | Name |
+|---|---|
+| `mol/s` | `mol_per_s` |
+| `L2.s-1.J-1` | `L2_per_s_per_J` |
+| `J.s.C-1.m-1` | `J_s_per_C_per_m` |
+| `mol-1` | `per_mol` |
+| `F` | `F` |
+| `m.m/s` | `m2_per_s` (repeated symbols combine) |
+| `10*9/L` | `giga_per_L` (a factor gets a prefix word where there is one) |
+| `mm[Hg]` | `mmHg` |
+| `1`, `m/m` | `dimensionless` |
+
+Every name is a valid CellML identifier, and equal expressions get equal names. `uniqueName` adds `_1`, `_2`, ... when a name is already taken in a model.
+
+A test checks `unitsName` against PhLynx's own output for every BG-RDF units code and 15 harder cases (`test/fixtures/phlynx-names.json`, from PhLynx commit 68bf007).
 
 ## Bugs in the Python version that this package fixes
 

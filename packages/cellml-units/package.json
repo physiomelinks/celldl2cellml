@@ -27,9 +27,6 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
-  "dependencies": {
-    "@atomic-ehr/ucum": "^0.2.5"
-  },
   "peerDependencies": {
     "libcellml.js": ">=0.7.1"
   },
