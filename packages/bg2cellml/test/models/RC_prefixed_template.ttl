@@ -1,0 +1,57 @@
+@prefix bgf: <https://bg-rdf.org/ontologies/bondgraph-framework#> .
+@prefix cdt: <https://w3id.org/cdt/> .
+@prefix : <#> .
+
+#===============================================================================
+#
+#  example_RC with the templates in prefixed_electrical.ttl, which are in
+#  prefixed units (charge in mC, current in mA). The values are as in
+#  example_RC, in units other than the templates', so each is converted:
+#  10 Ohm is 0.01 kOhm, 1000 uF is 1 mF, 0 C is 0 mC.
+#
+#  Charging through R from 0, with tau = R C = 0.01 s:
+#      q = C V (1 - exp(-t/tau)) = 10 (1 - exp(-100 t)) mC
+#
+#  For plan chunk 7.4; the Python bg2cellml can't load the templates.
+#
+#===============================================================================
+
+:RC_circuit
+    a bgf:BondgraphModel ;
+    bgf:hasBondElement :V_in, :R_0, :q_1 ;
+    bgf:hasJunctionStructure :I_R, :V_C .
+
+:R_0
+    a bgf:MilliElectricalResistor ;
+    bgf:parameterValue [
+        bgf:varName "R" ;
+        bgf:hasValue "10 Ohm"^^cdt:ucum
+    ] .
+:q_1
+    a bgf:MilliElectricalCapacitor ;
+    bgf:hasValue "0 C"^^cdt:ucum ;
+    bgf:parameterValue [
+        bgf:varName "C" ;
+        bgf:hasValue "1000 uF"^^cdt:ucum
+    ] .
+:V_in
+    a bgf:MilliVoltageSource ;
+    bgf:hasValue "10 V"^^cdt:ucum .
+
+:I_R
+    a bgf:OneNode .
+:V_C
+    a bgf:ZeroNode .
+
+:V_in.I_R
+    bgf:hasSource :V_in ;
+    bgf:hasTarget :I_R .
+:I_R.R
+    bgf:hasSource :I_R ;
+    bgf:hasTarget :R_0 .
+:I_R.V_C
+    bgf:hasSource :I_R ;
+    bgf:hasTarget :V_C .
+:V_C.q
+    bgf:hasSource :V_C ;
+    bgf:hasTarget :q_1 .

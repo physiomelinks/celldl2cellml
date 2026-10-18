@@ -30,7 +30,7 @@ Results from the Python [bg2cellml](https://github.com/CellDL/BG-Tools) 0.11.2, 
 | `A3_numbers_with_units` | `example_A3` | Matches, ignoring the units (`bgf:units`) on the voltage source's numbers, which make its equation dimensionally consistent |
 | `A3_reduced_numbers_with_units` | `example_A3_reduced` | The same |
 
-The prefixed-units recursion bug isn't covered here. It needs a template with prefixed units, so it belongs in `@physiomelinks/cellml-units`'s tests.
+The prefixed-units recursion bug can't be covered here, as Python fails on a template with prefixed units. `test/hand-worked.test.ts` covers it, with other cases Python can't check, against expectations worked out by hand: `../models/prefixed_electrical.ttl`, an electrical domain in mC, mA and V, with `RC_prefixed_template.ttl` on it; and `rdf_error.celldl`, a CellDL document saved by the CellDL Editor, copied from BG-Tools' tests (commit 9d44196).
 
 ## Comparing
 

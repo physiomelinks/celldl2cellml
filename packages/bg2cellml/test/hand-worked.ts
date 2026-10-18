@@ -127,3 +127,28 @@ export function mixedReaction(python: SimulationResult): SimulationResult {
   const voi = { ...python.voi, values: indices.map((i) => settings.start + (i * (settings.end - settings.start)) / settings.steps) }
   return { simulation: settings, voi, states, rates, algebraics }
 }
+
+/** A variable's value at each time, worked out by hand. */
+export type Solution = (t: number) => number
+
+/**
+ * A result from closed-form solutions, at the points a simulation with
+ * `settings` records, to compare with one using `compareResults()`. Ours
+ * should be simulated with tight tolerances (SOLVER_TOLERANCE), as for
+ * `mixedReaction`.
+ */
+export function fromSolutions(
+  settings: SimulationResult['simulation'],
+  solutions: { states: Record<string, Solution>; rates: Record<string, Solution>; algebraics: Record<string, Solution> },
+): SimulationResult {
+  const simulation: SimulationSettings = { ...settings, relativeTolerance: SOLVER_TOLERANCE, absoluteTolerance: SOLVER_TOLERANCE }
+  const times = recordedIndices(settings.steps, settings.recordedEvery).map((i) => settings.start + (i * (settings.end - settings.start)) / settings.steps)
+  const at = (group: Record<string, Solution>): Trajectories => Object.fromEntries(Object.entries(group).map(([name, f]) => [name, times.map(f)]))
+  return {
+    simulation,
+    voi: { name: 't', units: 'second', values: times },
+    states: at(solutions.states),
+    rates: at(solutions.rates),
+    algebraics: at(solutions.algebraics),
+  }
+}

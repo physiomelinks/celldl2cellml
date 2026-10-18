@@ -34,6 +34,7 @@ export type FrameworkSource =
   | { quads: Iterable<QuadLike> }
 
 export interface CellMLGenerationOptions {
+  /** The source's IRI, the base for its relative IRIs: an absolute IRI, such as `file:///C:/Models/My%20model.celldl`. */
   sourceUri: string
   /** The CellML file's IRI, for the metadata. The source's with `.cellml` if not given, as in `@celldl/editor-python-tools`. */
   cellmlUri?: string
@@ -78,11 +79,32 @@ export class Converter {
     return this.#framework.log.issues.map((issue) => issue.message)
   }
 
+  /**
+   * Why `iri` can't be the base or name of a document, or `undefined` if it
+   * can. oxigraph checks it as it does a base IRI: a Windows path or one with
+   * a space isn't an IRI, as the CellDL Editor found on Windows (BG-Tools'
+   * tests/models/rdf_error.celldl).
+   */
+  #iriIssue(option: string, iri: string): string | undefined {
+    try {
+      this.#runtime.oxigraph.namedNode(iri)
+      return undefined
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : String(error)
+      return `${option} isn't an absolute IRI: ${JSON.stringify(iri)} (${reason}). A file path must be given as a file: URL, with characters such as spaces percent-encoded.`
+    }
+  }
+
   /** Convert a CellDL document, or BG-RDF Turtle with `rdfSource: true`, to CellML 2.0. */
   async celldl2cellml(source: string, options: CellMLGenerationOptions): Promise<CellMLOutput> {
     if (this.#framework === undefined) {
       return { issues: ['The BG-RDF framework has not been loaded'] }
     }
+    const iriIssues = [
+      this.#iriIssue('sourceUri', options.sourceUri),
+      ...(options.cellmlUri === undefined ? [] : [this.#iriIssue('cellmlUri', options.cellmlUri)]),
+    ].filter((issue) => issue !== undefined)
+    if (iriIssues.length > 0) return { issues: iriIssues }
     try {
       const bgRdf = options.rdfSource ? source : extractBgRdf(source, this.#runtime.domParser)
       const model = BondgraphModel.fromTurtle(this.#framework, this.#runtime, bgRdf, options.sourceUri)

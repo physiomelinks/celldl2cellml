@@ -1,0 +1,83 @@
+@prefix bgf: <https://bg-rdf.org/ontologies/bondgraph-framework#> .
+@prefix cdt: <https://w3id.org/cdt/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+#===============================================================================
+#
+#  An electrical domain and templates in prefixed units, for plan chunk 7.4.
+#  The Python bg2cellml 0.11.2 can't load them: prefixed units send its
+#  CellML units generation into recursion (bug 1).
+#
+#  Charge is in mC, current in mA (mC/s) and potential in V, so the
+#  prefixes cancel in every relation: mC/mF = V and V/kOhm = mA. Names
+#  start with Milli so they don't clash with BG-RDF's (a model's elements
+#  need bgf: types).
+#
+#===============================================================================
+
+bgf:MilliElectrical
+    a bgf:PhysicalDomain ;
+    rdfs:label "Electrical, in millicoulombs" ;
+    bgf:hasFlow [
+        bgf:varName "v" ;
+        bgf:hasUnits "mA"^^cdt:ucumunit
+    ] ;
+    bgf:hasPotential [
+        bgf:varName "u" ;
+        bgf:hasUnits "V"^^cdt:ucumunit
+    ] ;
+    bgf:hasQuantity [
+        bgf:varName "q" ;
+        bgf:hasUnits "mC"^^cdt:ucumunit
+    ] .
+
+#===============================================================================
+
+bgf:MilliVoltageSource
+    a bgf:ElementTemplate ;
+    rdfs:subClassOf bgf:PotentialSource ;
+    bgf:hasDomain bgf:MilliElectrical .
+
+bgf:MilliElectricalResistor
+    a bgf:ElementTemplate ;
+    rdfs:subClassOf bgf:Resistance ;
+    bgf:hasDomain bgf:MilliElectrical ;
+    bgf:hasParameter [
+        bgf:varName "R" ;
+        bgf:hasUnits "kOhm"^^cdt:ucumunit
+    ] ;
+    # v = u/R
+    bgf:constitutiveRelation """
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <ci>v</ci>
+                <apply><divide/><ci>u</ci><ci>R</ci></apply>
+            </apply>
+        </math>
+    """^^bgf:mathml .
+
+bgf:MilliElectricalCapacitor
+    a bgf:ElementTemplate ;
+    rdfs:subClassOf bgf:QuantityStore ;
+    bgf:hasDomain bgf:MilliElectrical ;
+    bgf:hasParameter [
+        bgf:varName "C" ;
+        bgf:hasUnits "mF"^^cdt:ucumunit
+    ] ;
+    # dq/dt = v
+    # u = q/C
+    bgf:constitutiveRelation """
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <apply><diff/><bvar><ci>t</ci></bvar><ci>q</ci></apply>
+                <ci>v</ci>
+            </apply>
+            <apply>
+                <eq/>
+                <ci>u</ci>
+                <apply><divide/><ci>q</ci><ci>C</ci></apply>
+            </apply>
+        </math>
+    """^^bgf:mathml .

@@ -26,7 +26,7 @@ converter.loadFramework({
 converter.loadFramework({ quads: store.match(null, null, null, null) })
 
 const { cellml, metadata, issues, exception } = await converter.celldl2cellml(celldlSvg, {
-  sourceUri: 'https://example.org/rc.celldl',
+  sourceUri: 'https://example.org/rc.celldl',         // an absolute IRI: a file as file:///C:/My%20models/rc.celldl
   metadata: true,
 })
 ```
@@ -77,6 +77,7 @@ Each difference is deliberate. The parity tests (`test/parity.test.ts`) check th
 
 ### Reported where Python carries on
 
+- **A source URI that isn't an absolute IRI is reported.** `celldl2cellml` checks `sourceUri`, and `cellmlUri` if given, before reading anything, and says what's wrong: `sourceUri isn't an absolute IRI: "C:\\Users\\Some One\\rc.celldl" (...)`, with how to give a file path. Python fails on such a URI with oxigraph's message alone, `Invalid IRI code point ' '`, as the CellDL Editor did on Windows (BG-Tools' `tests/models/rdf_error.celldl`).
 - **Equations naming unknown variables are reported.** Python writes them anyway, giving CellML that can't be valid; this happens with a resistor or reaction whose port has no bond, whose relation keeps the template's potential.
 - **Clashing variables are reported.** Python writes one CellML variable per symbol, keeping the first; so do we, but two variables with one symbol and different units or values, or a variable named as `t` or a domain constant, are reported (Python would write two variables with one name for the latter). Two domains whose constant of one name differs are reported too.
 - **Symbols are substituted all at once.** Python renames a relation's names one at a time and fails if a symbol is already there; here a symbol that would give two variables one name is reported. A variable given another element's intrinsic variable must be in the same units, not just pint-equal ones. A source's MathML may use only its own variables, the domain's constants and `t`.
