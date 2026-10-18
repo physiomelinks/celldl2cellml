@@ -1,4 +1,4 @@
-# bg-2-cellml
+# BG-RDF 2 CellML
 
 Generates CellML 2.0 from [BG-RDF](https://github.com/CellDL/BG-RDF) bond graph models, in JavaScript, without Pyodide.
 
