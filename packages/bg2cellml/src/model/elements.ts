@@ -59,8 +59,14 @@ export class ModelVariable {
   }
 }
 
+/** The flow and potential at a node of the bond network: an element's port, or a transform node's. */
+export interface PowerPort {
+  flow: ModelVariable
+  potential: ModelVariable
+}
+
 /** A port of an element, by which bonds connect to it. */
-export interface ElementPort {
+export interface ElementPort extends PowerPort {
   /** The port's id in the bond network: the element's IRI, with `_` and the port id if the template names its ports. */
   readonly iri: string
   readonly template: PortTemplate

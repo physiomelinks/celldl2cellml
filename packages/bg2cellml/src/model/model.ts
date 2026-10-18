@@ -23,14 +23,22 @@ import { IssueLog } from '../issues.js'
 import { RdfGraph, type OxigraphModule } from '../rdf/graph.js'
 import { BONDGRAPH_MODEL } from '../rdf/queries.js'
 import { buildNetwork, inferBonds, loadBonds, type BondgraphBond, type NetworkNode } from './bonds.js'
+import { assignDomains } from './domains.js'
 import { loadElements, type BondgraphElement } from './elements.js'
-import { loadJunctions, type BondgraphJunction } from './junctions.js'
+import { assignJunctionVariables, loadJunctions, type BondgraphJunction } from './junctions.js'
 import { prettyUri } from './names.js'
 import { BondNetwork } from './network.js'
 
 export { type BondgraphBond, type NetworkNode } from './bonds.js'
-export { BondgraphElement, ModelVariable, type ElementPort, type ValueAssignment } from './elements.js'
-export { BondgraphJunction, JUNCTION_TYPES, TRANSFORM_PORT_IDS } from './junctions.js'
+export { BondgraphElement, ModelVariable, type ElementPort, type PowerPort, type ValueAssignment } from './elements.js'
+export {
+  BondgraphJunction,
+  GYRATOR_EQUATIONS,
+  JUNCTION_TYPES,
+  TRANSFORMER_EQUATIONS,
+  TRANSFORM_PORT_IDS,
+  TRANSFORM_RATIO_NAME,
+} from './junctions.js'
 
 /** What a model needs from the host: oxigraph, libCellML, and an XML parser where there's no `DOMParser`. */
 export interface ModelRuntime {
@@ -69,7 +77,8 @@ export class BondgraphModel {
    * `bgf:BondgraphModel`. Problems are reported in `log` rather than thrown.
    *
    * So far this finds the model's elements (5.1), and its junctions and bonds,
-   * and builds the bond network (5.2). Variables and equations come next.
+   * and builds the bond network (5.2), spreads domains through it and assigns
+   * the junctions' variables (5.3). Element variables and equations come next.
    */
   static fromTurtle(framework: BondgraphFramework, runtime: ModelRuntime, turtle: string, baseIri: string): BondgraphModel {
     const model = new BondgraphModel(new RdfGraph(runtime.oxigraph))
@@ -81,11 +90,12 @@ export class BondgraphModel {
     }
     if (!model.#findModel()) return model
 
+    const unitsCompatible = (a: string, b: string): boolean => compatible(runtime.libcellml, a, b)
     const elements = loadElements(model.iri, {
       framework,
       graph: model.graph,
       log: model.log,
-      compatible: (a, b) => compatible(runtime.libcellml, a, b),
+      compatible: unitsCompatible,
       ...(runtime.domParser === undefined ? {} : { domParser: runtime.domParser }),
     })
     for (const [iri, element] of elements) model.elements.set(iri, element)
@@ -101,6 +111,8 @@ export class BondgraphModel {
     inferBonds(model.iri, context)
     model.bonds.push(...loadBonds(model.iri, context))
     model.network = buildNetwork(context, model.bonds)
+    assignDomains(model.elements, model.network, model.log)
+    assignJunctionVariables(model.junctions, { log: model.log, compatible: unitsCompatible, network: model.network })
     return model
   }
 

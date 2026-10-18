@@ -233,6 +233,8 @@ describe('loading bonds', () => {
     expect(messages(model).sort()).toEqual([
       "Bond #b3 has a bgf:bondCount that isn't a positive integer: 1.5",
       "Bond #b4 has a bgf:bondCount that isn't a positive integer: 0",
+      // With b3 and b4 left out, nothing joins V_C to an element
+      'Cannot find domain for junction V_C (#V_C). Are there bonds to it?',
     ])
   })
 
@@ -262,29 +264,31 @@ describe('loading bonds', () => {
 
   it("joins bonds to a reaction's ports and a transform node's", () => {
     const model = modelFrom(`
-      :m a bgf:BondgraphModel ; bgf:hasBondElement :q_1, :q_2, :Re ; bgf:hasJunctionStructure :u_1, :u_2, :TF .
+      :m a bgf:BondgraphModel ; bgf:hasBondElement :q_1, :q_2, :Re ; bgf:hasJunctionStructure :u_1, :u_2, :v, :TF .
       :q_1 a bgf:ChemicalConcentration ; bgf:hasValue "1 mol"^^cdt:ucum ; bgf:parameterValue [ bgf:varName "K" ; bgf:hasValue "1 mol-1"^^cdt:ucum ] .
       :q_2 a bgf:ChemicalConcentration ; bgf:hasValue "0 mol"^^cdt:ucum ; bgf:parameterValue [ bgf:varName "K" ; bgf:hasValue "1 mol-1"^^cdt:ucum ] .
       :Re a bgf:ChemicalReaction ; bgf:parameterValue [ bgf:varName "kappa" ; bgf:hasValue "1 mol/s"^^cdt:ucum ] .
-      :u_1 a bgf:ZeroNode . :u_2 a bgf:ZeroNode .
+      :u_1 a bgf:ZeroNode . :u_2 a bgf:ZeroNode . :v a bgf:OneNode .
       :TF a bgf:TransformNode ; bgf:hasValue 2 .
       :b1 bgf:hasSource :u_1 ; bgf:hasTarget :q_1 .
       :b2 bgf:hasSource :u_1 ; bgf:hasTarget :Re .
-      :b3 bgf:hasSource :Re ; bgf:hasTarget :TF .
+      :b3 bgf:hasSource :Re ; bgf:hasTarget :v .
+      :b6 bgf:hasSource :v ; bgf:hasTarget :TF .
       :b4 bgf:hasSource :TF ; bgf:hasTarget :u_2 .
       :b5 bgf:hasSource :u_2 ; bgf:hasTarget :q_2 .`)
     expect(messages(model)).toEqual([])
-    expect(model.bonds.map((bond) => `${fragment(bond.source)} -> ${fragment(bond.target)}`)).toEqual([
-      'u_1 -> q_1',
-      'u_1 -> Re_f',
-      'Re_r -> TF_0',
+    expect(model.bonds.map((bond) => `${fragment(bond.source)} -> ${fragment(bond.target)}`).sort()).toEqual([
+      'Re_r -> v',
       'TF_1 -> u_2',
+      'u_1 -> Re_f',
+      'u_1 -> q_1',
       'u_2 -> q_2',
+      'v -> TF_0',
     ])
     // Element ports first, in IRI order, then junctions in query order
     const nodes = [...model.network.nodes()].map(([node]) => fragment(node))
     expect(nodes.slice(0, 4)).toEqual(['Re_f', 'Re_r', 'q_1', 'q_2'])
-    expect(nodes.slice(4).sort()).toEqual(['TF_0', 'TF_1', 'u_1', 'u_2'])
+    expect(nodes.slice(4).sort()).toEqual(['TF_0', 'TF_1', 'u_1', 'u_2', 'v'])
     expect(model.junctions.get(id('TF'))!.value).toEqual({ magnitude: 2 })
   })
 })
@@ -310,6 +314,8 @@ describe('loading junctions', () => {
       :R_0 a bgf:ElectricalResistor ; bgf:parameterValue [ bgf:varName "R" ; bgf:hasValue "10 Ohm"^^cdt:ucum ] .
       :a a bgf:NoSuchNode . :b a bgf:ZeroStorageNode . :c a bgf:OneNode, bgf:ZeroNode . :d a bgf:OneNode .`)
     expect(messages(model).sort()).toEqual([
+      // d is the one junction that loads, and has no bonds
+      'Cannot find domain for junction d (#d). Are there bonds to it?',
       "Junction b (#b) is a bgf:ZeroStorageNode: a model's junctions must be one, zero or transform nodes",
       'Junction c (#c) has more than one type: bgf:OneNode, bgf:ZeroNode',
       `Unknown Junction ${bgf('NoSuchNode')} for node ${id('a')}`,

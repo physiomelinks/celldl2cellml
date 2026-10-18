@@ -15,7 +15,7 @@ import type { IssueLog } from '../issues.js'
 import type { OxigraphModule, RdfGraph, ResultRow, Term } from '../rdf/graph.js'
 import { BGF, xsd } from '../rdf/namespaces.js'
 import { BONDGRAPH_BONDS, modelBondsQuery } from '../rdf/queries.js'
-import type { BondgraphElement, ElementPort } from './elements.js'
+import type { BondgraphElement, PowerPort } from './elements.js'
 import { TRANSFORM_PORT_IDS, type BondgraphJunction } from './junctions.js'
 import { prettyUri } from './names.js'
 import { BondNetwork } from './network.js'
@@ -42,9 +42,9 @@ export interface NetworkNode {
   readonly label: string
   readonly element?: BondgraphElement
   readonly junction?: BondgraphJunction
-  /** An element's port. A transform node's ports get theirs once domains are known. */
-  port?: ElementPort
-  /** The element's class, for an element's port. */
+  /** An element's port, or once its variables are assigned, a transform node's. */
+  port?: PowerPort
+  /** The element's class for an element's port, `bgf:TransformNode` for a transform node's once it has a port. */
   portType?: string
   /** Spread through the network from the elements. */
   domain?: Domain
