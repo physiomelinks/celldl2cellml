@@ -29,6 +29,7 @@ import { BondgraphModel, Converter, generateCellML, type Runtime } from '../src/
 import { mixedReaction } from './hand-worked.js'
 import { UNITS_INCONSISTENT, expectKnownIssues } from './known-issues.js'
 import { compareResults, frameworkSource, loadManifest, loadReference, readSource, type ReferenceCase, type SimulationResult } from './reference.js'
+import { pmrMixedReaction, withOurNames } from './pmr.js'
 import { loadLibOpenCOR, simulate } from './simulate.js'
 
 /** Cases that must pass. Add each one when it does. */
@@ -92,26 +93,37 @@ async function cellmlDespiteKnownIssues(c: ReferenceCase): Promise<string | unde
   return generateCellML(runtime.libcellml, model).cellml
 }
 
-/** Convert, simulate and compare one case. An empty list means it matches. */
-async function parityProblems(c: ReferenceCase): Promise<string[]> {
+/** Convert one case: its CellML, or the problems that stopped it. */
+async function convert(c: ReferenceCase): Promise<{ cellml: string } | { problems: string[] }> {
   const output = await (await getConverter()).converter.celldl2cellml(readSource(c), {
     sourceUri: c.baseIri,
     rdfSource: true,
     debug: true,
   })
-  if (output.exception !== undefined) return [`exception: ${output.exception}`]
+  if (output.exception !== undefined) return { problems: [`exception: ${output.exception}`] }
   let cellml = output.cellml
   if (c.name in UNITS_INCONSISTENT) {
     expectKnownIssues(c.name, output.issues ?? [])
     cellml = await cellmlDespiteKnownIssues(c)
   } else if (output.issues !== undefined && output.issues.length > 0) {
-    return output.issues.map((issue) => `issue: ${issue}`)
+    return { problems: output.issues.map((issue) => `issue: ${issue}`) }
   }
-  if (cellml === undefined) return ['no CellML was generated']
+  return cellml === undefined ? { problems: ['no CellML was generated'] } : { cellml }
+}
+
+/** Convert, simulate and compare one case. An empty list means it matches. */
+async function parityProblems(c: ReferenceCase): Promise<string[]> {
+  const converted = await convert(c)
+  if ('problems' in converted) return converted.problems
   const python = loadReference(c)
   const reference = DIFFERS_FROM_PYTHON[c.name]?.reference(python) ?? python
-  const result = simulate(await loadLibOpenCOR(), cellml, reference.simulation)
+  const result = simulate(await loadLibOpenCOR(), converted.cellml, reference.simulation)
   return compareResults(result, reference, manifest.tolerance)
+}
+
+/** The PMR model of example_B2, simulated as the hand-worked reference is, with our names. */
+async function pmrResult(settings: SimulationResult['simulation']): Promise<SimulationResult> {
+  return withOurNames(simulate(await loadLibOpenCOR(), pmrMixedReaction(), settings), settings)
 }
 
 describe('parity with the Python bg2cellml', () => {
@@ -134,6 +146,27 @@ describe('parity with the Python bg2cellml', () => {
     for (const variable of ['states.q_1', 'states.q_4', 'rates.q_2', 'rates.q_3', 'algebraics.v_Re_c']) {
       expect(problems.some((p) => p.startsWith(`${variable} `)), variable).toBe(true)
     }
+  })
+
+  describe('FAIRDO BG example 3.5 from PMR, an independent model of example_B2 (test/pmr.ts)', () => {
+    const b2 = manifest.cases.find((c) => c.name === 'example_B2')!
+    const handWorked = () => mixedReaction(loadReference(b2))
+
+    it('agrees with the hand-worked reference', async () => {
+      const reference = handWorked()
+      // Every variable the PMR model has, so the PMR model is the expected side
+      expect(compareResults(reference, await pmrResult(reference.simulation), manifest.tolerance)).toEqual([])
+    })
+
+    it.each(Object.keys(DIFFERS_FROM_PYTHON))('agrees with our %s', async (name) => {
+      const c = manifest.cases.find((x) => x.name === name)!
+      const converted = await convert(c)
+      if ('problems' in converted) expect.fail(converted.problems.join('; '))
+      const settings = DIFFERS_FROM_PYTHON[name]!.reference(loadReference(c)).simulation
+      const pmr = await pmrResult(settings)
+      const ours = simulate(await loadLibOpenCOR(), converted.cellml, settings)
+      expect(compareResults(ours, pmr, manifest.tolerance)).toEqual([])
+    })
   })
 
   describe.each([

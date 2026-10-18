@@ -1,0 +1,217 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<model name="BG4" xmlns="http://www.cellml.org/cellml/1.1#" xmlns:cellml="http://www.cellml.org/cellml/1.1#">
+    <!-- A biochemical reaction with mixed stoichiometry-->
+    <units name="mol_per_s">
+        <unit units="mole"/>
+        <unit exponent="-1" units="second"/>
+    </units>
+    <units name="per_mol">
+        <unit exponent="-1" units="mole"/>
+    </units>
+    <units name="J_per_mol">
+        <unit units="joule"/>
+        <unit exponent="-1" units="mole"/>
+    </units>
+    <component name="main">
+        <variable initial_value="0" name="t" units="second"/>
+        <variable initial_value="2578.73058" name="RT" units="J_per_mol"/>
+        <!-- R=8.31446262 J/mol/K, T=310.15 K, F=9.64853321e4 C/mol-->
+        <!-- State variables-->
+        <variable initial_value="1" name="q_1" units="mole"/>
+        <variable initial_value="1" name="q_2" units="mole"/>
+        <variable initial_value="0" name="q_3" units="mole"/>
+        <variable initial_value="0" name="q_4" units="mole"/>
+        <variable name="v_r" units="mol_per_s"/>
+        <variable name="u_1" units="J_per_mol"/>
+        <variable name="u_2" units="J_per_mol"/>
+        <variable name="u_3" units="J_per_mol"/>
+        <variable name="u_4" units="J_per_mol"/>
+        <variable name="u_f" units="J_per_mol"/>
+        <variable name="u_r" units="J_per_mol"/>
+        <!-- Constitutive parameters-->
+        <variable initial_value="2" name="K_q_1" units="per_mol"/>
+        <variable initial_value="2" name="K_q_2" units="per_mol"/>
+        <variable initial_value="2" name="K_q_3" units="per_mol"/>
+        <variable initial_value="2" name="K_q_4" units="per_mol"/>
+        <variable initial_value="0.1" name="kappa_r" units="mol_per_s"/>
+        <!-- Conservation laws-->
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+                <eq/>
+                <apply>
+                    <diff/>
+                    <bvar>
+                        <ci>t</ci>
+                    </bvar>
+                    <ci>q_1</ci>
+                </apply>
+                <apply>
+                    <minus/>
+                    <ci>v_r</ci>
+                </apply>
+            </apply>
+            <apply>
+                <eq/>
+                <apply>
+                    <diff/>
+                    <bvar>
+                        <ci>t</ci>
+                    </bvar>
+                    <ci>q_2</ci>
+                </apply>
+                <apply>
+                    <times/>
+                    <apply>
+                        <minus/>
+                        <cn cellml:units="dim">2</cn>
+                    </apply>
+                    <ci>v_r</ci>
+                </apply>
+            </apply>
+            <apply>
+                <eq/>
+                <apply>
+                    <diff/>
+                    <bvar>
+                        <ci>t</ci>
+                    </bvar>
+                    <ci>q_3</ci>
+                </apply>
+                <ci>v_r</ci>
+            </apply>
+            <apply>
+                <eq/>
+                <apply>
+                    <diff/>
+                    <bvar>
+                        <ci>t</ci>
+                    </bvar>
+                    <ci>q_4</ci>
+                </apply>
+                <apply>
+                    <times/>
+                    <cn cellml:units="dim">2</cn>
+                    <ci>v_r</ci>
+                </apply>
+            </apply>
+            <apply>
+                <eq/>
+                <ci>u_f</ci>
+                <apply>
+                    <plus/>
+                    <ci>u_1</ci>
+                    <apply>
+                        <times/>
+                        <cn cellml:units="dim">2</cn>
+                        <ci>u_2</ci>
+                    </apply>
+                </apply>
+            </apply>
+            <apply>
+                <eq/>
+                <ci>u_r</ci>
+                <apply>
+                    <plus/>
+                    <ci>u_3</ci>
+                    <apply>
+                        <times/>
+                        <cn cellml:units="dim">2</cn>
+                        <ci>u_4</ci>
+                    </apply>
+                </apply>
+            </apply>
+            <!-- Constitutive relations-->
+            <apply>
+                <eq/>
+                <ci>u_1</ci>
+                <apply>
+                    <times/>
+                    <ci>RT</ci>
+                    <apply>
+                        <ln/>
+                        <apply>
+                            <times/>
+                            <ci>K_q_1</ci>
+                            <ci>q_1</ci>
+                        </apply>
+                    </apply>
+                </apply>
+            </apply>
+            <apply>
+                <eq/>
+                <ci>u_2</ci>
+                <apply>
+                    <times/>
+                    <ci>RT</ci>
+                    <apply>
+                        <ln/>
+                        <apply>
+                            <times/>
+                            <ci>K_q_2</ci>
+                            <ci>q_2</ci>
+                        </apply>
+                    </apply>
+                </apply>
+            </apply>
+            <apply>
+                <eq/>
+                <ci>u_3</ci>
+                <apply>
+                    <times/>
+                    <ci>RT</ci>
+                    <apply>
+                        <ln/>
+                        <apply>
+                            <times/>
+                            <ci>K_q_3</ci>
+                            <ci>q_3</ci>
+                        </apply>
+                    </apply>
+                </apply>
+            </apply>
+            <apply>
+                <eq/>
+                <ci>u_4</ci>
+                <apply>
+                    <times/>
+                    <ci>RT</ci>
+                    <apply>
+                        <ln/>
+                        <apply>
+                            <times/>
+                            <ci>K_q_4</ci>
+                            <ci>q_4</ci>
+                        </apply>
+                    </apply>
+                </apply>
+            </apply>
+            <apply>
+                <eq/>
+                <ci>v_r</ci>
+                <apply>
+                    <times/>
+                    <ci>kappa_r</ci>
+                    <apply>
+                        <minus/>
+                        <apply>
+                            <exp/>
+                            <apply>
+                                <divide/>
+                                <ci>u_f</ci>
+                                <ci>RT</ci>
+                            </apply>
+                        </apply>
+                        <apply>
+                            <exp/>
+                            <apply>
+                                <divide/>
+                                <ci>u_r</ci>
+                                <ci>RT</ci>
+                            </apply>
+                        </apply>
+                    </apply>
+                </apply>
+            </apply>
+        </math>
+    </component>
+</model>
