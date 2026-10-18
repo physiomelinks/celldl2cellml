@@ -1,5 +1,10 @@
 export type {
+  Analyser,
+  AnalyserModel,
+  AnalyserModelStatics,
   Component,
+  EnumValue,
+  IssueStatics,
   LibCellML,
   Logger,
   LoggerIssue,
@@ -8,6 +13,7 @@ export type {
   Printer,
   Units,
   UnitsConstructor,
+  Validator,
   Variable,
 } from './libcellml.js'
 export {

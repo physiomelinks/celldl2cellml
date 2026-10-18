@@ -81,8 +81,15 @@ export interface Model {
 }
 
 /** An issue from a Parser, Validator or Analyser. */
+/** A value of an enumeration, as libcellml.js gives it. */
+export interface EnumValue {
+  readonly value: number
+}
+
 export interface LoggerIssue {
   description(): string
+  /** `Issue.Level.ERROR`, `WARNING` or `MESSAGE`. */
+  level(): EnumValue
   delete?(): void
 }
 
@@ -95,6 +102,31 @@ export interface Logger {
 
 export interface Parser extends Logger {
   parseModel(cellml: string): Model
+}
+
+export interface Validator extends Logger {
+  validateModel(model: Model): void
+}
+
+export interface AnalyserModel {
+  /** `AnalyserModel.Type.ODE`, `DAE`, ...: see `AnalyserModelStatics.typeAsString`. */
+  type(): EnumValue
+  stateCount(): number
+  delete?(): void
+}
+
+export interface Analyser extends Logger {
+  analyseModel(model: Model): void
+  analyserModel(): AnalyserModel
+}
+
+export interface AnalyserModelStatics {
+  /** `ode`, `dae`, `nla`, `algebraic`, `invalid`, `underconstrained`, ... */
+  typeAsString(type: EnumValue): string
+}
+
+export interface IssueStatics {
+  readonly Level: { readonly ERROR: EnumValue; readonly WARNING: EnumValue; readonly MESSAGE: EnumValue }
 }
 
 export interface Printer {
@@ -111,6 +143,10 @@ export interface LibCellML {
   /** `strict` false also reads CellML 1.0 and 1.1, converting them to CellML 2.0. */
   Parser: new (strict: boolean) => Parser
   Printer: new () => Printer
-  // Validator, Analyser, ... are added as bg2cellml needs them.
+  Validator: new () => Validator
+  Analyser: new () => Analyser
+  AnalyserModel: AnalyserModelStatics
+  Issue: IssueStatics
+  // Others are added as bg2cellml needs them.
   readonly [name: string]: unknown
 }

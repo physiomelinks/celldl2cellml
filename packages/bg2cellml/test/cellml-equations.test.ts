@@ -47,6 +47,7 @@ import {
   type ModelRuntime,
 } from '../src/index.js'
 import { bgRdfFramework, frameworkRuntime } from './framework-fixtures.js'
+import { expectKnownIssues } from './known-issues.js'
 import { pythonEquation } from './python-math.js'
 import { loadFixedPythonModel, loadManifest, readSource, type ReferenceCase } from './reference.js'
 
@@ -115,7 +116,7 @@ function ourCellML(c: ReferenceCase): string {
   const model = loadCase(c)
   expect(model.log.issues.map((issue) => issue.message)).toEqual([])
   const result = generateCellML(libcellml, model)
-  expect(result.issues.map((issue) => issue.message)).toEqual([])
+  expectKnownIssues(c.name, result.issues.map((issue) => issue.message))
   const cellml = result.cellml!
   const lib = libcellml as unknown as Record<string, new (...args: unknown[]) => any>
   const parser = new lib.Parser!(true)

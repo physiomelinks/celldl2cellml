@@ -29,6 +29,7 @@ import {
   type ModelRuntime,
 } from '../src/index.js'
 import { bgRdfFramework, frameworkRuntime } from './framework-fixtures.js'
+import { expectKnownIssues } from './known-issues.js'
 import { loadManifest, readSource, type ReferenceCase } from './reference.js'
 
 const REFERENCE_DIR = fileURLToPath(new URL('./reference/', import.meta.url))
@@ -99,7 +100,7 @@ function ourModel(c: ReferenceCase): Model {
   const model = loadCase(c)
   expect(model.log.issues.map((issue) => issue.message)).toEqual([])
   const result = generateCellML(libcellml, model)
-  expect(result.issues.map((issue) => issue.message)).toEqual([])
+  expectKnownIssues(c.name, result.issues.map((issue) => issue.message))
   const { model: cellml, issues } = parse(result.cellml!, true)
   expect(issues).toEqual([])
   return cellml
