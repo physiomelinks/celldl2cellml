@@ -11,7 +11,9 @@
  * Hugh in 6.3).
  *
  * Cases only run once they're listed in ENABLED, so the suite stays green while
- * the converter is being built. Stage 7 adds them as they start to pass.
+ * the converter is being built. Since 7.2 every case is: the 14 examples and
+ * the 5 variants. A case added to the manifest later is skipped until it's
+ * listed.
  *
  * To see where every case stands, whatever ENABLED says:
  *
@@ -49,6 +51,13 @@ const ENABLED = new Set<string>([
   'example_B2_reduced',
   'example_RC',
   'example_RC_reduced',
+  // 7.2: the variants. Python fails on the first two and is wrong on the third
+  'RC_labelled_bonds',
+  'RC_plain_number',
+  'RC_prefixed_values',
+  // A3's parity check, as the A3 examples aren't dimensionally consistent (6.3)
+  'A3_numbers_with_units',
+  'A3_reduced_numbers_with_units',
 ])
 
 const BOND_COUNT = 'Python ignores bgf:bondCount on bonds (model.py:233); two bonds have a count of 2'
@@ -132,6 +141,21 @@ describe('parity with the Python bg2cellml', () => {
     expect(manifest.cases.filter((c) => c.kind === 'variant')).toHaveLength(5)
     for (const name of ENABLED) expect(manifest.cases.map((c) => c.name), `ENABLED has unknown case ${name}`).toContain(name)
     for (const name of Object.keys(DIFFERS_FROM_PYTHON)) expect(manifest.cases.map((c) => c.name)).toContain(name)
+  })
+
+  it('has the RC variants Python fails on twice and gets wrong once, all with example_RC as their reference', () => {
+    const python = (name: string) => {
+      const c = manifest.cases.find((x) => x.name === name)!
+      expect(c.kind, name).toBe('variant')
+      expect(c.reference, name).toBe('example_RC.json')
+      return c.python
+    }
+    // A bond's rdfs:label is read as its count (bug 3)
+    expect(python('RC_labelled_bonds')).toMatchObject({ status: 'error', error: expect.stringMatching(/^ValueError: invalid literal for int\(\)/) })
+    // A value without units, an xsd:decimal, is rejected (bug 6)
+    expect(python('RC_plain_number')).toMatchObject({ status: 'error', error: expect.stringMatching(/^TypeError: Literal value has unexpected datatype/) })
+    // 1000 uF, 0.01 kOhm and 10000 mV are used unconverted (bug 2)
+    expect(python('RC_prefixed_values')).toMatchObject({ status: 'differs', problems: expect.arrayContaining([expect.stringMatching(/^states\.q_1 differs/)]) })
   })
 
   it.each(Object.keys(DIFFERS_FROM_PYTHON))('%s: the hand-worked reference has stoichiometry 2 where Python has 1', (name) => {
