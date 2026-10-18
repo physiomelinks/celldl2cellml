@@ -16,6 +16,8 @@ Where patching the Python bg2cellml's bug 3 (it gives `BondgraphBond` a bond's l
 
 To rewrite only `framework.json`, the framework as Python loads it, add `--framework-only`. To rewrite `framework.json` and the `models/` fixtures without simulating, add `--fixtures-only`. Both need the same BG-Tools commit as the other references.
 
+To rewrite only the examples' Python metadata and annotations, add `--metadata-only`.
+
 To redo only the variants, after adding or changing one, add `--variants-only`: it runs Python on each variant and compares it with its example's existing reference, so nothing else is rewritten. It needs the same BG-Tools commit.
 
 Simulating on another platform can change the last of the 9 stored digits, which is well within the tolerance but shows up as changes to commit. `--fixtures-only` avoids that when only the fixtures need regenerating.

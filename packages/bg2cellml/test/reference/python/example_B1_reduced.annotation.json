@@ -1,0 +1,32 @@
+[
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_1": {
+      "variables": [
+        "main/K_q_1",
+        "main/q_1",
+        "main/u_q_1",
+        "main/v_q_1"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_2": {
+      "variables": [
+        "main/K_q_2",
+        "main/q_2",
+        "main/u_q_2",
+        "main/v_q_2"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re": {
+      "variables": [
+        "main/v_Re",
+        "main/u_f_Re",
+        "main/kappa_r",
+        "main/u_r_Re"
+      ]
+    }
+  }
+]

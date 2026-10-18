@@ -1,0 +1,94 @@
+[
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#u_1": {
+      "variables": [
+        "main/u_1"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#u_2": {
+      "variables": [
+        "main/u_2"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#u_3": {
+      "variables": [
+        "main/u_3"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#u_4": {
+      "variables": [
+        "main/u_4"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#q_1": {
+      "variables": [
+        "main/K_q_1",
+        "main/q_1",
+        "main/u_q_1",
+        "main/v_q_1"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#q_2": {
+      "variables": [
+        "main/K_q_2",
+        "main/q_2",
+        "main/u_q_2",
+        "main/v_q_2"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#q_3": {
+      "variables": [
+        "main/K_q_3",
+        "main/q_3",
+        "main/u_q_3",
+        "main/v_q_3"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#q_4": {
+      "variables": [
+        "main/K_q_4",
+        "main/q_4",
+        "main/u_q_4",
+        "main/v_q_4"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#Re_c": {
+      "variables": [
+        "main/v_Re_c",
+        "main/u_f_Re_c",
+        "main/kappa_r",
+        "main/u_r_Re_c"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#v_r_1": {
+      "variables": [
+        "main/v_r_1"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#v_r_2": {
+      "variables": [
+        "main/v_r_2"
+      ]
+    }
+  }
+]

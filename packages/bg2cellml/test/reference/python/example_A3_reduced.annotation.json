@@ -1,0 +1,66 @@
+[
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#GY": {
+      "variables": [
+        "main/Bl",
+        "main/u_Bl_0",
+        "main/u_Bl_1"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#q_C_m": {
+      "variables": [
+        "main/C_q_C_m",
+        "main/q_C_m",
+        "main/u_q_C_m",
+        "main/v_q_C_m"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#L_e": {
+      "variables": [
+        "main/L_L_e",
+        "main/u_L_e",
+        "main/v_L_e"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#L_m": {
+      "variables": [
+        "main/L_L_m",
+        "main/u_L_m",
+        "main/v_L_m",
+        "main/a_L_m"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#R_e": {
+      "variables": [
+        "main/R_R_e",
+        "main/u_R_e",
+        "main/v_R_e"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#R_m": {
+      "variables": [
+        "main/R_R_m",
+        "main/u_R_m",
+        "main/v_R_m"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#u_in_e": {
+      "variables": [
+        "main/u_in_e",
+        "main/v_u_in_e"
+      ]
+    }
+  }
+]

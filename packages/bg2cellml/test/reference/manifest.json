@@ -32,7 +32,11 @@
       "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl",
       "reference": "RCR.json",
       "pythonCellml": "python/RCR.cellml",
-      "intermediate": "models/RCR.json"
+      "intermediate": "models/RCR.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_C_R_circuit#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.cellml",
+      "pythonMetadata": "python/RCR.metadata.ttl",
+      "pythonAnnotation": "python/RCR.annotation.json"
     },
     {
       "name": "RCR_reduced",
@@ -42,7 +46,11 @@
       "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR_reduced.ttl",
       "reference": "RCR_reduced.json",
       "pythonCellml": "python/RCR_reduced.cellml",
-      "intermediate": "models/RCR_reduced.json"
+      "intermediate": "models/RCR_reduced.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR_reduced.ttl#R_C_R_circuit#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR_reduced.cellml",
+      "pythonMetadata": "python/RCR_reduced.metadata.ttl",
+      "pythonAnnotation": "python/RCR_reduced.annotation.json"
     },
     {
       "name": "example_A1",
@@ -57,7 +65,11 @@
         "agrees": true,
         "problems": []
       },
-      "intermediate": "models/example_A1.json"
+      "intermediate": "models/example_A1.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1.ttl#example_A1#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1.cellml",
+      "pythonMetadata": "python/example_A1.metadata.ttl",
+      "pythonAnnotation": "python/example_A1.annotation.json"
     },
     {
       "name": "example_A1_reduced",
@@ -67,7 +79,11 @@
       "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1_reduced.ttl",
       "reference": "example_A1_reduced.json",
       "pythonCellml": "python/example_A1_reduced.cellml",
-      "intermediate": "models/example_A1_reduced.json"
+      "intermediate": "models/example_A1_reduced.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1_reduced.ttl#example_A1#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1_reduced.cellml",
+      "pythonMetadata": "python/example_A1_reduced.metadata.ttl",
+      "pythonAnnotation": "python/example_A1_reduced.annotation.json"
     },
     {
       "name": "example_A2",
@@ -77,7 +93,11 @@
       "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2.ttl",
       "reference": "example_A2.json",
       "pythonCellml": "python/example_A2.cellml",
-      "intermediate": "models/example_A2.json"
+      "intermediate": "models/example_A2.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2.ttl#example_A2#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2.cellml",
+      "pythonMetadata": "python/example_A2.metadata.ttl",
+      "pythonAnnotation": "python/example_A2.annotation.json"
     },
     {
       "name": "example_A2_reduced",
@@ -87,7 +107,11 @@
       "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2_reduced.ttl",
       "reference": "example_A2_reduced.json",
       "pythonCellml": "python/example_A2_reduced.cellml",
-      "intermediate": "models/example_A2_reduced.json"
+      "intermediate": "models/example_A2_reduced.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2_reduced.ttl#example_A2#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2_reduced.cellml",
+      "pythonMetadata": "python/example_A2_reduced.metadata.ttl",
+      "pythonAnnotation": "python/example_A2_reduced.annotation.json"
     },
     {
       "name": "example_A3",
@@ -97,7 +121,11 @@
       "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.ttl",
       "reference": "example_A3.json",
       "pythonCellml": "python/example_A3.cellml",
-      "intermediate": "models/example_A3.json"
+      "intermediate": "models/example_A3.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.ttl#example_A3#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.cellml",
+      "pythonMetadata": "python/example_A3.metadata.ttl",
+      "pythonAnnotation": "python/example_A3.annotation.json"
     },
     {
       "name": "example_A3_reduced",
@@ -107,7 +135,11 @@
       "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl",
       "reference": "example_A3_reduced.json",
       "pythonCellml": "python/example_A3_reduced.cellml",
-      "intermediate": "models/example_A3_reduced.json"
+      "intermediate": "models/example_A3_reduced.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#example_A3#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.cellml",
+      "pythonMetadata": "python/example_A3_reduced.metadata.ttl",
+      "pythonAnnotation": "python/example_A3_reduced.annotation.json"
     },
     {
       "name": "example_B1",
@@ -122,7 +154,11 @@
         "agrees": true,
         "problems": []
       },
-      "intermediate": "models/example_B1.json"
+      "intermediate": "models/example_B1.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#Simple_reaction#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.cellml",
+      "pythonMetadata": "python/example_B1.metadata.ttl",
+      "pythonAnnotation": "python/example_B1.annotation.json"
     },
     {
       "name": "example_B1_reduced",
@@ -132,7 +168,11 @@
       "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl",
       "reference": "example_B1_reduced.json",
       "pythonCellml": "python/example_B1_reduced.cellml",
-      "intermediate": "models/example_B1_reduced.json"
+      "intermediate": "models/example_B1_reduced.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Simple_reaction#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.cellml",
+      "pythonMetadata": "python/example_B1_reduced.metadata.ttl",
+      "pythonAnnotation": "python/example_B1_reduced.annotation.json"
     },
     {
       "name": "example_B2",
@@ -143,7 +183,11 @@
       "reference": "example_B2.json",
       "pythonCellml": "python/example_B2.cellml",
       "intermediate": "models/example_B2.json",
-      "intermediateBug3Fixed": "models/example_B2.bug3-fixed.json"
+      "intermediateBug3Fixed": "models/example_B2.bug3-fixed.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#mixed_reaction#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.cellml",
+      "pythonMetadata": "python/example_B2.metadata.ttl",
+      "pythonAnnotation": "python/example_B2.annotation.json"
     },
     {
       "name": "example_B2_reduced",
@@ -154,7 +198,11 @@
       "reference": "example_B2_reduced.json",
       "pythonCellml": "python/example_B2_reduced.cellml",
       "intermediate": "models/example_B2_reduced.json",
-      "intermediateBug3Fixed": "models/example_B2_reduced.bug3-fixed.json"
+      "intermediateBug3Fixed": "models/example_B2_reduced.bug3-fixed.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2_reduced.ttl#mixed_reaction#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2_reduced.cellml",
+      "pythonMetadata": "python/example_B2_reduced.metadata.ttl",
+      "pythonAnnotation": "python/example_B2_reduced.annotation.json"
     },
     {
       "name": "example_RC",
@@ -164,7 +212,11 @@
       "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC.ttl",
       "reference": "example_RC.json",
       "pythonCellml": "python/example_RC.cellml",
-      "intermediate": "models/example_RC.json"
+      "intermediate": "models/example_RC.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC.ttl#RC_circuit#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC.cellml",
+      "pythonMetadata": "python/example_RC.metadata.ttl",
+      "pythonAnnotation": "python/example_RC.annotation.json"
     },
     {
       "name": "example_RC_reduced",
@@ -174,7 +226,11 @@
       "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC_reduced.ttl",
       "reference": "example_RC_reduced.json",
       "pythonCellml": "python/example_RC_reduced.cellml",
-      "intermediate": "models/example_RC_reduced.json"
+      "intermediate": "models/example_RC_reduced.json",
+      "pythonMetadataError": "ValueError: Invalid prefix diagram IRI 'https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC_reduced.ttl#RC_circuit#', Invalid IRI code point '#'",
+      "cellmlUri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC_reduced.cellml",
+      "pythonMetadata": "python/example_RC_reduced.metadata.ttl",
+      "pythonAnnotation": "python/example_RC_reduced.annotation.json"
     },
     {
       "name": "RC_labelled_bonds",

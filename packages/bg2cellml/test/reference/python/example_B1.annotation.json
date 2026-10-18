@@ -1,0 +1,60 @@
+[
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#u_1": {
+      "variables": [
+        "main/u_1"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#u_2": {
+      "variables": [
+        "main/u_2"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#q_1": {
+      "variables": [
+        "main/K_q_1",
+        "main/q_1",
+        "main/u_q_1",
+        "main/v_q_1"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#q_2": {
+      "variables": [
+        "main/K_q_2",
+        "main/q_2",
+        "main/u_q_2",
+        "main/v_q_2"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#Re_r": {
+      "variables": [
+        "main/v_Re_r",
+        "main/u_f_Re_r",
+        "main/kappa_r",
+        "main/u_r_Re_r"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#v_r_1": {
+      "variables": [
+        "main/v_r_1"
+      ]
+    }
+  },
+  {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#v_r_2": {
+      "variables": [
+        "main/v_r_2"
+      ]
+    }
+  }
+]

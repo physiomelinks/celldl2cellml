@@ -42,6 +42,14 @@ export interface ReferenceCase {
   /** File in test/reference/ to compare against. A variant uses its example's. */
   reference: string
   pythonCellml?: string
+  /** The CellML file's IRI the metadata uses: the source's with `.cellml`, as the CellDL Editor names it. */
+  cellmlUri?: string
+  /** Python's metadata for the CellML, as Turtle. */
+  pythonMetadata?: string
+  /** Python's `metadata()` fails on BG-RDF models, so the generator serialises its triples itself. This is the error. */
+  pythonMetadataError?: string
+  /** Python's element-to-variables annotation, as JSON. */
+  pythonAnnotation?: string
   pmrCheck?: { model: string; agrees: boolean; problems: string[] }
   /** What the Python bg2cellml did with a variant. */
   python?: { status: 'matches' | 'differs' | 'error'; problems?: string[]; error?: string }

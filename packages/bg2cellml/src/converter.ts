@@ -9,6 +9,7 @@ import type { LibCellML } from '@physiomelinks/cellml-units'
 
 import { extractBgRdf, type DOMParserLike } from './celldl.js'
 import { generateCellML } from './cellml/generate.js'
+import { cellmlUriFor } from './cellml/metadata.js'
 import { BondgraphFramework } from './framework/framework.js'
 import { BondgraphModel } from './model/model.js'
 import { BGF_ONTOLOGY_IRI, BGF_TEMPLATE_IRI_PREFIX } from './rdf/namespaces.js'
@@ -34,6 +35,7 @@ export type FrameworkSource =
 
 export interface CellMLGenerationOptions {
   sourceUri: string
+  /** The CellML file's IRI, for the metadata. The source's with `.cellml` if not given, as in `@celldl/editor-python-tools`. */
   cellmlUri?: string
   debug?: boolean
   metadata?: boolean
@@ -89,7 +91,7 @@ export class Converter {
       }
       const result = generateCellML(this.#runtime.libcellml, model, {
         metadata: options.metadata ?? false,
-        ...(options.cellmlUri === undefined ? {} : { cellmlUri: options.cellmlUri }),
+        cellmlUri: options.cellmlUri ?? cellmlUriFor(options.sourceUri),
       })
       if (result.issues.length > 0) {
         return { issues: result.issues.map((issue) => issue.message) }

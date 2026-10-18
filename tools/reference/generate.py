@@ -499,6 +499,48 @@ def python_cellml(framework, path: Path) -> str:
     # Drop the generation timestamp so reruns give identical files
     return re.sub(r'This CellML file was generated at \S+', 'This CellML file was generated', cellml)
 
+def cellml_uri_for(source_uri: str) -> str:
+    """The CellML file's IRI, as `@celldl/editor-python-tools` names it when none is given: the source's with `.cellml`."""
+    parts = source_uri.split('.')
+    if len(parts) > 1:
+        parts.pop()
+    parts.append('cellml')
+    return '.'.join(parts)
+
+def write_python_metadata(case: dict, framework) -> None:
+    """
+    Write `python/<case>.metadata.ttl`, the metadata Python gives for the CellML
+    (`CellMLModel.metadata()`, with the CellML IRI the CellDL Editor would use),
+    and `python/<case>.annotation.json`, its element-to-variables annotation
+    (`CellMLModel.annotation()`), and name them in the case.
+    """
+    path = REPO_ROOT / case['source']
+    model = framework.make_bondgraph_model(source_iri(path), path.read_text())
+    if model.has_issues:
+        raise RuntimeError('; '.join(issue.reason for issue in model.issues))
+    cellml_model = model.make_cellml_model()
+    cellml_uri = cellml_uri_for(case['baseIri'])
+    case.pop('pythonMetadataError', None)
+    try:
+        metadata = asyncio.run(cellml_model.metadata(cellml_uri))
+    except ValueError as e:
+        # metadata() adds a `diagram` prefix of the model's IRI with `#` appended,
+        # which isn't a valid IRI when the model's IRI has a fragment, as BG-RDF's
+        # do. So serialise its triples as it would, without that prefix.
+        case['pythonMetadataError'] = f'{type(e).__name__}: {e}'
+        from bg2cellml.cellml import CELLML_MODEL_NS, CELLML_MODEL_URI, METADATA_NAMESPACES
+        graph = cellml_model._CellMLModel__metadata
+        serialised = graph.serialise({**METADATA_NAMESPACES, 'model': str(CELLML_MODEL_NS)})
+        if asyncio.iscoroutine(serialised):
+            serialised = asyncio.run(serialised)
+        metadata = serialised.replace(CELLML_MODEL_URI, cellml_uri)
+    name = case['name']
+    (OUTPUT_DIR / 'python' / f'{name}.metadata.ttl').write_text(metadata)
+    (OUTPUT_DIR / 'python' / f'{name}.annotation.json').write_text(json.dumps(cellml_model.annotation(), indent=2) + '\n')
+    case['cellmlUri'] = cellml_uri
+    case['pythonMetadata'] = f'python/{name}.metadata.ttl'
+    case['pythonAnnotation'] = f'python/{name}.annotation.json'
+
 # ------------------------------------------------------------------------------
 
 def simulate_document(document, end_time: float, steps: int) -> dict:
@@ -609,6 +651,8 @@ def main():
     parser.add_argument('--framework-only', action='store_true', help='Only rewrite framework.json')
     parser.add_argument('--fixtures-only', action='store_true',
                         help='Only rewrite framework.json and the models/ fixtures, without simulating')
+    parser.add_argument('--metadata-only', action='store_true',
+                        help="Only rewrite the examples' Python metadata and annotations")
     parser.add_argument('--variants-only', action='store_true',
                         help="Only redo the variants, comparing them with the examples' existing references")
     args = parser.parse_args()
@@ -627,12 +671,20 @@ def main():
     from bg2cellml.rdf import namedNode
     framework_entry = write_framework(framework, sympy_to_mathml, (RdfGraph, namedNode, NAMESPACES))
     python = (framework, BondgraphModel, sympy_to_mathml)
-    if args.framework_only or args.fixtures_only or args.variants_only:
+    if args.framework_only or args.fixtures_only or args.variants_only or args.metadata_only:
         manifest_path = OUTPUT_DIR / 'manifest.json'
         manifest = json.loads(manifest_path.read_text())
-        option = 'framework' if args.framework_only else 'fixtures' if args.fixtures_only else 'variants'
+        option = ('framework' if args.framework_only else 'fixtures' if args.fixtures_only
+                  else 'variants' if args.variants_only else 'metadata')
         if manifest['generator']['bgToolsCommit'] != git(bg_tools, 'rev-parse', 'HEAD'):
             raise RuntimeError(f'--{option}-only needs the BG-Tools commit the other references came from')
+        if args.metadata_only:
+            for case in manifest['cases']:
+                if case['kind'] == 'example':
+                    write_python_metadata(case, framework)
+            manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
+            print('Wrote the examples\' Python metadata and annotations')
+            return
         if args.variants_only:
             examples = [case for case in manifest['cases'] if case['kind'] == 'example']
             results = {case['name']: json.loads((OUTPUT_DIR / case['reference']).read_text()) for case in examples}
@@ -670,6 +722,7 @@ def main():
             'reference': f'{name}.json',
             'pythonCellml': f'python/{name}.cellml',
         }
+        write_python_metadata(case, framework)
         if name in PMR_CHECKS:
             pmr = BG_RDF / PMR_CHECKS[name]
             pmr_result = simulate_document(loc.SedDocument(loc.File(f'{pmr}.cellml')), end_time, steps)

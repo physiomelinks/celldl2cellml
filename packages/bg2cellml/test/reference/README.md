@@ -11,6 +11,8 @@ Results from the Python [bg2cellml](https://github.com/CellDL/BG-Tools) 0.11.2, 
 | `manifest.json` | Generator versions, the bg-rdf tag, commit and file hashes, tolerances, and every case |
 | `<example>.json` | Simulation settings, and the states, rates and algebraic variables by name, at up to 101 time points |
 | `python/<example>.cellml` | The CellML 1.1 the Python version generated, for inspection |
+| `python/<example>.metadata.ttl` | Python's metadata for that CellML, with the CellML IRI the CellDL Editor would give it (the source's with `.cellml`, the case's `cellmlUri`). Python's own `metadata()` fails on every example (`pythonMetadataError`: its `diagram` prefix isn't an IRI), so the generator serialises the same triples without that prefix |
+| `python/<example>.annotation.json` | Python's `annotation()`: each element's CellML variables |
 | `framework.json` | The BG-RDF framework as the Python version loads it: domains, element templates with their ports, parameters, variables and constitutive relations, junctions, composites, and which template each element class and domain gives |
 | `models/<case>.json` | The model as the Python version builds it, for each case it can build: elements, junctions and bonds as loaded, the bond network, every variable once assigned, and the equations |
 | `models/<case>.bug3-fixed.json` | The same, from the Python version with its bug 3 (bond labels and counts swapped) patched, where that changes the model: `example_B2`, `example_B2_reduced` and `RC_labelled_bonds` |

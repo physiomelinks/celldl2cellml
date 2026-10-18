@@ -8,6 +8,17 @@ export {
 export { CELLDL_METADATA_ID, extractBgRdf, type DOMParserLike } from './celldl.js'
 export { generateCellML, type CellMLResult, type GenerateOptions } from './cellml/generate.js'
 export {
+  BQMODEL,
+  CELLML_MODEL_URI,
+  annotation,
+  cellmlUriFor,
+  metadataPrefixes,
+  metadataTriples,
+  metadataTurtle,
+  type ElementAnnotation,
+} from './cellml/metadata.js'
+export { toTurtle, type Triple, type TurtleObject } from './rdf/turtle.js'
+export {
   RUNNABLE_MODEL_TYPES,
   checkCellMLModel,
   type CellMLCheck,
