@@ -32,7 +32,7 @@ const ATOMS: [string, UcumAtom][] = Object.entries({
   min: plain('second', 60), h: plain('second', 3600), d: plain('second', 86400),
   'm[Hg]': metric('pascal', 133322), 'm[H2O]': metric('pascal', 9806.65),
   cal: metric('joule', 4.184), bar: metric('pascal', 1e5), atm: plain('pascal', 101325),
-  '%': plain('dimensionless', 0.01), '[ppm]': plain('dimensionless', 1e-6),
+  '%': plain('dimensionless', 0.01), '[ppm]': plain('dimensionless', 1e-6), '[pi]': plain('dimensionless', Math.PI),
 })
 
 /** UCUM symbols. Bracketed symbols also match without their brackets, so `mmHg` and `cmH2O` are understood. */
@@ -65,6 +65,23 @@ export const AFFINE_SYMBOLS: ReadonlyMap<string, string> = new Map([
   ['Cel', 'celsius'],
   ['[degF]', 'fahrenheit'],
   ['degF', 'fahrenheit'],
+])
+
+/**
+ * UCUM's arbitrary units: amounts of a substance measured by its effect,
+ * which have no fixed relation to any other units. They take prefixes.
+ */
+// prettier-ignore
+export const ARBITRARY_SYMBOLS: ReadonlySet<string> = new Set([
+  '[iU]', '[IU]', "[arb'U]", "[USP'U]", "[GPL'U]", "[MPL'U]", "[APL'U]", "[beth'U]", "[anti'Xa'U]", "[todd'U]",
+  "[dye'U]", "[smgy'U]", "[bdsk'U]", "[ka'U]", "[knk'U]", "[mclg'U]", "[tb'U]", '[CCID_50]', '[TCID_50]', '[EID_50]',
+  '[PFU]', '[FFU]', '[CFU]', '[IR]', '[BAU]', '[AU]', "[Amb'a'1'U]", '[PNU]', '[Lf]', "[D'ag'U]", '[FEU]', '[ELU]', '[EU]',
+])
+
+/** UCUM's logarithmic units, which no CellML units multiplier can express. Neper and bel take prefixes (`dB`). */
+// prettier-ignore
+export const LOGARITHMIC_SYMBOLS: ReadonlySet<string> = new Set([
+  '[pH]', 'Np', 'B', 'B[SPL]', 'B[V]', 'B[mV]', 'B[uV]', 'B[10.nV]', 'B[W]', 'B[kW]',
 ])
 
 /** CellML 2.0's built-in units. */

@@ -1,6 +1,8 @@
 export type { LibCellML, Units, UnitsConstructor } from './libcellml.js'
 export {
   AFFINE_SYMBOLS,
+  ARBITRARY_SYMBOLS,
+  LOGARITHMIC_SYMBOLS,
   CELLML_BUILT_IN_UNITS,
   PREFIX_NAMES,
   PREFIX_POWERS,
@@ -18,6 +20,7 @@ export {
   uniqueName,
   type ParsedExpression,
   type ResolvedSymbol,
+  type UcumErrorReason,
   type UcumUnits,
   type WrittenSymbol,
 } from './ucum.js'

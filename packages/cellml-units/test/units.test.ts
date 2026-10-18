@@ -1,7 +1,18 @@
 import createLibCellML from 'libcellml.js'
 import { beforeAll, describe, expect, it } from 'vitest'
 
-import { UcumError, builtInUnits, compatible, convertValue, parseUcum, toCellMLUnits, unitsName, type LibCellML, type Units } from '../src/index.js'
+import {
+  UcumError,
+  builtInUnits,
+  compatible,
+  convertValue,
+  parseUcum,
+  resolveSymbol,
+  toCellMLUnits,
+  unitsName,
+  type LibCellML,
+  type Units,
+} from '../src/index.js'
 
 import { BG_RDF_CODES, HARDER_CODES } from './codes.js'
 
@@ -121,7 +132,7 @@ describe('toCellMLUnits', () => {
 
   it('throws for affine temperatures, which CellML 2.0 has no units for', () => {
     expect(() => toCellMLUnits(libcellml, 'Cel')).toThrow(UcumError)
-    expect(() => toCellMLUnits(libcellml, 'Cel/s')).toThrow(/"Cel" in "Cel\/s" has no CellML 2.0 units/)
+    expect(() => toCellMLUnits(libcellml, 'Cel/s')).toThrow(/"Cel" in "Cel\/s" is an affine temperature/)
   })
 })
 
@@ -199,3 +210,88 @@ describe('convertValue', () => {
     expect(() => convertValue(libcellml, 1, 'F', 'H')).toThrow(/Can't convert from "F" to "H": the units aren't compatible/)
   })
 })
+
+//==============================================================================
+
+/** The UcumError `run` throws. */
+function failure(run: () => unknown): UcumError {
+  try {
+    run()
+  } catch (error) {
+    if (error instanceof UcumError) return error
+    throw error
+  }
+  throw new Error('Expected a UcumError')
+}
+
+describe('unsupported units', () => {
+  it('supports percent and pi as scaled dimensionless units', () => {
+    expect(unitsName('%')).toBe('percent')
+    expect(unitsName('[pi].rad')).toBe('pi_rad')
+    expect(unitElements('[pi]')).toEqual(['<unit multiplier="3.14159265358979" units="dimensionless"/>'])
+    expect(compatible(libcellml, '[pi]', '1')).toBe(true)
+    expect(convertValue(libcellml, 2, '[pi].rad', 'rad')).toBe(6.28318530717959)
+    expect(convertValue(libcellml, 25, '%', '1')).toBe(0.25)
+  })
+
+  it('reads affine temperatures and names them, but can’t build, compare or convert them', () => {
+    expect(unitsName('Cel')).toBe('celsius')
+    expect(failure(() => toCellMLUnits(libcellml, 'Cel/s'))).toMatchObject({ reason: 'affine', code: 'Cel/s', symbol: 'Cel' })
+    expect(failure(() => toCellMLUnits(libcellml, '[degF]'))).toMatchObject({ reason: 'affine', symbol: '[degF]' })
+    expect(failure(() => convertValue(libcellml, 20, 'Cel', 'K')).message).toBe(
+      '"Cel" in "Cel" is an affine temperature, which CellML 2.0 can\'t express; use K',
+    )
+  })
+
+  it.each([
+    ['[iU]', '[iU]'],
+    ['[iU]/L', '[iU]'],
+    ['m[IU]/mL', 'm[IU]'],
+    ["[arb'U]", "[arb'U]"],
+    ['[CFU]/mL', '[CFU]'],
+    ['[iU]2', '[iU]2'],
+  ])('rejects the arbitrary units in %s', (code, symbol) => {
+    expect(failure(() => parseUcum(code))).toMatchObject({ reason: 'arbitrary', code, symbol })
+  })
+
+  it.each([
+    ['[pH]', '[pH]'],
+    ['dB', 'dB'],
+    ['Np', 'Np'],
+    ['B[SPL]', 'B[SPL]'],
+    ['B[10.nV]', 'B[10.nV]'],
+  ])('rejects the logarithmic units in %s', (code, symbol) => {
+    expect(failure(() => parseUcum(code))).toMatchObject({ reason: 'logarithmic', code, symbol })
+  })
+
+  it('names the code and the symbol in the message', () => {
+    expect(failure(() => parseUcum('[iU]/L')).message).toBe('"[iU]" in "[iU]/L" is an arbitrary units, which can\'t be related to CellML units')
+    expect(failure(() => parseUcum('mol/[pH]')).message).toBe('"[pH]" in "mol/[pH]" is a logarithmic units, which CellML units can\'t express')
+  })
+
+  it('rejects them wherever a code is used', () => {
+    expect(failure(() => unitsName('[iU]/L')).reason).toBe('arbitrary')
+    expect(failure(() => toCellMLUnits(libcellml, '[iU]/L')).reason).toBe('arbitrary')
+    expect(failure(() => compatible(libcellml, '[pH]', '1')).reason).toBe('logarithmic')
+    expect(failure(() => convertValue(libcellml, 1, 'dB', '1')).reason).toBe('logarithmic')
+  })
+
+  it('leaves resolveSymbol as PhLynx has it', () => {
+    expect(resolveSymbol('[iU]')).toBeNull()
+    expect(resolveSymbol('[pH]')).toBeNull()
+  })
+
+  it('gives a reason for every other failure', () => {
+    expect(failure(() => parseUcum('m^2'))).toMatchObject({ reason: 'syntax', code: 'm^2', symbol: undefined })
+    expect(failure(() => parseUcum('furlong/s'))).toMatchObject({ reason: 'unknown', code: 'furlong/s', symbol: 'furlong' })
+    expect(failure(() => parseUcum('[foo]'))).toMatchObject({ reason: 'unknown', symbol: '[foo]' })
+    expect(failure(() => parseUcum('kB'))).toMatchObject({ reason: 'logarithmic', symbol: 'kB' })
+    expect(failure(() => compatible(libcellml, parseUcum('mM', new Set(['mM'])), 'mol/L'))).toMatchObject({
+      reason: 'library',
+      code: 'mM',
+      symbol: 'mM',
+    })
+    expect(failure(() => convertValue(libcellml, 1, 'F', 'H'))).toMatchObject({ reason: 'incompatible', code: 'F' })
+  })
+})
+

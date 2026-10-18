@@ -6,10 +6,44 @@
  * names and behaviour, so units read and named here match PhLynx's.
  */
 
-import { AFFINE_SYMBOLS, PREFIX_NAMES, PREFIX_POWERS, UCUM_ATOMS, UCUM_PREFIXES, type UcumAtom } from './tables.js'
+import {
+  AFFINE_SYMBOLS,
+  ARBITRARY_SYMBOLS,
+  LOGARITHMIC_SYMBOLS,
+  PREFIX_NAMES,
+  PREFIX_POWERS,
+  UCUM_ATOMS,
+  UCUM_PREFIXES,
+  type UcumAtom,
+} from './tables.js'
 
+/**
+ * Why a units code couldn't be used:
+ * - `syntax`: it can't be read (`m^2`).
+ * - `unknown`: a symbol isn't one we know (`furlong`).
+ * - `arbitrary`: an arbitrary units (`[iU]`), with no relation to any other units.
+ * - `logarithmic`: a logarithmic units (`[pH]`, `dB`), which a units multiplier can't express.
+ * - `affine`: an affine temperature (`Cel`), whose zero is offset, which CellML 2.0 can't express.
+ * - `library`: a units from the caller's library, which can't be compared without its definition.
+ * - `incompatible`: the two codes in a conversion aren't compatible.
+ */
+export type UcumErrorReason = 'syntax' | 'unknown' | 'arbitrary' | 'logarithmic' | 'affine' | 'library' | 'incompatible'
+
+/** A units code that can't be read, turned into CellML units, compared or converted. The message names the code. */
 export class UcumError extends Error {
   override name = 'UcumError'
+  readonly reason: UcumErrorReason
+  /** The code at fault. */
+  readonly code: string
+  /** The symbol at fault, as written in the code. */
+  readonly symbol: string | undefined
+
+  constructor(message: string, details: { reason: UcumErrorReason; code: string; symbol?: string }) {
+    super(message)
+    this.reason = details.reason
+    this.code = details.code
+    this.symbol = details.symbol
+  }
 }
 
 class ExpressionError extends Error {}
@@ -223,6 +257,35 @@ export function nameUnits(symbols: readonly { label: string; exponent: number }[
 
 //==============================================================================
 
+/** UCUM symbols we know of but CellML can't express, with or without a prefix and an exponent. */
+function unsupportedReason(text: string): 'arbitrary' | 'logarithmic' | undefined {
+  const bare = text.replace(/(?<=[^\d+-])[+-]?\d+$/, '')
+  const candidates = [bare, ...[...UCUM_PREFIXES.keys()].filter((prefix) => bare.startsWith(prefix)).map((prefix) => bare.slice(prefix.length))]
+  if (candidates.some((symbol) => ARBITRARY_SYMBOLS.has(symbol))) return 'arbitrary'
+  if (candidates.some((symbol) => LOGARITHMIC_SYMBOLS.has(symbol))) return 'logarithmic'
+  return undefined
+}
+
+/** The error for a symbol `resolveSymbol` couldn't resolve. */
+function unresolved(text: string, code: string): UcumError {
+  switch (unsupportedReason(text)) {
+    case 'arbitrary':
+      return new UcumError(`"${text}" in "${code}" is an arbitrary units, which can't be related to CellML units`, {
+        reason: 'arbitrary',
+        code,
+        symbol: text,
+      })
+    case 'logarithmic':
+      return new UcumError(`"${text}" in "${code}" is a logarithmic units, which CellML units can't express`, {
+        reason: 'logarithmic',
+        code,
+        symbol: text,
+      })
+    default:
+      return new UcumError(`Unknown units "${text}" in "${code}"`, { reason: 'unknown', code, symbol: text })
+  }
+}
+
 /** A units expression with every symbol resolved. */
 export interface UcumUnits {
   /** The expression as given. */
@@ -239,10 +302,10 @@ export interface UcumUnits {
  */
 export function parseUcum(code: string, names: ReadonlySet<string> = new Set()): UcumUnits {
   const parsed = parseUnitExpression(code)
-  if ('error' in parsed) throw new UcumError(`Can't read units "${code}": ${parsed.error}`)
+  if ('error' in parsed) throw new UcumError(`Can't read units "${code}": ${parsed.error}`, { reason: 'syntax', code })
   const symbols = parsed.symbols.map(({ text, sign }) => {
     const symbol = resolveSymbol(text, names)
-    if (symbol === null) throw new UcumError(`Unknown units "${text}" in "${code}"`)
+    if (symbol === null) throw unresolved(text, code)
     return { ...symbol, exponent: symbol.exponent * sign }
   })
   return { code, factor: parsed.factor, symbols }

@@ -4,9 +4,6 @@ Turns [UCUM](https://ucum.org/) units expressions into CellML 2.0 units, names t
 
 It replaces pint and ucumvert in the Python [bg2cellml](https://github.com/CellDL/BG-Tools). Reading and naming units is ported from [PhLynx](https://github.com/physiomelinks/PhLynx) (`src/utils/unitExpression.js`), so units read and named here match PhLynx's. Compatibility and scaling come from libCellML, so mole is a base unit, as CellML has it; strict UCUM treats mol as a dimensionless count. It has no runtime dependencies; libcellml.js is a peer dependency.
 
-> [!WARNING]
-> Work in progress: unsupported units (3.4) don't all give clear errors yet.
-
 ## Usage
 
 ```js
@@ -31,7 +28,7 @@ convertValue(libcellml, 1000, 'uF', 'F')    // 0.001
 | Area | Functions | Status |
 |---|---|---|
 | Reading UCUM | `parseUnitExpression`, `resolveSymbol` (PhLynx's), `parseUcum` (throws a `UcumError`) | Done |
-| Symbols | `UCUM_ATOMS`, `UCUM_PREFIXES`, `PREFIX_POWERS`, `AFFINE_SYMBOLS`, `CELLML_BUILT_IN_UNITS` | Done |
+| Symbols | `UCUM_ATOMS`, `UCUM_PREFIXES`, `PREFIX_POWERS`, `AFFINE_SYMBOLS`, `ARBITRARY_SYMBOLS`, `LOGARITHMIC_SYMBOLS`, `CELLML_BUILT_IN_UNITS` | Done |
 | Naming | `unitsName`, `builtInUnits`, `nameUnits`, `sanitiseName`, `uniqueName` | Done |
 | Building units | `toCellMLUnits` | Done |
 | Comparing and converting | `compatible`, `convertValue` | Done |
@@ -43,9 +40,9 @@ As PhLynx reads them:
 - **Operators:** `.` multiplies and `/` divides, left to right, so `mmol/L.s` is (mmol/L)·s. Brackets group, and a leading `/` is one over.
 - **Exponents** follow their symbol: `m2`, `s-1`. `10*3` and plain integers are factors.
 - **Annotations** such as `{RBC}` are dropped; one on its own counts as 1, as in `{cells}/mL`.
-- **Symbols:** the SI units, `L`, `eq` and `osm`, and the non-SI units `min`, `h`, `d`, `mm[Hg]`, `cm[H2O]`, `cal`, `bar`, `atm`, `%` and `[ppm]`, each with its factor in CellML's built-in units. Bracketed symbols also work without brackets (`mmHg`). Only metric symbols take a prefix.
+- **Symbols:** the SI units, `L`, `eq` and `osm`, and the non-SI units `min`, `h`, `d`, `mm[Hg]`, `cm[H2O]`, `cal`, `bar`, `atm`, `%`, `[ppm]` and `[pi]`, each with its factor in CellML's built-in units. Bracketed symbols also work without brackets (`mmHg`). Only metric symbols take a prefix.
 - **Known names:** a units name the caller already has, such as one from a units library, is passed in `names` and takes precedence over UCUM.
-- **Affine temperatures:** `Cel` and `[degF]` are recognised, but CellML 2.0 has no built-in units for them.
+- **Affine temperatures:** `Cel` and `[degF]` are read and named (`celsius`), but can't be turned into CellML units (see below).
 
 ## Naming
 
@@ -90,6 +87,25 @@ A test builds a model with the units for every BG-RDF code, and for `mmol/s`, `m
 - `scalingFactor(a, b)` is the factor that takes a value in `b` to `a`; a test pins this down.
 - libCellML 0.7.1 gives a scaling factor of 1 between bare `kilogram` and bare `gram`, so both sides are always built as definitions that refer to the built-in units.
 - Codes are read as UCUM only. Units from a library can't be resolved here, so a `UcumUnits` holding one throws.
+
+## Units CellML can't express
+
+Every failure throws a `UcumError` whose message names the symbol and the code, with `reason`, `code` and `symbol` properties for the caller:
+
+| `reason` | Example | Thrown by |
+|---|---|---|
+| `syntax` | `m^2` | reading |
+| `unknown` | `furlong` | reading |
+| `arbitrary` | `[iU]/L`, `m[IU]`, `[CFU]` | reading |
+| `logarithmic` | `[pH]`, `dB`, `B[SPL]` | reading |
+| `affine` | `Cel`, `[degF]` | `toCellMLUnits`, `compatible`, `convertValue` |
+| `library` | a library units passed to `compatible` | `compatible`, `convertValue` |
+| `incompatible` | `F` to `H` | `convertValue` |
+
+- **Arbitrary units** (`[iU]`, `[arb'U]`, `[PFU]` and the rest of UCUM's list) have no fixed relation to any other units.
+- **Logarithmic units** (`[pH]`, neper and bel, with any prefix) can't be written with a multiplier.
+- **Affine temperatures** have an offset zero, which CellML 2.0 units can't express. Use `K`.
+- `%` and `[pi]` aren't errors: they are `dimensionless` with a multiplier of 0.01 and π.
 
 ## Bugs in the Python version that this package fixes
 

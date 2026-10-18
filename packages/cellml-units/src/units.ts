@@ -75,7 +75,13 @@ const roundValue = (value: number): number => Number(value.toPrecision(15))
  */
 function buildUnits(libcellml: LibCellML, units: UcumUnits, name: string): Units {
   const affine = units.symbols.find((symbol) => symbol.affine !== undefined)
-  if (affine !== undefined) throw new UcumError(`"${affine.label}" in "${units.code}" has no CellML 2.0 units`)
+  if (affine !== undefined) {
+    throw new UcumError(`"${affine.label}" in "${units.code}" is an affine temperature, which CellML 2.0 can't express; use K`, {
+      reason: 'affine',
+      code: units.code,
+      symbol: affine.label,
+    })
+  }
 
   let multiplier = units.factor
   for (const { atom, exponent } of units.symbols) multiplier *= (atom?.factor ?? 1) ** exponent
@@ -101,8 +107,11 @@ function buildUnits(libcellml: LibCellML, units: UcumUnits, name: string): Units
  * integers and the factors of symbols such as `min` and `mm[Hg]` become the
  * first unit's multiplier (libCellML's Printer writes it to 15 significant
  * figures); a factor with no symbols (`10*3`) is a scaled `dimensionless`.
- * A symbol that is a units name in `names` refers to those units. Affine temperatures (`Cel`) throw a
- * `UcumError`, as CellML 2.0 can't express them.
+ * A symbol that is a units name in `names` refers to those units.
+ *
+ * Throws a `UcumError` for codes CellML can't express: arbitrary units
+ * (`[iU]`) and logarithmic units (`[pH]`) when parsed, and affine
+ * temperatures (`Cel`) here; `error.reason` says which.
  */
 export function toCellMLUnits(
   libcellml: LibCellML,
@@ -121,7 +130,13 @@ function withUnits<T>(libcellml: LibCellML, a: string | UcumUnits, b: string | U
   const parse = (code: string | UcumUnits): UcumUnits => {
     const units = typeof code === 'string' ? parseUcum(code) : code
     const library = units.symbols.find((symbol) => symbol.library !== undefined)
-    if (library !== undefined) throw new UcumError(`Can't compare "${units.code}": "${library.label}" is a library units`)
+    if (library !== undefined) {
+      throw new UcumError(`Can't compare "${units.code}": "${library.label}" is a library units`, {
+        reason: 'library',
+        code: units.code,
+        symbol: library.label,
+      })
+    }
     return units
   }
   // Always build a definition, even for a built-in: libCellML 0.7.1 gives a
@@ -156,7 +171,10 @@ export function compatible(libcellml: LibCellML, a: string | UcumUnits, b: strin
 export function convertValue(libcellml: LibCellML, value: number, from: string | UcumUnits, to: string | UcumUnits): number {
   return withUnits(libcellml, from, to, (unitsFrom, unitsTo) => {
     if (!libcellml.Units.compatible(unitsFrom, unitsTo)) {
-      throw new UcumError(`Can't convert from "${codeOf(from)}" to "${codeOf(to)}": the units aren't compatible`)
+      throw new UcumError(`Can't convert from "${codeOf(from)}" to "${codeOf(to)}": the units aren't compatible`, {
+        reason: 'incompatible',
+        code: codeOf(from),
+      })
     }
     // scalingFactor(a, b) multiplies a value in b to give it in a
     return roundValue(value * libcellml.Units.scalingFactor(unitsTo, unitsFrom, false))
