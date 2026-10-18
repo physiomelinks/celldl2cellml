@@ -95,18 +95,21 @@ export function readValue(term: Term, context = 'Value'): Value {
   throw new DeclarationError(`Literal value has unexpected datatype: ${angled(datatype)}`)
 }
 
+/** Whether values in two UCUM codes can be converted, such as `compatible` from cellml-units. */
+export type CompatibleUnits = (a: string, b: string) => boolean
+
 /**
  * A variable from its declaration. Its units are `units` if given, otherwise
  * those of its value; a variable with neither is an error. A value with no
- * units of its own takes the variable's.
- *
- * Checking that a value's units are compatible with the variable's needs
- * libCellML, and comes with the templates that need it (chunk 4.2).
+ * units of its own takes the variable's, and a value with units must be in
+ * units `compatible` with the variable's. Without `compatible`, that isn't
+ * checked; domain constants don't need it, as their units come from their values.
  */
 export function makeVariable(
   owner: string,
   name: string,
   declaration: { readonly units?: Term; readonly value?: Term; readonly type?: string },
+  compatible?: CompatibleUnits,
 ): VariableDefinition {
   const context = `Variable ${name} for ${angled(owner)}`
   let units = declaration.units === undefined ? undefined : readUnits(declaration.units, context)
@@ -114,6 +117,9 @@ export function makeVariable(
   units ??= value?.units
   if (units === undefined) throw new DeclarationError(`Variable ${name} for ${angled(owner)} has no Units specified`)
   if (value !== undefined && value.units === undefined) value = { ...value, units }
+  if (value !== undefined && compatible !== undefined && !unitsCompatible(compatible, units, value.units!, context)) {
+    throw new DeclarationError(`Value for variable ${name} has incompatible units (${value.units} != ${units})`)
+  }
 
   return {
     name: cleanName(name),
@@ -121,4 +127,18 @@ export function makeVariable(
     ...(value === undefined ? {} : { value }),
     ...(declaration.type === undefined ? {} : { type: declaration.type }),
   }
+}
+
+function unitsCompatible(compatible: CompatibleUnits, a: string, b: string, context: string): boolean {
+  try {
+    return a === b || compatible(a, b)
+  } catch (error) {
+    if (error instanceof UcumError) throw new DeclarationError(`${context} has no valid units: ${error.message}`)
+    throw error
+  }
+}
+
+/** A variable named and typed as a domain's, with no value: a port's flow or potential, or an intrinsic variable. */
+export function copyVariable(variable: VariableDefinition, name = variable.name): VariableDefinition {
+  return { name: cleanName(name), units: variable.units, ...(variable.type === undefined ? {} : { type: variable.type }) }
 }

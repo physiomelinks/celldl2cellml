@@ -4,15 +4,24 @@
  * templates. Ported from `bondgraph/framework.py` and `framework_support.py`.
  */
 
-import type { Equation } from '@physiomelinks/math-ast'
+import { compatible, type LibCellML } from '@physiomelinks/cellml-units'
+import type { ParseOptions } from '@physiomelinks/math-ast'
 
 import { IssueLog } from '../issues.js'
 import type { RdfGraph, ResultRow } from '../rdf/graph.js'
 import { BGF, fragment } from '../rdf/namespaces.js'
-import { DECLARED_DOMAINS, DOMAIN_QUERY, domainConstantsQuery } from '../rdf/queries.js'
+import { DECLARED_DOMAINS, DOMAIN_QUERY, ELEMENT_TEMPLATE_DEFINITIONS, domainConstantsQuery } from '../rdf/queries.js'
+import { elementTemplateFromRow, type ElementTemplate, type TemplateOptions } from './templates.js'
 import { DeclarationError, makeVariable, type VariableDefinition } from './variables.js'
 
+export type { ElementTemplate, PortTemplate } from './templates.js'
 export type { Value, VariableDefinition } from './variables.js'
+
+/** What loading the framework needs from the host: libCellML, and an XML parser where there's no `DOMParser`. */
+export interface FrameworkRuntime {
+  readonly libcellml: LibCellML
+  readonly domParser?: ParseOptions['domParser']
+}
 
 export interface Domain {
   readonly iri: string
@@ -25,25 +34,6 @@ export interface Domain {
   readonly constants: readonly VariableDefinition[]
   /** The flow, potential and quantity names, such as `v`, `u` and `q`. */
   readonly intrinsicSymbols: readonly string[]
-}
-
-export interface PortTemplate {
-  readonly id: string
-  readonly direction?: 'inward' | 'outward'
-  readonly bondCount: number
-}
-
-export interface ElementTemplate {
-  readonly iri: string
-  /** One of the `BGF` element classes, such as `bgf:Resistance`. */
-  readonly elementClass: string
-  readonly label?: string
-  readonly domain: Domain
-  readonly ports: readonly PortTemplate[]
-  readonly parameters: readonly VariableDefinition[]
-  readonly variables: readonly VariableDefinition[]
-  /** Absent for flow and potential sources. */
-  readonly constitutiveRelation?: readonly Equation[]
 }
 
 export interface CompositeTemplate {
@@ -68,11 +58,15 @@ export class BondgraphFramework {
    * Build the framework from a graph holding the ontology and templates.
    * Problems are reported in `log` rather than thrown.
    *
-   * Element templates, junctions and composites are to come (chunks 4.2 and 4.3).
+   * Junctions and composites are to come (chunk 4.3).
    */
-  static fromGraph(graph: RdfGraph): BondgraphFramework {
+  static fromGraph(graph: RdfGraph, runtime: FrameworkRuntime): BondgraphFramework {
     const framework = new BondgraphFramework()
     framework.#loadDomains(graph)
+    framework.#loadElementTemplates(graph, {
+      compatible: (a, b) => compatible(runtime.libcellml, a, b),
+      ...(runtime.domParser === undefined ? {} : { domParser: runtime.domParser }),
+    })
     return framework
   }
 
@@ -105,6 +99,38 @@ export class BondgraphFramework {
       const iri = declared.get('domain')!.value
       if (!rows.has(iri)) {
         this.log.report(`Domain <${iri}> needs a flow, a potential and a quantity, each with a bgf:varName and bgf:hasUnits`, iri)
+      }
+    }
+  }
+
+  /**
+   * Each element template with its ports, parameters, variables and
+   * constitutive relation. As with domains, a template with a problem is
+   * reported and left out.
+   */
+  #loadElementTemplates(graph: RdfGraph, options: TemplateOptions): void {
+    const rows = new Map<string, ResultRow[]>()
+    for (const row of graph.select(ELEMENT_TEMPLATE_DEFINITIONS)) {
+      const iri = row.get('uri')!.value
+      rows.set(iri, [...(rows.get(iri) ?? []), row])
+    }
+
+    for (const [iri, [row, ...others]] of rows) {
+      if (others.length > 0) {
+        this.log.report(`<${iri}> has more than one element class, domain, constitutive relation or label`, iri)
+        continue
+      }
+      const domainIri = row!.get('domain')!.value
+      const domain = this.domains.get(domainIri)
+      if (domain === undefined) {
+        this.log.report(`Unknown domain <${domainIri}> for <${iri}> element`, iri)
+        continue
+      }
+      try {
+        this.elementTemplates.set(iri, elementTemplateFromRow(graph, row!, domain, options))
+      } catch (error) {
+        if (!(error instanceof DeclarationError)) throw error
+        this.log.report(error.message, iri)
       }
     }
   }

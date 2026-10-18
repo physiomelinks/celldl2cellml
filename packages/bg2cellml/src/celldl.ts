@@ -5,7 +5,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg'
 const TURTLE = 'text/turtle'
 
 export interface DOMParserLike {
-  parseFromString(source: string, mimeType: 'image/svg+xml' | 'application/xml'): Document
+  parseFromString(source: string, mimeType: 'image/svg+xml' | 'application/xml' | 'text/xml'): Document
 }
 
 /**

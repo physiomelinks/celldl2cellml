@@ -65,7 +65,7 @@ export class Converter {
         graph.load(turtle, `${BGF_TEMPLATE_IRI_PREFIX}${name}`)
       }
     }
-    this.#framework = BondgraphFramework.fromGraph(graph)
+    this.#framework = BondgraphFramework.fromGraph(graph, this.#runtime)
     return this.#framework.log.issues.map((issue) => issue.message)
   }
 

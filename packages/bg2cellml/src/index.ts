@@ -9,6 +9,7 @@ export { CELLDL_METADATA_ID, extractBgRdf, type DOMParserLike } from './celldl.j
 export { generateCellML, type CellMLResult, type GenerateOptions } from './cellml/generate.js'
 export {
   BondgraphFramework,
+  type FrameworkRuntime,
   type CompositeTemplate,
   type Domain,
   type ElementTemplate,
@@ -17,7 +18,16 @@ export {
   type Value,
   type VariableDefinition,
 } from './framework/framework.js'
-export { DeclarationError, cleanName, makeVariable, readUnits, readValue } from './framework/variables.js'
+export { VOI_NAME } from './framework/templates.js'
+export {
+  DeclarationError,
+  cleanName,
+  copyVariable,
+  makeVariable,
+  readUnits,
+  readValue,
+  type CompatibleUnits,
+} from './framework/variables.js'
 export { BondgraphModel, type ModelElement } from './model/model.js'
 export { BondNetwork } from './model/network.js'
 export { IssueLog, type Issue } from './issues.js'

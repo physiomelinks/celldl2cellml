@@ -1,5 +1,3 @@
-import { compatible, convertValue, type LibCellML } from '@physiomelinks/cellml-units'
-import createLibCellML from 'libcellml.js'
 import * as oxigraph from 'oxigraph'
 import { beforeAll, describe, expect, it } from 'vitest'
 
@@ -7,64 +5,26 @@ import {
   BGF,
   BondgraphFramework,
   DeclarationError,
-  RdfGraph,
   cleanName,
   makeVariable,
   readUnits,
   readValue,
   type Domain,
 } from '../src/index.js'
-import { BGF_ONTOLOGY_IRI, BGF_TEMPLATE_IRI_PREFIX, CDT, bgf, xsd } from '../src/rdf/namespaces.js'
-import { frameworkSource, loadPythonFramework, type PythonUnits } from './reference.js'
-
-let libcellml: LibCellML
+import { CDT, bgf, xsd } from '../src/rdf/namespaces.js'
+import {
+  bgRdfFramework,
+  domainTurtle,
+  expectSameUnits,
+  frameworkFrom,
+  frameworkRuntime,
+  messages,
+} from './framework-fixtures.js'
+import { loadPythonFramework } from './reference.js'
 
 beforeAll(async () => {
-  libcellml = (await createLibCellML()) as unknown as LibCellML
+  await frameworkRuntime()
 })
-
-/** Our UCUM code is the units Python has: `scale` × its SI base units. */
-function expectSameUnits(code: string, python: PythonUnits): void {
-  expect(compatible(libcellml, code, python.base), `${code} is ${python.pint}`).toBe(true)
-  expect(convertValue(libcellml, 1, code, python.base), `${code} is ${python.pint}`).toBe(python.scale)
-}
-
-/** The framework from the BG-RDF ontology and templates in the bg-rdf submodule. */
-function bgRdfFramework(): BondgraphFramework {
-  const { ontology, templates } = frameworkSource()
-  const graph = new RdfGraph(oxigraph)
-  graph.load(ontology, BGF_ONTOLOGY_IRI)
-  for (const [name, turtle] of Object.entries(templates)) graph.load(turtle, `${BGF_TEMPLATE_IRI_PREFIX}${name}`)
-  return BondgraphFramework.fromGraph(graph)
-}
-
-const PREFIXES = `
-@prefix bgf: <https://bg-rdf.org/ontologies/bondgraph-framework#> .
-@prefix cdt: <https://w3id.org/cdt/> .
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-@prefix : <https://example.org/test#> .
-`
-
-/** A domain declaration, with any of its parts replaced. */
-function domainTurtle(
-  name: string,
-  parts: { flow?: string; potential?: string; quantity?: string; extra?: string } = {},
-): string {
-  const flow = parts.flow ?? `bgf:hasFlow [ bgf:varName "v" ; bgf:hasUnits "m/s"^^cdt:ucumunit ]`
-  const potential = parts.potential ?? `bgf:hasPotential [ bgf:varName "u" ; bgf:hasUnits "J/m"^^cdt:ucumunit ]`
-  const quantity = parts.quantity ?? `bgf:hasQuantity [ bgf:varName "q" ; bgf:hasUnits "m"^^cdt:ucumunit ]`
-  return `:${name} a bgf:PhysicalDomain ; ${[flow, potential, quantity, parts.extra].filter(Boolean).join(' ; ')} .\n`
-}
-
-/** The framework from Turtle holding domain declarations. */
-function frameworkFrom(...domains: string[]): BondgraphFramework {
-  const graph = new RdfGraph(oxigraph)
-  graph.load(PREFIXES + domains.join('\n'), 'https://example.org/test')
-  return BondgraphFramework.fromGraph(graph)
-}
-
-const messages = (framework: BondgraphFramework): string[] => framework.log.issues.map((issue) => issue.message)
 
 //==============================================================================
 
