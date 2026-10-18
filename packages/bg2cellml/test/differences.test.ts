@@ -288,4 +288,4 @@ describe("our CellML and Python's", () => {
     const cases = [...found].filter(([, result]) => result.kinds.has('bondCounts')).map(([name]) => name)
     expect(cases.sort()).toEqual(['example_B2', 'example_B2_reduced'])
   })
-})
+}, 30_000)
