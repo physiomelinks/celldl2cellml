@@ -5,6 +5,8 @@
  * Bugs in the Python version that shouldn't be carried over:
  * - `BondgraphBond` is given the label and the bond count in the wrong order,
  *   so a labelled bond crashes and `bgf:bondCount` on bonds is ignored.
+ *   (Fixed in `bonds.ts`. Models with bond counts give different results
+ *   from Python's until it is fixed there.)
  * - When a port only has outputs, its expression is built from the empty
  *   inputs list and comes out as 0.
  * - The unknown-variable check (`name not in name not in ...`) never fires.
@@ -20,10 +22,15 @@ import type { BondgraphFramework } from '../framework/framework.js'
 import { IssueLog } from '../issues.js'
 import { RdfGraph, type OxigraphModule } from '../rdf/graph.js'
 import { BONDGRAPH_MODEL } from '../rdf/queries.js'
+import { buildNetwork, inferBonds, loadBonds, type BondgraphBond, type NetworkNode } from './bonds.js'
 import { loadElements, type BondgraphElement } from './elements.js'
+import { loadJunctions, type BondgraphJunction } from './junctions.js'
 import { prettyUri } from './names.js'
+import { BondNetwork } from './network.js'
 
+export { type BondgraphBond, type NetworkNode } from './bonds.js'
 export { BondgraphElement, ModelVariable, type ElementPort, type ValueAssignment } from './elements.js'
+export { BondgraphJunction, JUNCTION_TYPES, TRANSFORM_PORT_IDS } from './junctions.js'
 
 /** What a model needs from the host: oxigraph, libCellML, and an XML parser where there's no `DOMParser`. */
 export interface ModelRuntime {
@@ -45,7 +52,11 @@ export class BondgraphModel {
   readonly label?: string
   /** By IRI, in IRI order. */
   readonly elements = new Map<string, BondgraphElement>()
-  readonly junctions: readonly ModelElement[] = []
+  /** By IRI. */
+  readonly junctions = new Map<string, BondgraphJunction>()
+  readonly bonds: BondgraphBond[] = []
+  /** Element ports and junctions, joined by the bonds. */
+  network = new BondNetwork<NetworkNode>()
   readonly equations: readonly Equation[] = []
   readonly graph: RdfGraph
 
@@ -57,8 +68,8 @@ export class BondgraphModel {
    * Load a model from BG-RDF Turtle. The source must define exactly one
    * `bgf:BondgraphModel`. Problems are reported in `log` rather than thrown.
    *
-   * So far this finds the model's elements (5.1); junctions, bonds and the
-   * bond network come next.
+   * So far this finds the model's elements (5.1), and its junctions and bonds,
+   * and builds the bond network (5.2). Variables and equations come next.
    */
   static fromTurtle(framework: BondgraphFramework, runtime: ModelRuntime, turtle: string, baseIri: string): BondgraphModel {
     const model = new BondgraphModel(new RdfGraph(runtime.oxigraph))
@@ -82,6 +93,14 @@ export class BondgraphModel {
       model.log.report(`Model ${prettyUri(model.iri)} has no valid elements`, model.iri)
       return model
     }
+
+    for (const [iri, junction] of loadJunctions(model.iri, { framework, graph: model.graph, log: model.log })) {
+      model.junctions.set(iri, junction)
+    }
+    const context = { graph: model.graph, oxigraph: runtime.oxigraph, log: model.log, elements: model.elements, junctions: model.junctions }
+    inferBonds(model.iri, context)
+    model.bonds.push(...loadBonds(model.iri, context))
+    model.network = buildNetwork(context, model.bonds)
     return model
   }
 

@@ -29,6 +29,7 @@ import {
   modelElementsQuery,
 } from '../rdf/queries.js'
 import { elementVariableName, makeSymbolicName, prettyName } from './names.js'
+import { groupRows } from './rows.js'
 
 /**
  * A variable of a model element or junction. Its `name` is fixed when it is
@@ -403,14 +404,4 @@ function readState(
     return {}
   }
   return { state: assignment.value! }
-}
-
-/** Query rows grouped by the IRI in `key`, in query order. */
-function groupRows(rows: readonly ResultRow[], key: string): Map<string, ResultRow[]> {
-  const groups = new Map<string, ResultRow[]>()
-  for (const row of rows) {
-    const iri = row.get(key)!.value
-    groups.set(iri, [...(groups.get(iri) ?? []), row])
-  }
-  return groups
 }

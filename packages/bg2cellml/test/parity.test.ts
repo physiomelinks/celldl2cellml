@@ -25,6 +25,16 @@ import { loadLibOpenCOR, simulate } from './simulate.js'
 /** Cases that must pass. Add each one when it does. */
 const ENABLED = new Set<string>([])
 
+/**
+ * Cases whose references are wrong because of a bug in the Python version,
+ * which this version doesn't copy. They're expected to differ until the
+ * references are regenerated from a fixed BG-Tools.
+ */
+const DIFFERS_FROM_PYTHON: Readonly<Record<string, string>> = {
+  example_B2: 'Python ignores bgf:bondCount on bonds (model.py:233); two bonds have a count of 2',
+  example_B2_reduced: 'Python ignores bgf:bondCount on bonds (model.py:233); two bonds have a count of 2',
+}
+
 const RUN_ALL = process.env['BG2CELLML_PARITY'] === 'all'
 
 const manifest = loadManifest()
@@ -63,6 +73,7 @@ describe('parity with the Python bg2cellml', () => {
     expect(manifest.cases.filter((c) => c.kind === 'example')).toHaveLength(14)
     expect(manifest.cases.filter((c) => c.kind === 'variant')).toHaveLength(3)
     for (const name of ENABLED) expect(manifest.cases.map((c) => c.name), `ENABLED has unknown case ${name}`).toContain(name)
+    for (const name of Object.keys(DIFFERS_FROM_PYTHON)) expect(manifest.cases.map((c) => c.name)).toContain(name)
   })
 
   describe.each([
@@ -70,7 +81,13 @@ describe('parity with the Python bg2cellml', () => {
     ['variants, which should match their example', manifest.cases.filter((c) => c.kind === 'variant')],
   ] as const)('%s', (_group, cases) => {
     for (const c of cases) {
-      const label = c.kind === 'variant' ? `${c.name} (as ${c.reference.replace(/\.json$/, '')})` : c.name
+      const differs = DIFFERS_FROM_PYTHON[c.name]
+      const label =
+        c.kind === 'variant'
+          ? `${c.name} (as ${c.reference.replace(/\.json$/, '')})`
+          : differs === undefined
+            ? c.name
+            : `${c.name} (differs from Python: ${differs})`
       it.skipIf(!(RUN_ALL || ENABLED.has(c.name)))(label, async () => {
         expect(await parityProblems(c)).toEqual([])
       }, 60_000)

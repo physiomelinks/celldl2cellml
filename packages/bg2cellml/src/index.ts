@@ -33,9 +33,14 @@ export {
 } from './framework/variables.js'
 export {
   BondgraphElement,
+  BondgraphJunction,
   BondgraphModel,
+  JUNCTION_TYPES,
   ModelVariable,
+  TRANSFORM_PORT_IDS,
+  type BondgraphBond,
   type ElementPort,
+  type NetworkNode,
   type ModelElement,
   type ModelRuntime,
   type ValueAssignment,

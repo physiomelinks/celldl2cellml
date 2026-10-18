@@ -36,6 +36,10 @@ export const BGF = {
   // Ports
   InwardPort: bgf('InwardPort'),
   OutwardPort: bgf('OutwardPort'),
+  // Model structure
+  hasBondElement: bgf('hasBondElement'),
+  hasJunctionStructure: bgf('hasJunctionStructure'),
+  hasPowerBond: bgf('hasPowerBond'),
   // Datatypes
   mathml: bgf('mathml'),
 } as const

@@ -50,7 +50,12 @@ export class BondNetwork<N> {
     return [...new Set([...this.predecessors(id), ...this.successors(id)])]
   }
 
-  /** In-degree plus out-degree, as networkx's `DiGraph.degree`. */
+  /** Every edge as `[source, target, bondCount]`, in the order networkx's `DiGraph.edges()` gives them: by source node, then target, in the order they were added. */
+  edges(): [string, string, number][] {
+    return [...this.#out].flatMap(([source, targets]) => [...targets].map(([target, count]): [string, string, number] => [source, target, count]))
+  }
+
+    /** In-degree plus out-degree, as networkx's `DiGraph.degree`. */
   degree(id: string): number {
     return (this.#in.get(id)?.size ?? 0) + (this.#out.get(id)?.size ?? 0)
   }

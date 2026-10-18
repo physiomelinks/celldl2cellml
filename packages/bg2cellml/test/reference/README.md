@@ -53,5 +53,5 @@ Numbers are rounded to 9 significant figures. Regenerating on a different platfo
 - **`variables`:** every element's and junction's variables once assigned, by IRI and name.
 - **`equations`:** every equation, in Python's order, with its provenance (`cr` a constitutive relation, `be` a bond element's, `js` a junction's), as sympy prints it and as sympy's Content MathML.
 
-Python's bugs show here as they are. Its bonds hold any `bgf:bondCount` as their `label`, and have a `bondCount` of 1 (model.py:233). `RC_labelled_bonds` and `RC_plain_number` have no fixture, as Python can't build them.
+Python's bugs show here as they are. Its bonds hold any `bgf:bondCount` as their `label`, and have a `bondCount` of 1 (model.py:233). So for `example_B2` and `example_B2_reduced`, whose models give two bonds each a count of 2, the fixtures, the Python CellML and the simulation references are all for counts of 1. The JavaScript version reads the counts, so it differs there on purpose; `test/bonds.test.ts` checks against the counts the fixtures hold as labels, and lists exactly which bonds differ. `RC_labelled_bonds` and `RC_plain_number` have no fixture, as Python can't build them.
 
