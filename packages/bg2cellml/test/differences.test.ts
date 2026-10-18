@@ -269,7 +269,7 @@ function compare(c: ReferenceCase): { kinds: Set<Kind>; unexplained: string[] } 
 
 //==============================================================================
 
-describe("our CellML and Python's", () => {
+describe("our CellML and Python's", { timeout: 30_000 }, () => {
   it.each(manifest.cases.map((c) => c.name))('%s differ only as the README explains', (name) => {
     expect(found.get(name)!.unexplained).toEqual([])
   })
@@ -288,4 +288,4 @@ describe("our CellML and Python's", () => {
     const cases = [...found].filter(([, result]) => result.kinds.has('bondCounts')).map(([name]) => name)
     expect(cases.sort()).toEqual(['example_B2', 'example_B2_reduced'])
   })
-}, 30_000)
+})
