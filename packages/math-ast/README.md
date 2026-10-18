@@ -4,9 +4,6 @@ An expression tree for CellML 2.0's subset of Content MathML, with a MathML read
 
 It replaces the parts of sympy that the Python [bg2cellml](https://github.com/CellDL/BG-Tools) uses, and is meant to be the shared core for other tools that handle CellML maths. The tree, the function, constant and operator tables, and the reader's handling of CellML's MathML come from [vue3-math-editor](https://github.com/vue3-repos/vue3-math-editor). It has no runtime dependencies and knows nothing about bond graphs or editors.
 
-> [!WARNING]
-> Work in progress: `canonicalise` (chunk 2.3) isn't implemented yet.
-
 ## Usage
 
 ```js
@@ -38,7 +35,7 @@ In Node, pass a DOM parser such as `@xmldom/xmldom`'s: `parseMathML(text, { domP
 | Renaming | `substitute` | Done |
 | Reading | `readMathML`, `readMathMLElement` (lenient); `parseMathML`, `fromMathMLElement` (strict); `toEquations` | Done |
 | Writing | `toMathML`, `toMathMLFragment`, with a `cnUnits` hook for CellML's `cellml:units` | Done |
-| Tidying | `canonicalise`: flatten, fold numbers, collect like terms, drop zeros | To do (2.3) |
+| Tidying | `canonicalise`: flatten, fold numbers, collect like terms, drop zeros, sort | Done |
 
 ## Reading
 
@@ -54,12 +51,30 @@ In Node, pass a DOM parser such as `@xmldom/xmldom`'s: `parseMathML(text, { domP
 - **Numbers:** written as JavaScript prints them (`0.1`, not `0.10000000000000001`). A number that would print with an exponent is written in e-notation, since CellML rejects `1e-8` as text. Numbers read in e-notation keep their mantissa and exponent. NaN and the infinities are written as `<notanumber/>` and `<infinity/>`.
 - **Checked by libCellML:** every BG-RDF relation, written out, passes libCellML's strict parser and validator, and reads back as the same expression.
 
+## Tidying
+
+`canonicalise` does what sympy does automatically when the Python bg2cellml builds sums and products, so expressions that are equal come out as equal trees:
+
+- **Flattening:** nested sums and products become one.
+- **Numbers:** plain numbers fold (`2 × 3 × x` is `6x`), and zeros and ones go (`x + 0`, `x × 1`, `x / 1`, `x ^ 1`).
+- **Like terms:** collected, so `2x + 3x` is `5x` and `x - x` is `0`. An empty sum is `0` and an empty product `1`.
+- **Spreading:** a number times a sum is spread over it, as sympy does (`2(a + b)` is `2a + 2b`). That's how a variable that is both an input and an output of a junction cancels. Products of other sums stay as they are.
+- **Order:** terms and factors are sorted, so `b + a` and `a + b` give the same tree. Coefficients come first and the constant term last.
+- **Signs:** negative terms are gathered into one subtraction, `a + c - (b + x)`, or a negation when every term is negative.
+
+Two limits, both deliberate:
+
+- **Units:** numbers with units are never folded or collected, since `2 s + 3` has no single value.
+- **Finite arithmetic:** the result equals the input wherever the input is finite. Once a division by zero gives an infinity, JavaScript's signed zero can decide between `∞ - ∞` and `∞ + ∞`, and folding `-(0)` to `0` loses that sign.
+
+It's checked against 2,000 random expressions for keeping the value, being stable under a second pass, and ignoring the order of terms and factors. A one-off run of 50,000 deeper expressions also passed.
+
 ## Design notes
 
 - **Plain data.** Nodes are plain, read-only objects, so they're easy to compare, serialise and test. `traverse.ts` is the only place that needs a case for every node type.
 - **Editor-only nodes stay out.** vue3-math-editor's `Group` (typed brackets) and `Placeholder` (empty slot) aren't part of the maths. An editor can extend `AstNode` with them.
 - **CellML stays outside.** CellML 2.0 needs `cellml:units` on every `<cn>`. The writer asks the caller for those units through `cnUnits`, so this package doesn't need to know about CellML models.
-- **Output text won't match sympy's.** Term order should be deterministic but doesn't need to match the Python output. Parity is checked by simulation.
+- **Output text won't match sympy's.** Term order is deterministic but differs from sympy's. Parity is checked by simulation.
 
 ## Licence
 
