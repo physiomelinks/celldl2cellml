@@ -4,7 +4,7 @@
  * fixtures (test/reference/models) and on hand-written models.
  */
 
-import { canonicalise, equals } from '@physiomelinks/math-ast'
+import { equals } from '@physiomelinks/math-ast'
 import * as oxigraph from 'oxigraph'
 import { beforeAll, describe, expect, it } from 'vitest'
 
@@ -26,7 +26,7 @@ import {
   type ValueAssignment,
 } from '../src/index.js'
 import { bgRdfFramework, expectSameUnits, frameworkRuntime } from './framework-fixtures.js'
-import { pythonEquation } from './python-math.js'
+import { forPython, pythonEquation } from './python-math.js'
 import {
   loadManifest,
   loadPythonModel,
@@ -122,7 +122,7 @@ function expectElement(ours: BondgraphElement | undefined, theirs: PythonModelEl
   } else {
     expect(ours!.constitutiveRelation, context).toHaveLength(theirs.constitutiveRelation.length)
     theirs.constitutiveRelation.forEach((equation, index) => {
-      const ourEquation = canonicalise(ours!.constitutiveRelation![index]!)
+      const ourEquation = forPython(ours!.constitutiveRelation![index]!)
       expect(equals(ourEquation, pythonEquation(equation.mathml)), `${context}: ${equation.text}`).toBe(true)
     })
   }

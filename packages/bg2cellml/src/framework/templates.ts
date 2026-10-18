@@ -3,10 +3,10 @@
  * Ported from `ElementTemplate` in `bondgraph/framework_support.py`.
  */
 
-import { MathMLError, parseMathML, toEquations, variables, type Equation, type ParseOptions } from '@physiomelinks/math-ast'
+import { MathMLError, cellmlUnits, parseMathML, toEquations, variables, type Equation, type ParseOptions } from '@physiomelinks/math-ast'
 
 import type { RdfGraph, ResultRow, Term } from '../rdf/graph.js'
-import { BGF, xsd } from '../rdf/namespaces.js'
+import { BGF, NAMESPACES, xsd } from '../rdf/namespaces.js'
 import { templateParametersQuery, templatePortBondsQuery, templateVariablesQuery } from '../rdf/queries.js'
 import type { Domain } from './framework.js'
 import { DeclarationError, copyVariable, makeVariable, type CompatibleUnits, type VariableDefinition } from './variables.js'
@@ -102,13 +102,27 @@ function readRelation(iri: string, relation: Term | undefined, options: Template
 }
 
 /**
+ * A number's units in BG-RDF MathML: a UCUM code in `bgf:units`
+ * (`<cn bgf:units="V">50</cn>`), or else in `cellml:units`. The `bgf` prefix
+ * needn't be declared.
+ */
+export function numberUnits(cn: Element): string | undefined {
+  return cn.getAttributeNS(NAMESPACES.bgf, 'units') || cellmlUnits(cn)
+}
+
+/** How BG-RDF MathML is read. */
+export function mathmlOptions(domParser: ParseOptions['domParser']): ParseOptions {
+  return { ...(domParser === undefined ? {} : { domParser }), namespaces: { bgf: NAMESPACES.bgf }, cnUnits: numberUnits }
+}
+
+/**
  * Equations from MathML, as a constitutive relation has them: each equation's
  * left side must be a variable or a derivative. A problem throws a
  * `DeclarationError` starting with `context`.
  */
 export function readEquations(mathml: string, context: string, options: Pick<TemplateOptions, 'domParser'>): Equation[] {
   try {
-    const equations = toEquations(parseMathML(mathml, options.domParser === undefined ? {} : { domParser: options.domParser }))
+    const equations = toEquations(parseMathML(mathml, mathmlOptions(options.domParser)))
     for (const equation of equations) {
       if (equation.left.type !== 'Identifier' && equation.left.type !== 'Derivative') {
         throw new MathMLError([{ expression: equations.indexOf(equation), message: 'Unsupported form of equation: its left side must be a variable or a derivative' }])

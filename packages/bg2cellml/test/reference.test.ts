@@ -36,7 +36,12 @@ describe('reference results', () => {
 
   it('include the model as Python builds it, for every case Python can build', () => {
     const built = manifest.cases.filter((c) => c.intermediate !== undefined).map((c) => c.name)
-    expect(built).toEqual([...manifest.cases.filter((c) => c.kind === 'example').map((c) => c.name), 'RC_prefixed_values'])
+    expect(built).toEqual([
+      ...manifest.cases.filter((c) => c.kind === 'example').map((c) => c.name),
+      'RC_prefixed_values',
+      'A3_numbers_with_units',
+      'A3_reduced_numbers_with_units',
+    ])
   })
 
   it('include the model as Python builds it with bug 3 fixed, where that differs', () => {

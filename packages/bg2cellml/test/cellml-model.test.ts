@@ -212,17 +212,26 @@ describe('the reference examples', () => {
   })
 })
 
-describe('the example_RC variants', () => {
+/** The example a variant should match, from its reference: `example_A3.json` is `example_A3`. */
+const exampleOf = (c: ReferenceCase): string => c.reference.replace(/\.json$/, '')
+
+describe('the variants', () => {
   const variants = manifest.cases.filter((c) => c.kind === 'variant')
 
   it('are all here', () => {
-    expect(variants.map((c) => c.name).sort()).toEqual(['RC_labelled_bonds', 'RC_plain_number', 'RC_prefixed_values'])
+    expect(variants.map((c) => [c.name, exampleOf(c)]).sort()).toEqual([
+      ['A3_numbers_with_units', 'example_A3'],
+      ['A3_reduced_numbers_with_units', 'example_A3_reduced'],
+      ['RC_labelled_bonds', 'example_RC'],
+      ['RC_plain_number', 'example_RC'],
+      ['RC_prefixed_values', 'example_RC'],
+    ])
   })
 
   // Python fails on two and writes RC_prefixed_values' values unconverted
   describe.each(variants)('$name', (c) => {
-    it("has example_RC's variables, units and initial values", () => {
-      expectSameVariables(ourModel(c), pythonModel('python/example_RC.cellml'))
+    it("has its example's variables, units and initial values", () => {
+      expectSameVariables(ourModel(c), pythonModel(`python/${exampleOf(c)}.cellml`))
     })
   })
 })

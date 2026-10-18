@@ -14,7 +14,7 @@ import { beforeAll, describe, expect, it } from 'vitest'
 
 import { BondgraphModel, type BondgraphFramework, type ModelRuntime } from '../src/index.js'
 import { bgRdfFramework, frameworkRuntime } from './framework-fixtures.js'
-import { pythonEquation } from './python-math.js'
+import { forPython, pythonEquation } from './python-math.js'
 import { loadFixedPythonModel, loadManifest, loadPythonModel, readSource, type PythonModel, type ReferenceCase } from './reference.js'
 
 const manifest = loadManifest()
@@ -62,7 +62,7 @@ describe('equations of the reference models', () => {
     it('has the equations Python has, in the same order and from the same places', () => {
       expect(model.equations.map((e) => e.provenance)).toEqual(python.equations.map((e) => e.provenance))
       python.equations.forEach((theirs, index) => {
-        const ours = canonicalise(model.equations[index]!.equation)
+        const ours = forPython(model.equations[index]!.equation)
         expect(equals(ours, theirEquation(theirs.mathml)), `${index}: ${theirs.text}`).toBe(true)
       })
     })
@@ -84,7 +84,7 @@ describe('equations of the reference models', () => {
       const model = loadCase(c)
       const same =
         unfixed.length === model.equations.length &&
-        unfixed.every((theirs, i) => equals(canonicalise(model.equations[i]!.equation), theirEquation(theirs.mathml)))
+        unfixed.every((theirs, i) => equals(forPython(model.equations[i]!.equation), theirEquation(theirs.mathml)))
       return same ? [] : [c.name]
     })
     // RC_labelled_bonds has no unfixed fixture, as Python fails on it

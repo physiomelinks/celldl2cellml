@@ -40,7 +40,7 @@ In Node, pass a DOM parser such as `@xmldom/xmldom`'s: `parseMathML(text, { domP
 ## Reading
 
 - **Input:** one or more `<math>` elements, or bare expressions such as an `<apply>`. The `cellml` prefix can be used without being declared.
-- **Numbers:** `cellml:units` is read in any CellML version's namespace. E-notation (`<cn type="e-notation">1<sep/>-8</cn>`) keeps its mantissa and exponent. Only base 10 is accepted, and only real, integer and e-notation types.
+- **Numbers:** `cellml:units` is read in any CellML version's namespace, or a number's units are read another way with the `cnUnits` option (BG-RDF gives UCUM codes in `bgf:units`). `namespaces` lets other prefixes, such as `bgf`, be used without being declared, as `cellml` always may. E-notation (`<cn type="e-notation">1<sep/>-8</cn>`) keeps its mantissa and exponent. Only base 10 is accepted, and only real, integer and e-notation types.
 - **Derivatives:** only first derivatives, as CellML 2.0 allows. `toEquations` moves a derivative on the right of an equation to the left, as the Python bg2cellml does.
 - **Problems:** anything outside CellML's MathML is a problem naming the element, for example `<sum> isn't supported in CellML's MathML`. So is the wrong number of operands, a misplaced qualifier, an invalid name or number, or stray text. Every problem in every expression is reported, not just the first.
 

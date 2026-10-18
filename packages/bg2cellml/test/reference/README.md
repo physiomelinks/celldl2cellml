@@ -18,13 +18,15 @@ Results from the Python [bg2cellml](https://github.com/CellDL/BG-Tools) 0.11.2, 
 ## Cases
 
 - **Examples:** the 14 models in `bg-rdf/examples`, simulated for the times given in their comments. `example_A1` and `example_B1` are also checked against the hand-built CellML models in `bg-rdf/pmr`, and both agree.
-- **Variants:** the models in [`../models`](../models) are copies of `example_RC` that trigger bugs in the Python version. Each should simulate exactly like `example_RC`, so that's its reference. The manifest records what Python did instead:
+- **Variants:** the models in [`../models`](../models) are copies of examples, changed in ways the Python version handles badly or not at all. Each should simulate exactly like its example, so that's its reference. The manifest records what Python did:
 
-| Variant | Python 0.11.2 |
-|---|---|
-| `RC_labelled_bonds` | Fails: `int('source to current')` |
-| `RC_plain_number` | Fails: rejects the `xsd:decimal` value |
-| `RC_prefixed_values` | Wrong: `1000 uF`, `0.01 kOhm` and `10000 mV` are used unconverted |
+| Variant | Example | Python 0.11.2 |
+|---|---|---|
+| `RC_labelled_bonds` | `example_RC` | Fails: `int('source to current')` |
+| `RC_plain_number` | `example_RC` | Fails: rejects the `xsd:decimal` value |
+| `RC_prefixed_values` | `example_RC` | Wrong: `1000 uF`, `0.01 kOhm` and `10000 mV` are used unconverted |
+| `A3_numbers_with_units` | `example_A3` | Matches, ignoring the units (`bgf:units`) on the voltage source's numbers, which make its equation dimensionally consistent |
+| `A3_reduced_numbers_with_units` | `example_A3_reduced` | The same |
 
 The prefixed-units recursion bug isn't covered here. It needs a template with prefixed units, so it belongs in `@physiomelinks/cellml-units`'s tests.
 

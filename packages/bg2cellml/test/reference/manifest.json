@@ -223,6 +223,30 @@
         ]
       },
       "intermediate": "models/RC_prefixed_values.json"
+    },
+    {
+      "name": "A3_numbers_with_units",
+      "kind": "variant",
+      "source": "packages/bg2cellml/test/models/A3_numbers_with_units.ttl",
+      "sourceSha256": "2a507ba30631f4b67555a9490f43ea2e6c0526f725f625a7f95eebded628fb34",
+      "baseIri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_numbers_with_units.ttl",
+      "reference": "example_A3.json",
+      "python": {
+        "status": "matches"
+      },
+      "intermediate": "models/A3_numbers_with_units.json"
+    },
+    {
+      "name": "A3_reduced_numbers_with_units",
+      "kind": "variant",
+      "source": "packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl",
+      "sourceSha256": "6cc3cc5fbca79afcbd02599dd0578d93a9b7e58c11623829f1505ccf14699a49",
+      "baseIri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl",
+      "reference": "example_A3_reduced.json",
+      "python": {
+        "status": "matches"
+      },
+      "intermediate": "models/A3_reduced_numbers_with_units.json"
     }
   ]
 }

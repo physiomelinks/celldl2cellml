@@ -10,9 +10,11 @@
  * Each equation is its own `<math>`.
  *
  * Differences from Python, on purpose:
- * - A number with no units of its own is `dimensionless`, CellML 2.0's
- *   built-in, rather than Python's `dim`. A number given `cellml:units` in a
- *   source's MathML keeps them, read as a UCUM code.
+ * - A number given units in BG-RDF's MathML (a UCUM code in `bgf:units`, or
+ *   `cellml:units`; see `numberUnits`) keeps them, which Python ignores. One
+ *   with none is `dimensionless`, CellML 2.0's built-in, rather than Python's
+ *   `dim`. Bond graphs should be dimensionally consistent, so numbers that
+ *   aren't dimensionless need units.
  * - An equation using a name that isn't one of the model's variables, such as
  *   the template potential of a resistor's unbonded port, is reported rather
  *   than written into CellML that can't be valid.

@@ -21,6 +21,7 @@ export {
   CELLML_2_0_NS,
   MATHML_NS,
   MathMLError,
+  cellmlUnits,
   fromMathMLElement,
   parseMathML,
   readMathML,
@@ -30,5 +31,6 @@ export {
   type MathMLProblem,
   type MathMLRead,
   type ParseOptions,
+  type ReadOptions,
 } from './mathml.js'
 export { MathMLWriteError, toMathML, toMathMLFragment, type WriteOptions } from './write.js'

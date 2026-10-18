@@ -70,9 +70,9 @@ async function parityProblems(c: ReferenceCase): Promise<string[]> {
 }
 
 describe('parity with the Python bg2cellml', () => {
-  it('covers every case in the manifest: 14 examples and 3 variants', () => {
+  it('covers every case in the manifest: 14 examples and 5 variants', () => {
     expect(manifest.cases.filter((c) => c.kind === 'example')).toHaveLength(14)
-    expect(manifest.cases.filter((c) => c.kind === 'variant')).toHaveLength(3)
+    expect(manifest.cases.filter((c) => c.kind === 'variant')).toHaveLength(5)
     for (const name of ENABLED) expect(manifest.cases.map((c) => c.name), `ENABLED has unknown case ${name}`).toContain(name)
     for (const name of Object.keys(DIFFERS_FROM_PYTHON)) expect(manifest.cases.map((c) => c.name)).toContain(name)
   })

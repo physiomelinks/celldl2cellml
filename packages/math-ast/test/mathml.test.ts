@@ -102,6 +102,27 @@ describe('reading', () => {
     expect(node).toEqual({ type: 'Number', value: 10, units: 'volt' })
   })
 
+  it('reads units another way with a cnUnits hook, with extra undeclared prefixes', () => {
+    const BGF = 'https://bg-rdf.org/ontologies/bondgraph-framework#'
+    const options = {
+      domParser: new DOMParser() as unknown as DOMParserLike,
+      namespaces: { bgf: BGF },
+      cnUnits: (cn: Element) => cn.getAttributeNS(BGF, 'units') ?? undefined,
+    }
+    const nodes = parseMathML(`<math ${M}><cn bgf:units="V">50</cn><cn cellml:units="volt">1</cn><cn bgf:units=" ">2</cn></math>`, options)
+    expect(nodes).toEqual([
+      { type: 'Number', value: 50, units: 'V' },
+      { type: 'Number', value: 1 },
+      { type: 'Number', value: 2 },
+    ])
+    // Without the hook, only cellml:units count
+    expect(parseMathML(`<cn bgf:units="V">50</cn>`, { domParser: options.domParser, namespaces: { bgf: BGF } })).toEqual([{ type: 'Number', value: 50 }])
+  })
+
+  it('needs an undeclared prefix to be given', () => {
+    expect(() => parseMathML(`<cn bgf:units="V">50</cn>`, { domParser: new DOMParser() as unknown as DOMParserLike })).toThrow(MathMLError)
+  })
+
   it('reads e-notation, keeping the notation', () => {
     expect(one('<cn type="e-notation">1.5<sep/>-8</cn>')).toEqual({
       type: 'Number',

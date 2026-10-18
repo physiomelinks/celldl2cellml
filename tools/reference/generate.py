@@ -78,6 +78,8 @@ VARIANTS = {
     'RC_labelled_bonds':  'example_RC',
     'RC_plain_number':    'example_RC',
     'RC_prefixed_values': 'example_RC',
+    'A3_numbers_with_units':         'example_A3',
+    'A3_reduced_numbers_with_units': 'example_A3_reduced',
 }
 
 # Independent checks of the Python output against hand-built models in PMR,
@@ -580,12 +582,35 @@ def compare_states_by_index(actual: dict, expected: dict) -> list[str]:
 
 # ------------------------------------------------------------------------------
 
+def variant_case(name: str, expected: str, framework, expected_result: dict) -> dict:
+    """A variant's manifest entry: what the Python version does with it, against the example's result."""
+    path = MODELS_DIR / f'{name}.ttl'
+    end_time, steps = SIMULATIONS[expected]
+    try:
+        cellml = python_cellml(framework, path)
+        problems = compare(simulate_cellml(cellml, end_time, steps), expected_result)
+        outcome = {'status': 'differs', 'problems': problems} if problems else {'status': 'matches'}
+    except Exception as e:
+        outcome = {'status': 'error', 'error': f'{type(e).__name__}: {e}'}
+    print(f'{name}: Python {outcome["status"]}')
+    return {
+        'name': name,
+        'kind': 'variant',
+        'source': path.relative_to(REPO_ROOT).as_posix(),
+        'sourceSha256': sha256(path),
+        'baseIri': source_iri(path),
+        'reference': f'{expected}.json',
+        'python': outcome,
+    }
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     parser.add_argument('--bg-tools', required=True, type=Path, help='Checkout of CellDL/BG-Tools to use as the reference')
     parser.add_argument('--framework-only', action='store_true', help='Only rewrite framework.json')
     parser.add_argument('--fixtures-only', action='store_true',
                         help='Only rewrite framework.json and the models/ fixtures, without simulating')
+    parser.add_argument('--variants-only', action='store_true',
+                        help="Only redo the variants, comparing them with the examples' existing references")
     args = parser.parse_args()
 
     bg_tools = args.bg_tools.resolve()
@@ -602,11 +627,22 @@ def main():
     from bg2cellml.rdf import namedNode
     framework_entry = write_framework(framework, sympy_to_mathml, (RdfGraph, namedNode, NAMESPACES))
     python = (framework, BondgraphModel, sympy_to_mathml)
-    if args.framework_only or args.fixtures_only:
+    if args.framework_only or args.fixtures_only or args.variants_only:
         manifest_path = OUTPUT_DIR / 'manifest.json'
         manifest = json.loads(manifest_path.read_text())
+        option = 'framework' if args.framework_only else 'fixtures' if args.fixtures_only else 'variants'
         if manifest['generator']['bgToolsCommit'] != git(bg_tools, 'rev-parse', 'HEAD'):
-            raise RuntimeError(f'--{"framework" if args.framework_only else "fixtures"}-only needs the BG-Tools commit the other references came from')
+            raise RuntimeError(f'--{option}-only needs the BG-Tools commit the other references came from')
+        if args.variants_only:
+            examples = [case for case in manifest['cases'] if case['kind'] == 'example']
+            results = {case['name']: json.loads((OUTPUT_DIR / case['reference']).read_text()) for case in examples}
+            variants = [variant_case(name, expected, framework, results[expected]) for name, expected in VARIANTS.items()]
+            for case in variants:
+                write_model_fixture(case, python)
+            manifest['cases'] = examples + variants
+            manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
+            print(f'Wrote {len(variants)} variants to {OUTPUT_DIR.relative_to(REPO_ROOT)}')
+            return
         manifest['framework'] = framework_entry
         if args.fixtures_only:
             for case in manifest['cases']:
@@ -644,24 +680,7 @@ def main():
               + (f', PMR check {"passed" if not case["pmrCheck"]["problems"] else "FAILED"}' if 'pmrCheck' in case else ''))
 
     for name, expected in VARIANTS.items():
-        path = MODELS_DIR / f'{name}.ttl'
-        end_time, steps = SIMULATIONS[expected]
-        try:
-            cellml = python_cellml(framework, path)
-            problems = compare(simulate_cellml(cellml, end_time, steps), results[expected])
-            python = {'status': 'differs', 'problems': problems} if problems else {'status': 'matches'}
-        except Exception as e:
-            python = {'status': 'error', 'error': f'{type(e).__name__}: {e}'}
-        cases.append({
-            'name': name,
-            'kind': 'variant',
-            'source': path.relative_to(REPO_ROOT).as_posix(),
-            'sourceSha256': sha256(path),
-            'baseIri': source_iri(path),
-            'reference': f'{expected}.json',
-            'python': python,
-        })
-        print(f'{name}: Python {python["status"]}')
+        cases.append(variant_case(name, expected, framework, results[expected]))
 
     for case in cases:
         write_model_fixture(case, python)

@@ -199,11 +199,15 @@ describe('the reference examples', () => {
   })
 })
 
-describe('the example_RC variants', () => {
+/** Ours with every number's units removed, as Python ignores those a source gives (`bgf:units`). */
+const oursWithoutUnits = (math: string): Equation => ours(math.replace(/ cellml:units="[^"]*"/g, ''))
+
+describe('the variants', () => {
   describe.each(manifest.cases.filter((c) => c.kind === 'variant'))('$name', (c) => {
-    it("has example_RC's equations", () => {
-      const actual = equationsByGroup(ourCellML(c), ours)
-      const expected = equationsByGroup(readFileSync(`${REFERENCE_DIR}python/example_RC.cellml`, 'utf8'), pythons)
+    it("has its example's equations", () => {
+      const example = c.reference.replace(/\.json$/, '')
+      const actual = equationsByGroup(ourCellML(c), oursWithoutUnits)
+      const expected = equationsByGroup(readFileSync(`${REFERENCE_DIR}python/${example}.cellml`, 'utf8'), pythons)
       expect([...actual.keys()]).toEqual([...expected.keys()])
       for (const [group, equations] of expected) expectSameEquations(actual.get(group)!, equations, group)
     })
@@ -222,6 +226,47 @@ describe('example_RC', () => {
     const numbers = [...cellml.matchAll(/<cn\b[^>]*>/g)].map((m) => m[0])
     expect(numbers.length).toBeGreaterThan(0)
     expect(numbers.every((n) => n.includes('cellml:units="dimensionless"'))).toBe(true)
+  })
+})
+
+/** The Analyser's messages about a case's CellML. */
+function analyse(c: ReferenceCase): string[] {
+  const lib = libcellml as unknown as Record<string, new (...args: unknown[]) => any>
+  const parser = new lib.Parser!(true)
+  const analyser = new lib.Analyser!()
+  try {
+    const parsed = parser.parseModel(ourCellML(c))
+    analyser.analyseModel(parsed)
+    parsed.delete()
+    return Array.from({ length: analyser.issueCount() }, (_, i) => analyser.issue(i).description() as string)
+  } finally {
+    parser.delete()
+    analyser.delete()
+  }
+}
+
+describe('numbers with units, for dimensionally consistent equations', () => {
+  it.each(['A3_numbers_with_units', 'A3_reduced_numbers_with_units'])('%s writes its numbers in their units', (name) => {
+    const cellml = ourCellML(caseNamed(name))
+    expect(cellml).toContain('<units name="per_s">')
+    const numbers = [...cellml.matchAll(/<cn cellml:units="([^"]+)">([^<]+)<\/cn>/g)].map((m) => `${m[2]} ${m[1]}`).sort()
+    // The reduced model's junction equation repeats the source's expression
+    const once = ['2 dimensionless', '50 per_s', '50 volt']
+    expect(numbers).toEqual(name.includes('reduced') ? [...once, ...once].sort() : once)
+  })
+
+  it.each(['A3_numbers_with_units', 'A3_reduced_numbers_with_units'])('%s has consistent units throughout', (name) => {
+    expect(analyse(caseNamed(name))).toEqual([])
+  })
+
+  // Until BG-RDF gives them units, the examples' dimensionless numbers aren't consistent
+  it.each([
+    ['example_A3', 1],
+    ['example_A3_reduced', 2],
+  ])("%s's dimensionless numbers aren't consistent", (name, count) => {
+    const messages = analyse(caseNamed(name))
+    expect(messages).toHaveLength(count)
+    for (const message of messages) expect(message).toMatch(/^The unit of '.*' in 'sin\(.*\)' .* is not dimensionless\./)
   })
 })
 

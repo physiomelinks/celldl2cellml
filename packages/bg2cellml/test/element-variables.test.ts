@@ -10,7 +10,7 @@
  */
 
 import { convertValue } from '@physiomelinks/cellml-units'
-import { canonicalise, equals, type Equation } from '@physiomelinks/math-ast'
+import { equals, type Equation } from '@physiomelinks/math-ast'
 import * as oxigraph from 'oxigraph'
 import { beforeAll, describe, expect, it } from 'vitest'
 
@@ -22,7 +22,7 @@ import {
   type ModelVariable,
 } from '../src/index.js'
 import { bgRdfFramework, expectSameUnits, frameworkRuntime } from './framework-fixtures.js'
-import { pythonEquation } from './python-math.js'
+import { forPython, pythonEquation } from './python-math.js'
 import { loadManifest, loadPythonModel, readSource, type PythonModel, type PythonVariable, type ReferenceCase } from './reference.js'
 
 const manifest = loadManifest()
@@ -88,7 +88,7 @@ describe('element variables of the reference models', () => {
       const theirs = python.equations.filter((equation) => equation.provenance === 'cr')
       expect(ours).toHaveLength(theirs.length)
       theirs.forEach((equation, index) => {
-        expect(equals(canonicalise(ours[index]!), pythonEquation(equation.mathml)), equation.text).toBe(true)
+        expect(equals(forPython(ours[index]!), pythonEquation(equation.mathml)), equation.text).toBe(true)
       })
     })
 

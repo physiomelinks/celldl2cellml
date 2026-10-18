@@ -1,0 +1,142 @@
+#===============================================================================
+#
+#  example_A3_reduced with units on the numbers in its voltage source
+#
+#  The source's MathML, u = 50 sin(50 * 2 * pi * t), gives its numbers no
+#  units, so they are all dimensionless and the equation isn't dimensionally
+#  consistent: sin's argument is in seconds, and u is in volts. Here the
+#  first 50 is in V and the second in s-1, as the comment in BG-RDF's own
+#  example suggests, written as UCUM codes in bgf:units. The <math> element
+#  declares the bgf prefix, so the Python bg2cellml (which ignores the units)
+#  can read it too.
+#
+#  Derived from BG-RDF examples/example_A3_reduced.ttl (v2026-04-12). It should
+#  simulate exactly as example_A3_reduced does.
+#
+#===============================================================================
+
+@prefix bgf: <https://bg-rdf.org/ontologies/bondgraph-framework#> .
+@prefix cdt: <https://w3id.org/cdt/> .
+@prefix tpl: <https://bg-rdf.org/templates/> .
+
+@prefix : <#> .
+
+#===============================================================================
+#
+#    u_in_e -----> R_e -----> GY -----> R_m -----> q_C_m
+#                   |                    |
+#                   |                    |
+#                  L_e                  L_m
+#
+# Simulation: 0.5 second with a 0.001 second step
+#
+#===============================================================================
+
+:example_A3
+    a bgf:BondgraphModel ;
+    bgf:usesTemplate
+        tpl:electrical.ttl ,
+        tpl:mechanical.ttl ;
+    bgf:hasBondElement :u_in_e, :R_e, :L_e, :R_m, :L_m, :q_C_m ;
+    bgf:hasJunctionStructure :GY .
+
+#===============================================================================
+
+:u_in_e
+    a bgf:VoltageSource ;
+#       u_in_e = 50{J_per_C}*sin(50{per_s}*2{dimensionless}*pi*t);
+#                    <cn bgf:units="V">50</cn>
+#                            <cn bgf:units="s-1">50</cn>
+    bgf:hasValue """
+        <math xmlns="http://www.w3.org/1998/Math/MathML" xmlns:bgf="https://bg-rdf.org/ontologies/bondgraph-framework#">
+            <apply>
+                <eq/>
+                <ci>u</ci>
+                <apply>
+                    <times/>
+                    <cn bgf:units="V">50</cn>
+                    <apply>
+                        <sin/>
+                        <apply>
+                            <times/>
+                            <cn bgf:units="s-1">50</cn>
+                            <cn>2</cn>
+                            <pi/>
+                            <ci>t</ci>
+                        </apply>
+                    </apply>
+                </apply>
+            </apply>
+        </math>
+    """^^bgf:mathml .
+
+:R_e
+    a bgf:ElectricalResistiveNode ;
+    bgf:parameterValue [
+        bgf:varName "R" ;
+        bgf:hasValue "5 Ohm"^^cdt:ucum
+    ] .
+
+:L_e
+    a bgf:ElectricalInductiveNode ;
+    bgf:hasValue "0 A"^^cdt:ucum ;
+    bgf:parameterValue [
+        bgf:varName "L" ;
+        bgf:hasValue "0.2 H"^^cdt:ucum
+    ] .
+
+:R_m
+    a bgf:MechanicalResistiveNode ;
+    bgf:parameterValue [
+        bgf:varName "R" ;
+        bgf:hasValue "0.4 J.s.m-2"^^cdt:ucum
+    ] .
+
+:L_m
+    a bgf:MechanicalInductiveNode ;
+    bgf:hasValue "0 m/s"^^cdt:ucum ;
+    bgf:parameterValue [
+        bgf:varName "L" ;
+        bgf:hasValue "0.01 J.s2.m-2"^^cdt:ucum
+    ] .
+
+:q_C_m
+    a bgf:MechanicalCapacitiveNode ;
+    bgf:hasValue "0 m"^^cdt:ucum ;
+    bgf:parameterValue [
+        bgf:varName "C" ;
+        bgf:hasValue "0.01 m2/J"^^cdt:ucum
+    ] .
+
+:GY
+    a bgf:TransformNode ;
+    bgf:hasSymbol "Bl" ;
+    bgf:hasValue "6 J.s.C-1.m-1"^^cdt:ucum .
+
+#===============================================================================
+
+:u_in_e.R_e
+    bgf:hasSource :u_in_e ;
+    bgf:hasTarget :R_e .
+
+:R_e.L_e
+    bgf:hasSource :R_e ;
+    bgf:hasTarget :L_e .
+
+:R_e.GY_0
+    bgf:hasSource :R_e ;
+    bgf:hasTarget :GY .
+
+:GY_1.R_m
+    bgf:hasSource :GY ;
+    bgf:hasTarget :R_m .
+
+:R_m.L_m
+    bgf:hasSource :R_m ;
+    bgf:hasTarget :L_m .
+
+:R_m.q_C_m
+    bgf:hasSource :R_m ;
+    bgf:hasTarget :q_C_m .
+
+#===============================================================================

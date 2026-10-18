@@ -1,0 +1,1327 @@
+{
+ "case": "A3_reduced_numbers_with_units",
+ "sourceSha256": "6cc3cc5fbca79afcbd02599dd0578d93a9b7e58c11623829f1505ccf14699a49",
+ "model": {
+  "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#example_A3",
+  "label": null
+ },
+ "issues": [],
+ "elements": [
+  {
+   "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_e",
+   "symbol": "L_e",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor",
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "impliedJunction": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+   "ports": {
+    "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_e": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_L_e",
+       "symbol": "v_L_e",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "coulomb / second",
+        "scale": 1.0,
+        "base": "A"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u_L_e",
+       "symbol": "u_L_e",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / coulomb",
+        "scale": 1.0,
+        "base": "A-1.m2.kg.s-3"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "variables": {
+    "v": {
+     "name": "v_L_e",
+     "symbol": "v_L_e",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": {
+      "magnitude": 0.0,
+      "units": {
+       "pint": "ampere",
+       "scale": 1.0,
+       "base": "A"
+      }
+     }
+    },
+    "u": {
+     "name": "u_L_e",
+     "symbol": "u_L_e",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    },
+    "L": {
+     "name": "L_L_e",
+     "symbol": "L_L_e",
+     "type": null,
+     "units": {
+      "pint": "joule * second ** 2 / coulomb ** 2",
+      "scale": 1.0,
+      "base": "A-2.m2.kg.s-2"
+     },
+     "value": null
+    }
+   },
+   "portVariableNames": [
+    "u",
+    "v"
+   ],
+   "values": {
+    "L": {
+     "value": {
+      "literal": "0.2 H",
+      "datatype": "https://w3id.org/cdt/ucum"
+     },
+     "symbol": null
+    }
+   },
+   "intrinsicVariable": {
+    "name": "v_L_e",
+    "symbol": "v_L_e",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+    "units": {
+     "pint": "coulomb / second",
+     "scale": 1.0,
+     "base": "A"
+    },
+    "value": {
+     "magnitude": 0.0,
+     "units": {
+      "pint": "ampere",
+      "scale": 1.0,
+      "base": "A"
+     }
+    }
+   },
+   "flow": "v_L_e",
+   "potential": "u_L_e",
+   "constitutiveRelation": [
+    {
+     "text": "Derivative(v, t) = u/L",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>v</ci></apply><apply><divide/><ci>u</ci><ci>L</ci></apply></apply></math>"
+    }
+   ]
+  },
+  {
+   "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_m",
+   "symbol": "L_m",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor",
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "impliedJunction": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+   "ports": {
+    "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_m": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_L_m",
+       "symbol": "v_L_m",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "meter / second",
+        "scale": 1.0,
+        "base": "m.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u_L_m",
+       "symbol": "u_L_m",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / meter",
+        "scale": 1.0,
+        "base": "m.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "variables": {
+    "v": {
+     "name": "v_L_m",
+     "symbol": "v_L_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "meter / second",
+      "scale": 1.0,
+      "base": "m.s-1"
+     },
+     "value": {
+      "magnitude": 0.0,
+      "units": {
+       "pint": "meter / second",
+       "scale": 1.0,
+       "base": "m.s-1"
+      }
+     }
+    },
+    "u": {
+     "name": "u_L_m",
+     "symbol": "u_L_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / meter",
+      "scale": 1.0,
+      "base": "m.kg.s-2"
+     },
+     "value": null
+    },
+    "L": {
+     "name": "L_L_m",
+     "symbol": "L_L_m",
+     "type": null,
+     "units": {
+      "pint": "joule * second ** 2 / meter ** 2",
+      "scale": 1.0,
+      "base": "kg"
+     },
+     "value": null
+    },
+    "a": {
+     "name": "a_L_m",
+     "symbol": "a_L_m",
+     "type": null,
+     "units": {
+      "pint": "meter / second ** 2",
+      "scale": 1.0,
+      "base": "m.s-2"
+     },
+     "value": null
+    }
+   },
+   "portVariableNames": [
+    "u",
+    "v"
+   ],
+   "values": {
+    "L": {
+     "value": {
+      "literal": "0.01 J.s2.m-2",
+      "datatype": "https://w3id.org/cdt/ucum"
+     },
+     "symbol": null
+    }
+   },
+   "intrinsicVariable": {
+    "name": "v_L_m",
+    "symbol": "v_L_m",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+    "units": {
+     "pint": "meter / second",
+     "scale": 1.0,
+     "base": "m.s-1"
+    },
+    "value": {
+     "magnitude": 0.0,
+     "units": {
+      "pint": "meter / second",
+      "scale": 1.0,
+      "base": "m.s-1"
+     }
+    }
+   },
+   "flow": "v_L_m",
+   "potential": "u_L_m",
+   "constitutiveRelation": [
+    {
+     "text": "Derivative(v, t) = a",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>v</ci></apply><ci>a</ci></apply></math>"
+    },
+    {
+     "text": "u = L*a",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><times/><ci>L</ci><ci>a</ci></apply></apply></math>"
+    }
+   ]
+  },
+  {
+   "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_e",
+   "symbol": "R_e",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "impliedJunction": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+   "ports": {
+    "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_e": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_R_e",
+       "symbol": "v_R_e",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "coulomb / second",
+        "scale": 1.0,
+        "base": "A"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u_R_e",
+       "symbol": "u_R_e",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / coulomb",
+        "scale": 1.0,
+        "base": "A-1.m2.kg.s-3"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "variables": {
+    "v": {
+     "name": "v_R_e",
+     "symbol": "v_R_e",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_R_e",
+     "symbol": "u_R_e",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    },
+    "R": {
+     "name": "R_R_e",
+     "symbol": "R_R_e",
+     "type": null,
+     "units": {
+      "pint": "joule * second / coulomb ** 2",
+      "scale": 1.0,
+      "base": "A-2.m2.kg.s-3"
+     },
+     "value": null
+    }
+   },
+   "portVariableNames": [
+    "u",
+    "v"
+   ],
+   "values": {
+    "R": {
+     "value": {
+      "literal": "5 Ohm",
+      "datatype": "https://w3id.org/cdt/ucum"
+     },
+     "symbol": null
+    }
+   },
+   "intrinsicVariable": null,
+   "flow": "v_R_e",
+   "potential": "u_R_e",
+   "constitutiveRelation": [
+    {
+     "text": "v = u/R",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v</ci><apply><divide/><ci>u</ci><ci>R</ci></apply></apply></math>"
+    }
+   ]
+  },
+  {
+   "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_m",
+   "symbol": "R_m",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor",
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "impliedJunction": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+   "ports": {
+    "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_m": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_R_m",
+       "symbol": "v_R_m",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "meter / second",
+        "scale": 1.0,
+        "base": "m.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u_R_m",
+       "symbol": "u_R_m",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / meter",
+        "scale": 1.0,
+        "base": "m.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "variables": {
+    "v": {
+     "name": "v_R_m",
+     "symbol": "v_R_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "meter / second",
+      "scale": 1.0,
+      "base": "m.s-1"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_R_m",
+     "symbol": "u_R_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / meter",
+      "scale": 1.0,
+      "base": "m.kg.s-2"
+     },
+     "value": null
+    },
+    "R": {
+     "name": "R_R_m",
+     "symbol": "R_R_m",
+     "type": null,
+     "units": {
+      "pint": "joule * second / meter ** 2",
+      "scale": 1.0,
+      "base": "kg.s-1"
+     },
+     "value": null
+    }
+   },
+   "portVariableNames": [
+    "u",
+    "v"
+   ],
+   "values": {
+    "R": {
+     "value": {
+      "literal": "0.4 J.s.m-2",
+      "datatype": "https://w3id.org/cdt/ucum"
+     },
+     "symbol": null
+    }
+   },
+   "intrinsicVariable": null,
+   "flow": "v_R_m",
+   "potential": "u_R_m",
+   "constitutiveRelation": [
+    {
+     "text": "u = R*v",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><times/><ci>R</ci><ci>v</ci></apply></apply></math>"
+    }
+   ]
+  },
+  {
+   "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#q_C_m",
+   "symbol": "q_C_m",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor",
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+   "impliedJunction": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+   "ports": {
+    "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#q_C_m": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_q_C_m",
+       "symbol": "v_q_C_m",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "meter / second",
+        "scale": 1.0,
+        "base": "m.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u_q_C_m",
+       "symbol": "u_q_C_m",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / meter",
+        "scale": 1.0,
+        "base": "m.kg.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "variables": {
+    "v": {
+     "name": "v_q_C_m",
+     "symbol": "v_q_C_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "meter / second",
+      "scale": 1.0,
+      "base": "m.s-1"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_q_C_m",
+     "symbol": "u_q_C_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / meter",
+      "scale": 1.0,
+      "base": "m.kg.s-2"
+     },
+     "value": null
+    },
+    "C": {
+     "name": "C_q_C_m",
+     "symbol": "C_q_C_m",
+     "type": null,
+     "units": {
+      "pint": "meter ** 2 / joule",
+      "scale": 1.0,
+      "base": "kg-1.s2"
+     },
+     "value": null
+    },
+    "q": {
+     "name": "q_C_m",
+     "symbol": "q_C_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+     "units": {
+      "pint": "meter",
+      "scale": 1.0,
+      "base": "m"
+     },
+     "value": {
+      "magnitude": 0.0,
+      "units": {
+       "pint": "meter",
+       "scale": 1.0,
+       "base": "m"
+      }
+     }
+    }
+   },
+   "portVariableNames": [
+    "u",
+    "v"
+   ],
+   "values": {
+    "C": {
+     "value": {
+      "literal": "0.01 m2/J",
+      "datatype": "https://w3id.org/cdt/ucum"
+     },
+     "symbol": null
+    }
+   },
+   "intrinsicVariable": {
+    "name": "q_C_m",
+    "symbol": "q_C_m",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+    "units": {
+     "pint": "meter",
+     "scale": 1.0,
+     "base": "m"
+    },
+    "value": {
+     "magnitude": 0.0,
+     "units": {
+      "pint": "meter",
+      "scale": 1.0,
+      "base": "m"
+     }
+    }
+   },
+   "flow": "v_q_C_m",
+   "potential": "u_q_C_m",
+   "constitutiveRelation": [
+    {
+     "text": "Derivative(q, t) = v",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>q</ci></apply><ci>v</ci></apply></math>"
+    },
+    {
+     "text": "u = q/C",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><divide/><ci>q</ci><ci>C</ci></apply></apply></math>"
+    }
+   ]
+  },
+  {
+   "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#u_in_e",
+   "symbol": "u_in_e",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource",
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "impliedJunction": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+   "ports": {
+    "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#u_in_e": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_u_in_e",
+       "symbol": "v_u_in_e",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "coulomb / second",
+        "scale": 1.0,
+        "base": "A"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u_in_e",
+       "symbol": "u_in_e",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / coulomb",
+        "scale": 1.0,
+        "base": "A-1.m2.kg.s-3"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "variables": {
+    "v": {
+     "name": "v_u_in_e",
+     "symbol": "v_u_in_e",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_in_e",
+     "symbol": "u_in_e",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    }
+   },
+   "portVariableNames": [
+    "u",
+    "v"
+   ],
+   "values": {},
+   "intrinsicVariable": {
+    "name": "u_in_e",
+    "symbol": "u_in_e",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+    "units": {
+     "pint": "joule / coulomb",
+     "scale": 1.0,
+     "base": "A-1.m2.kg.s-3"
+    },
+    "value": null
+   },
+   "flow": "v_u_in_e",
+   "potential": "u_in_e",
+   "constitutiveRelation": [
+    {
+     "text": "u = 50.0*sin(100*pi*t)",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><times/><cn>50.0</cn><apply><sin/><apply><times/><cn>100</cn><pi/><ci>t</ci></apply></apply></apply></apply></math>"
+    }
+   ]
+  }
+ ],
+ "junctions": [
+  {
+   "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#GY",
+   "type": "https://bg-rdf.org/ontologies/bondgraph-framework#TransformNode",
+   "symbol": "Bl",
+   "label": null,
+   "value": {
+    "literal": "6 J.s.C-1.m-1",
+    "datatype": "https://w3id.org/cdt/ucum"
+   }
+  }
+ ],
+ "bonds": [
+  {
+   "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#u_in_e.R_e",
+   "source": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#u_in_e",
+   "target": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_e",
+   "label": null,
+   "bondCount": 1
+  },
+  {
+   "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_e.L_e",
+   "source": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_e",
+   "target": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_e",
+   "label": null,
+   "bondCount": 1
+  },
+  {
+   "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_e.GY_0",
+   "source": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_e",
+   "target": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#GY_0",
+   "label": null,
+   "bondCount": 1
+  },
+  {
+   "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#GY_1.R_m",
+   "source": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#GY_1",
+   "target": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_m",
+   "label": null,
+   "bondCount": 1
+  },
+  {
+   "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_m.L_m",
+   "source": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_m",
+   "target": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_m",
+   "label": null,
+   "bondCount": 1
+  },
+  {
+   "iri": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_m.q_C_m",
+   "source": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_m",
+   "target": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#q_C_m",
+   "label": null,
+   "bondCount": 1
+  }
+ ],
+ "network": {
+  "nodes": {
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_e": {
+    "type": "bgf:ElectricalInductor",
+    "label": "L_e",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore",
+    "element": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_e",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "powerPort": {
+     "flow": "v_L_e",
+     "potential": "u_L_e"
+    }
+   },
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_m": {
+    "type": "bgf:MechanicalInductor",
+    "label": "L_m",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore",
+    "element": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_m",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+    "powerPort": {
+     "flow": "v_L_m",
+     "potential": "u_L_m"
+    }
+   },
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_e": {
+    "type": "bgf:ElectricalResistor",
+    "label": "R_e",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+    "element": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_e",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "powerPort": {
+     "flow": "v_R_e",
+     "potential": "u_R_e"
+    }
+   },
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_m": {
+    "type": "bgf:MechanicalResistor",
+    "label": "R_m",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+    "element": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_m",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+    "powerPort": {
+     "flow": "v_R_m",
+     "potential": "u_R_m"
+    }
+   },
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#q_C_m": {
+    "type": "bgf:MechanicalCapacitor",
+    "label": "q_C_m",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+    "element": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#q_C_m",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+    "powerPort": {
+     "flow": "v_q_C_m",
+     "potential": "u_q_C_m"
+    }
+   },
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#u_in_e": {
+    "type": "bgf:VoltageSource",
+    "label": "u_in_e",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+    "element": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#u_in_e",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "powerPort": {
+     "flow": "v_u_in_e",
+     "potential": "u_in_e"
+    }
+   },
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#GY_0": {
+    "type": "bgf:TransformNode",
+    "label": "Bl",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#TransformNode",
+    "element": null,
+    "junction": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#GY",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "powerPort": {
+     "flow": "v_R_e",
+     "potential": "u_Bl_0"
+    }
+   },
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#GY_1": {
+    "type": "bgf:TransformNode",
+    "label": "Bl",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#TransformNode",
+    "element": null,
+    "junction": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#GY",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+    "powerPort": {
+     "flow": "v_R_m",
+     "potential": "u_Bl_1"
+    }
+   }
+  },
+  "edges": [
+   {
+    "source": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_e",
+    "target": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_e",
+    "bondCount": 1
+   },
+   {
+    "source": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_e",
+    "target": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#GY_0",
+    "bondCount": 1
+   },
+   {
+    "source": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_m",
+    "target": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_m",
+    "bondCount": 1
+   },
+   {
+    "source": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_m",
+    "target": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#q_C_m",
+    "bondCount": 1
+   },
+   {
+    "source": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#u_in_e",
+    "target": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_e",
+    "bondCount": 1
+   },
+   {
+    "source": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#GY_1",
+    "target": "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_m",
+    "bondCount": 1
+   }
+  ]
+ },
+ "variables": {
+  "elements": {
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_e": {
+    "v": {
+     "name": "v_L_e",
+     "symbol": "v_L_e",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": {
+      "magnitude": 0.0,
+      "units": {
+       "pint": "ampere",
+       "scale": 1.0,
+       "base": "A"
+      }
+     }
+    },
+    "u": {
+     "name": "u_L_e",
+     "symbol": "u_L_e",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    },
+    "L": {
+     "name": "L_L_e",
+     "symbol": "L_L_e",
+     "type": null,
+     "units": {
+      "pint": "joule * second ** 2 / coulomb ** 2",
+      "scale": 1.0,
+      "base": "A-2.m2.kg.s-2"
+     },
+     "value": {
+      "magnitude": 0.2,
+      "units": {
+       "pint": "henry",
+       "scale": 1.0,
+       "base": "A-2.m2.kg.s-2"
+      }
+     }
+    }
+   },
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#L_m": {
+    "v": {
+     "name": "v_L_m",
+     "symbol": "v_L_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "meter / second",
+      "scale": 1.0,
+      "base": "m.s-1"
+     },
+     "value": {
+      "magnitude": 0.0,
+      "units": {
+       "pint": "meter / second",
+       "scale": 1.0,
+       "base": "m.s-1"
+      }
+     }
+    },
+    "u": {
+     "name": "u_L_m",
+     "symbol": "u_L_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / meter",
+      "scale": 1.0,
+      "base": "m.kg.s-2"
+     },
+     "value": null
+    },
+    "L": {
+     "name": "L_L_m",
+     "symbol": "L_L_m",
+     "type": null,
+     "units": {
+      "pint": "joule * second ** 2 / meter ** 2",
+      "scale": 1.0,
+      "base": "kg"
+     },
+     "value": {
+      "magnitude": 0.01,
+      "units": {
+       "pint": "joule * second ** 2 / meter ** 2",
+       "scale": 1.0,
+       "base": "kg"
+      }
+     }
+    },
+    "a": {
+     "name": "a_L_m",
+     "symbol": "a_L_m",
+     "type": null,
+     "units": {
+      "pint": "meter / second ** 2",
+      "scale": 1.0,
+      "base": "m.s-2"
+     },
+     "value": null
+    }
+   },
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_e": {
+    "v": {
+     "name": "v_R_e",
+     "symbol": "v_R_e",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_R_e",
+     "symbol": "u_R_e",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    },
+    "R": {
+     "name": "R_R_e",
+     "symbol": "R_R_e",
+     "type": null,
+     "units": {
+      "pint": "joule * second / coulomb ** 2",
+      "scale": 1.0,
+      "base": "A-2.m2.kg.s-3"
+     },
+     "value": {
+      "magnitude": 5.0,
+      "units": {
+       "pint": "ohm",
+       "scale": 1.0,
+       "base": "A-2.m2.kg.s-3"
+      }
+     }
+    }
+   },
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#R_m": {
+    "v": {
+     "name": "v_R_m",
+     "symbol": "v_R_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "meter / second",
+      "scale": 1.0,
+      "base": "m.s-1"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_R_m",
+     "symbol": "u_R_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / meter",
+      "scale": 1.0,
+      "base": "m.kg.s-2"
+     },
+     "value": null
+    },
+    "R": {
+     "name": "R_R_m",
+     "symbol": "R_R_m",
+     "type": null,
+     "units": {
+      "pint": "joule * second / meter ** 2",
+      "scale": 1.0,
+      "base": "kg.s-1"
+     },
+     "value": {
+      "magnitude": 0.4,
+      "units": {
+       "pint": "joule * second / meter ** 2",
+       "scale": 1.0,
+       "base": "kg.s-1"
+      }
+     }
+    }
+   },
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#q_C_m": {
+    "v": {
+     "name": "v_q_C_m",
+     "symbol": "v_q_C_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "meter / second",
+      "scale": 1.0,
+      "base": "m.s-1"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_q_C_m",
+     "symbol": "u_q_C_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / meter",
+      "scale": 1.0,
+      "base": "m.kg.s-2"
+     },
+     "value": null
+    },
+    "C": {
+     "name": "C_q_C_m",
+     "symbol": "C_q_C_m",
+     "type": null,
+     "units": {
+      "pint": "meter ** 2 / joule",
+      "scale": 1.0,
+      "base": "kg-1.s2"
+     },
+     "value": {
+      "magnitude": 0.01,
+      "units": {
+       "pint": "meter ** 2 / joule",
+       "scale": 1.0,
+       "base": "kg-1.s2"
+      }
+     }
+    },
+    "q": {
+     "name": "q_C_m",
+     "symbol": "q_C_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+     "units": {
+      "pint": "meter",
+      "scale": 1.0,
+      "base": "m"
+     },
+     "value": {
+      "magnitude": 0.0,
+      "units": {
+       "pint": "meter",
+       "scale": 1.0,
+       "base": "m"
+      }
+     }
+    }
+   },
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#u_in_e": {
+    "v": {
+     "name": "v_u_in_e",
+     "symbol": "v_u_in_e",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_in_e",
+     "symbol": "u_in_e",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    }
+   }
+  },
+  "junctions": {
+   "https://github.com/physiomelinks/bg-2-cellml/blob/main/packages/bg2cellml/test/models/A3_reduced_numbers_with_units.ttl#GY": {
+    "RATIO": {
+     "name": "Bl",
+     "symbol": "Bl",
+     "type": null,
+     "units": {
+      "pint": "joule * second / coulomb / meter",
+      "scale": 1.0,
+      "base": "A-1.m.kg.s-2"
+     },
+     "value": {
+      "magnitude": 6.0,
+      "units": {
+       "pint": "joule * second / coulomb / meter",
+       "scale": 1.0,
+       "base": "A-1.m.kg.s-2"
+      }
+     }
+    },
+    "v_0": {
+     "name": "v_R_e",
+     "symbol": "v_R_e",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    },
+    "u_0": {
+     "name": "u_Bl_0",
+     "symbol": "u_Bl_0",
+     "type": null,
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    },
+    "v_1": {
+     "name": "v_R_m",
+     "symbol": "v_R_m",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "meter / second",
+      "scale": 1.0,
+      "base": "m.s-1"
+     },
+     "value": null
+    },
+    "u_1": {
+     "name": "u_Bl_1",
+     "symbol": "u_Bl_1",
+     "type": null,
+     "units": {
+      "pint": "joule / meter",
+      "scale": 1.0,
+      "base": "m.kg.s-2"
+     },
+     "value": null
+    }
+   }
+  }
+ },
+ "equations": [
+  {
+   "provenance": "cr",
+   "text": "Derivative(v_L_e, t) = u_L_e/L_L_e",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>v_L_e</ci></apply><apply><divide/><ci>u_L_e</ci><ci>L_L_e</ci></apply></apply></math>"
+  },
+  {
+   "provenance": "be",
+   "text": "v_L_e = u_R_e/R_R_e",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v_L_e</ci><apply><divide/><ci>u_R_e</ci><ci>R_R_e</ci></apply></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "Derivative(v_L_m, t) = a_L_m",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>v_L_m</ci></apply><ci>a_L_m</ci></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "u_L_m = L_L_m*a_L_m",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_L_m</ci><apply><times/><ci>L_L_m</ci><ci>a_L_m</ci></apply></apply></math>"
+  },
+  {
+   "provenance": "be",
+   "text": "v_L_m = v_R_m",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v_L_m</ci><ci>v_R_m</ci></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "v_R_e = u_R_e/R_R_e",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v_R_e</ci><apply><divide/><ci>u_R_e</ci><ci>R_R_e</ci></apply></apply></math>"
+  },
+  {
+   "provenance": "be",
+   "text": "u_R_e = -u_Bl_0 - u_L_e + 50.0*sin(100*pi*t)",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_R_e</ci><apply><plus/><apply><minus/><apply><minus/><ci>u_Bl_0</ci></apply><ci>u_L_e</ci></apply><apply><times/><cn>50.0</cn><apply><sin/><apply><times/><cn>100</cn><pi/><ci>t</ci></apply></apply></apply></apply></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "u_R_m = R_R_m*v_R_m",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_R_m</ci><apply><times/><ci>R_R_m</ci><ci>v_R_m</ci></apply></apply></math>"
+  },
+  {
+   "provenance": "be",
+   "text": "u_R_m = -L_L_m*a_L_m + u_Bl_1 - q_C_m/C_q_C_m",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_R_m</ci><apply><plus/><apply><minus/><apply><times/><ci>L_L_m</ci><ci>a_L_m</ci></apply></apply><apply><minus/><ci>u_Bl_1</ci><apply><divide/><ci>q_C_m</ci><ci>C_q_C_m</ci></apply></apply></apply></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "Derivative(q_C_m, t) = v_q_C_m",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>q_C_m</ci></apply><ci>v_q_C_m</ci></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "u_q_C_m = q_C_m/C_q_C_m",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_q_C_m</ci><apply><divide/><ci>q_C_m</ci><ci>C_q_C_m</ci></apply></apply></math>"
+  },
+  {
+   "provenance": "be",
+   "text": "v_q_C_m = v_R_m",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v_q_C_m</ci><ci>v_R_m</ci></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "u_in_e = 50.0*sin(100*pi*t)",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_in_e</ci><apply><times/><cn>50.0</cn><apply><sin/><apply><times/><cn>100</cn><pi/><ci>t</ci></apply></apply></apply></apply></math>"
+  },
+  {
+   "provenance": "be",
+   "text": "v_u_in_e = -u_R_e/R_R_e",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v_u_in_e</ci><apply><minus/><apply><divide/><ci>u_R_e</ci><ci>R_R_e</ci></apply></apply></apply></math>"
+  },
+  {
+   "provenance": "js",
+   "text": "u_Bl_0 = Bl*v_R_m",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_Bl_0</ci><apply><times/><ci>Bl</ci><ci>v_R_m</ci></apply></apply></math>"
+  },
+  {
+   "provenance": "js",
+   "text": "u_Bl_1 = Bl*v_R_e",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_Bl_1</ci><apply><times/><ci>Bl</ci><ci>v_R_e</ci></apply></apply></math>"
+  }
+ ]
+}

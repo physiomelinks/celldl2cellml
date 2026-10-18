@@ -28,9 +28,23 @@ export interface DOMParserLike {
   parseFromString(source: string, mimeType: 'application/xml' | 'text/xml'): Document
 }
 
-export interface ParseOptions {
+export interface ReadOptions {
+  /**
+   * The units of a `<cn>`, kept as the number's `units`. Defaults to its
+   * `cellml:units` (`cellmlUnits`). A tool whose MathML gives units another
+   * way, such as BG-RDF's UCUM codes, reads them here.
+   */
+  cnUnits?: (cn: Element) => string | undefined
+}
+
+export interface ParseOptions extends ReadOptions {
   /** Defaults to `globalThis.DOMParser`. */
   domParser?: DOMParserLike
+  /**
+   * More namespace prefixes that may be used without being declared, as
+   * `{ prefix: namespace }`. `cellml` always may.
+   */
+  namespaces?: Readonly<Record<string, string>>
 }
 
 export interface MathMLProblem {
@@ -84,8 +98,8 @@ function strayText(el: Element): string | undefined {
   return undefined
 }
 
-/** A `<cn>`'s cellml:units, whichever CellML version's namespace declares it. */
-function unitsOf(el: Element): string | undefined {
+/** A `<cn>`'s `cellml:units`, whichever CellML version's namespace declares it. */
+export function cellmlUnits(el: Element): string | undefined {
   for (const attribute of Array.from(el.attributes)) {
     if (
       attribute.localName === 'units' &&
@@ -99,7 +113,10 @@ function unitsOf(el: Element): string | undefined {
 
 /** Reads one top-level expression; `null` wherever something couldn't be read, with the reason recorded. */
 class Reader {
-  constructor(private readonly report: (message: string) => void) {}
+  constructor(
+    private readonly report: (message: string) => void,
+    private readonly unitsOf: (cn: Element) => string | undefined = cellmlUnits,
+  ) {}
 
   private problem(message: string): null {
     this.report(message)
@@ -138,7 +155,7 @@ class Reader {
   }
 
   private number(el: Element): AstNode | null {
-    const units = unitsOf(el)
+    const units = this.unitsOf(el)?.trim() || undefined
     const base = el.getAttribute('base')
     if (base !== null && base.trim() !== '10') return this.problem(`<cn base="${base}"> isn't supported; numbers must be base 10`)
     const kind = el.getAttribute('type') ?? 'real'
@@ -328,10 +345,10 @@ class Reader {
 
 //==============================================================================
 
-function readItems(items: readonly Element[]): MathMLRead {
+function readItems(items: readonly Element[], options: ReadOptions): MathMLRead {
   const problems: MathMLProblem[] = []
   const expressions = items.map((item, expression) => {
-    const reader = new Reader((message) => problems.push({ expression, message }))
+    const reader = new Reader((message) => problems.push({ expression, message }), options.cnUnits)
     return reader.expression(item)
   })
   return { expressions, problems }
@@ -341,7 +358,7 @@ function readItems(items: readonly Element[]): MathMLRead {
  * Read the expressions in a `<math>` element: one per child, usually an
  * equation. Problems are listed, not thrown.
  */
-export function readMathMLElement(math: Element): MathMLRead {
+export function readMathMLElement(math: Element, options: ReadOptions = {}): MathMLRead {
   if (math.namespaceURI !== MATHML_NS || math.localName !== 'math') {
     return { expressions: [], problems: [{ expression: 0, message: `Expected <math>, got <${math.nodeName}>` }] }
   }
@@ -349,12 +366,13 @@ export function readMathMLElement(math: Element): MathMLRead {
   if (stray !== undefined) {
     return { expressions: [], problems: [{ expression: 0, message: `Unexpected text "${stray}" in <math>` }] }
   }
-  return readItems(elements(math))
+  return readItems(elements(math), options)
 }
 
 /**
  * Read MathML text: one or more `<math>` elements, or bare expressions such as
- * an `<apply>`. The `cellml` prefix may be used without being declared.
+ * an `<apply>`. The `cellml` prefix, and any in `options.namespaces`, may be
+ * used without being declared.
  * Problems are listed, not thrown; text that isn't well-formed XML throws.
  */
 export function readMathML(source: string, options: ParseOptions = {}): MathMLRead {
@@ -366,7 +384,11 @@ export function readMathML(source: string, options: ParseOptions = {}): MathMLRe
   // Wrapped so that fragments, and cellml:units without the namespace declared,
   // read as they would inside a CellML model.
   const body = source.replace(/^\s*<\?xml[^>]*\?>/, '')
-  const wrapped = `<wrapper xmlns="${MATHML_NS}" xmlns:cellml="${CELLML_2_0_NS}">${body}</wrapper>`
+  const prefixes = Object.entries(options.namespaces ?? {})
+    .filter(([prefix]) => prefix !== 'cellml' && /^[A-Za-z_][\w.-]*$/.test(prefix))
+    .map(([prefix, namespace]) => ` xmlns:${prefix}="${namespace.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')}"`)
+    .join('')
+  const wrapped = `<wrapper xmlns="${MATHML_NS}" xmlns:cellml="${CELLML_2_0_NS}"${prefixes}>${body}</wrapper>`
   let doc: Document
   try {
     doc = parser.parseFromString(wrapped, 'application/xml')
@@ -384,11 +406,11 @@ export function readMathML(source: string, options: ParseOptions = {}): MathMLRe
   }
   const top = elements(wrapper)
   const maths = top.filter((el) => el.namespaceURI === MATHML_NS && el.localName === 'math')
-  if (maths.length === 0) return readItems(top)
+  if (maths.length === 0) return readItems(top, options)
   if (maths.length < top.length) {
     return { expressions: [], problems: [{ expression: 0, message: 'Mixed <math> elements and bare expressions' }] }
   }
-  return readItems(maths.flatMap(elements))
+  return readItems(maths.flatMap(elements), options)
 }
 
 function strict(read: MathMLRead): AstNode[] {
@@ -402,8 +424,8 @@ export function parseMathML(source: string, options: ParseOptions = {}): AstNode
 }
 
 /** As `readMathMLElement`, but throws a `MathMLError` listing every problem. */
-export function fromMathMLElement(math: Element): AstNode[] {
-  return strict(readMathMLElement(math))
+export function fromMathMLElement(math: Element, options: ReadOptions = {}): AstNode[] {
+  return strict(readMathMLElement(math, options))
 }
 
 /**
