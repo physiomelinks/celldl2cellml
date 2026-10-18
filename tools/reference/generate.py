@@ -15,6 +15,8 @@ framework loader. `--framework-only` rewrites just that file.
 And for each case the Python version can build, models/<case>.json: the model's
 elements, junctions and bonds as loaded, its bond network, its variables and its
 equations, for testing the model a stage at a time before any CellML exists.
+Where fixing Python's bug 3 (bond labels and counts swapped) changes the model,
+models/<case>.bug3-fixed.json is the model as the fixed Python builds it.
 `--fixtures-only` rewrites framework.json and these, without simulating.
 
 Example models come from the bg-rdf submodule. Variant models in
@@ -40,6 +42,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import libopencor as loc
 
@@ -432,19 +435,57 @@ def model_fixture(framework, BondgraphModel, sympy_to_mathml, name: str, path: P
         'equations': [{'provenance': eq.provenance, **equation_fixture(eq, sympy_to_mathml)} for eq in model.equations],
     }
 
+class bug3_fixed:
+    """
+    Within this, the Python bg2cellml has its bug 3 fixed: model.py:233 gives
+    `BondgraphBond` a bond's label as its count and its count as its label,
+    so a labelled bond fails and `bgf:bondCount` on bonds is ignored. This
+    passes them the right way round, which is all the fix needs.
+    """
+    def __enter__(self):
+        import bg2cellml.bondgraph.model as model
+        self.__model = model
+        self.__bond = model.BondgraphBond
+        bond = self.__bond
+        def fixed(model, id, source_id, target_id, label=None, count=None):
+            return bond(model, id, source_id, target_id,
+                        None if count is None else SimpleNamespace(value=count),
+                        None if label is None else label.value)
+        model.BondgraphBond = fixed
+        return self
+
+    def __exit__(self, *_):
+        self.__model.BondgraphBond = self.__bond
+
 def write_model_fixture(case: dict, python) -> None:
-    """Write `models/<case>.json`, and name it in the case. Cases Python can't build get none."""
+    """
+    Write `models/<case>.json`, and name it in the case. Cases Python can't
+    build get none. Where Python with bug 3 fixed builds the model
+    differently, or only then can build it, also write
+    `models/<case>.bug3-fixed.json`.
+    """
     framework, BondgraphModel, sympy_to_mathml = python
     path = REPO_ROOT / case['source']
     case.pop('intermediate', None)
+    case.pop('intermediateBug3Fixed', None)
+    (OUTPUT_DIR / 'models').mkdir(exist_ok=True)
+    fixture = None
     try:
         fixture = model_fixture(framework, BondgraphModel, sympy_to_mathml, case['name'], path)
+        (OUTPUT_DIR / 'models' / f'{case["name"]}.json').write_text(json.dumps(fixture, indent=1) + '\n')
+        case['intermediate'] = f'models/{case["name"]}.json'
     except Exception as e:
         print(f'{case["name"]}: no intermediate fixture ({type(e).__name__}: {e})')
+    try:
+        with bug3_fixed():
+            fixed = model_fixture(framework, BondgraphModel, sympy_to_mathml, case['name'], path)
+    except Exception as e:
+        print(f'{case["name"]}: no intermediate fixture with bug 3 fixed ({type(e).__name__}: {e})')
         return
-    (OUTPUT_DIR / 'models').mkdir(exist_ok=True)
-    (OUTPUT_DIR / 'models' / f'{case["name"]}.json').write_text(json.dumps(fixture, indent=1) + '\n')
-    case['intermediate'] = f'models/{case["name"]}.json'
+    if fixed != fixture:
+        (OUTPUT_DIR / 'models' / f'{case["name"]}.bug3-fixed.json').write_text(json.dumps(fixed, indent=1) + '\n')
+        case['intermediateBug3Fixed'] = f'models/{case["name"]}.bug3-fixed.json'
+        print(f'{case["name"]}: differs with bug 3 fixed')
 
 # ------------------------------------------------------------------------------
 

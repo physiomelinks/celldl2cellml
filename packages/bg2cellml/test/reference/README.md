@@ -13,6 +13,7 @@ Results from the Python [bg2cellml](https://github.com/CellDL/BG-Tools) 0.11.2, 
 | `python/<example>.cellml` | The CellML 1.1 the Python version generated, for inspection |
 | `framework.json` | The BG-RDF framework as the Python version loads it: domains, element templates with their ports, parameters, variables and constitutive relations, junctions, composites, and which template each element class and domain gives |
 | `models/<case>.json` | The model as the Python version builds it, for each case it can build: elements, junctions and bonds as loaded, the bond network, every variable once assigned, and the equations |
+| `models/<case>.bug3-fixed.json` | The same, from the Python version with its bug 3 (bond labels and counts swapped) patched, where that changes the model: `example_B2`, `example_B2_reduced` and `RC_labelled_bonds` |
 
 ## Cases
 
@@ -53,5 +54,7 @@ Numbers are rounded to 9 significant figures. Regenerating on a different platfo
 - **`variables`:** every element's and junction's variables once assigned, by IRI and name.
 - **`equations`:** every equation, in Python's order, with its provenance (`cr` a constitutive relation, `be` a bond element's, `js` a junction's), as sympy prints it and as sympy's Content MathML.
 
-Python's bugs show here as they are. Its bonds hold any `bgf:bondCount` as their `label`, and have a `bondCount` of 1 (model.py:233). So for `example_B2` and `example_B2_reduced`, whose models give two bonds each a count of 2, the fixtures, the Python CellML and the simulation references are all for counts of 1. The JavaScript version reads the counts, so it differs there on purpose; `test/bonds.test.ts` checks against the counts the fixtures hold as labels, and lists exactly which bonds differ. `RC_labelled_bonds` and `RC_plain_number` have no fixture, as Python can't build them.
+Python's bugs show here as they are. Its bonds hold any `bgf:bondCount` as their `label`, and have a `bondCount` of 1 (model.py:233). So for `example_B2` and `example_B2_reduced`, whose models give two bonds each a count of 2, the fixtures, the Python CellML and the simulation references are all for counts of 1. The JavaScript version reads the counts, so it differs there on purpose; `test/bonds.test.ts` checks against the counts the fixtures hold as labels, and lists exactly which bonds differ.
+
+So the generator also builds every case with that bug patched (passing `BondgraphBond` its label and count the right way round, and nothing else), and writes `models/<case>.bug3-fixed.json` where the result differs. That's the two B2 models, and `RC_labelled_bonds`, which Python can only build once fixed. `test/equations.test.ts` checks our equations against these, so it shows we match Python once the bug is fixed. Their simulation references are still from unpatched Python: patched Python writes `2*v_r_1 = -v_q_2` for example_B2, which isn't valid CellML, so it can't give one. `RC_labelled_bonds` and `RC_plain_number` have no fixture, as Python can't build them.
 

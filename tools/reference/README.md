@@ -12,6 +12,8 @@ You need [uv](https://docs.astral.sh/uv/) and a checkout of [BG-Tools](https://g
 uv run --project tools/reference python tools/reference/generate.py --bg-tools ../bg-tools
 ```
 
+Where patching the Python bg2cellml's bug 3 (it gives `BondgraphBond` a bond's label and count the wrong way round) changes a model, `models/<case>.bug3-fixed.json` is the model as the patched version builds it. The patch is applied only while building those.
+
 To rewrite only `framework.json`, the framework as Python loads it, add `--framework-only`. To rewrite `framework.json` and the `models/` fixtures without simulating, add `--fixtures-only`. Both need the same BG-Tools commit as the other references.
 
 Simulating on another platform can change the last of the 9 stored digits, which is well within the tolerance but shows up as changes to commit. `--fixtures-only` avoids that when only the fixtures need regenerating.

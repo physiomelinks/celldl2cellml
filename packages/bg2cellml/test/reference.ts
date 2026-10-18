@@ -47,6 +47,12 @@ export interface ReferenceCase {
   python?: { status: 'matches' | 'differs' | 'error'; problems?: string[]; error?: string }
   /** File in test/reference/ with the model as Python builds it. Absent where Python can't build the model. */
   intermediate?: string
+  /**
+   * File in test/reference/ with the model as Python builds it with its bug 3
+   * (bond labels and counts swapped) fixed, where that differs: models with
+   * bond counts or labels.
+   */
+  intermediateBug3Fixed?: string
 }
 
 export interface Manifest {
@@ -216,6 +222,16 @@ export interface PythonModel {
 export function loadPythonModel(c: ReferenceCase): PythonModel {
   if (c.intermediate === undefined) throw new Error(`Python can't build ${c.name}, so it has no intermediate fixture`)
   return JSON.parse(readFileSync(`${REFERENCE_DIR}${c.intermediate}`, 'utf8')) as PythonModel
+}
+
+/**
+ * The model as Python builds it with bug 3 fixed: the bug-3-fixed fixture
+ * where there is one, otherwise the usual one, which it would be the same as.
+ * This is what this version should match.
+ */
+export function loadFixedPythonModel(c: ReferenceCase): PythonModel {
+  if (c.intermediateBug3Fixed === undefined) return loadPythonModel(c)
+  return JSON.parse(readFileSync(`${REFERENCE_DIR}${c.intermediateBug3Fixed}`, 'utf8')) as PythonModel
 }
 
 export function loadPythonFramework(manifest: Manifest = loadManifest()): PythonFramework {

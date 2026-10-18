@@ -142,7 +142,8 @@
       "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl",
       "reference": "example_B2.json",
       "pythonCellml": "python/example_B2.cellml",
-      "intermediate": "models/example_B2.json"
+      "intermediate": "models/example_B2.json",
+      "intermediateBug3Fixed": "models/example_B2.bug3-fixed.json"
     },
     {
       "name": "example_B2_reduced",
@@ -152,7 +153,8 @@
       "baseIri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2_reduced.ttl",
       "reference": "example_B2_reduced.json",
       "pythonCellml": "python/example_B2_reduced.cellml",
-      "intermediate": "models/example_B2_reduced.json"
+      "intermediate": "models/example_B2_reduced.json",
+      "intermediateBug3Fixed": "models/example_B2_reduced.bug3-fixed.json"
     },
     {
       "name": "example_RC",
@@ -184,7 +186,8 @@
       "python": {
         "status": "error",
         "error": "ValueError: invalid literal for int() with base 10: 'source to current'"
-      }
+      },
+      "intermediateBug3Fixed": "models/RC_labelled_bonds.bug3-fixed.json"
     },
     {
       "name": "RC_plain_number",
