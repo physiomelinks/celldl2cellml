@@ -48,6 +48,7 @@ const { cellml, metadata, issues, exception } = await converter.celldl2cellml(ce
 - **Known bugs fixed.** Bond labels and bond counts work, ports with only outputs get the right expression, and plain numbers such as `10.0` are accepted as values (Python rejects them under oxigraph). They're listed at the top of `src/model/model.ts`.
 - **A bad declaration doesn't sink the framework.** A domain or element template with a problem is reported and left out; the others still load. Python stops at the first problem.
 - **Templates are checked more closely.** Every parameter and variable must appear in the constitutive relation (Python only compares counts), and ports without a direction, duplicate ports and duplicate names are reported (Python drops or overwrites them).
+- **An ambiguous element class is reported.** An element given as a class and domain (`bgf:Reaction` in `bgf:Chemical`) where the domain has more than one template of that class finds nothing, and `templateIssue()` says which templates it could be. Python silently uses the last by IRI.
 - **A template's `rdfs:label` is its `label`.** Python holds it as the template's symbol, which nothing else uses.
 - **Domain constants are sorted by name.** Python's order depends on its oxigraph build.
 - **Output text differs.** The equations are the same mathematically, but terms may be ordered differently. Parity is checked by simulation.

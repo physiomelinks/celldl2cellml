@@ -57,12 +57,37 @@ describe('elementTemplate()', () => {
     },
   )
 
-  it.each(python.lookups.byClassAndDomain.map((l) => [short(l.elementClass), short(l.domain), short(l.template), l]))(
-    'finds a %s in %s as Python does: %s',
-    (_class, _domain, _template, lookup) => {
-      expect(framework.elementTemplate(lookup.elementClass, lookup.domain)?.iri ?? null).toBe(lookup.template)
-    },
-  )
+  // Where a domain has two templates of a class, Python uses the last by IRI; we find nothing, so it can be reported
+  const AMBIGUOUS: Record<string, string[]> = {
+    'Reaction Chemical': ['ChemicalReaction', 'NKETransporter'],
+    'QuantityStore Hydraulic': ['ElasticVessel', 'HydraulicStorage'],
+    'Reaction Hydraulic': ['OldOsmosis', 'OsmoticTransporter'],
+  }
+
+  it.each(
+    python.lookups.byClassAndDomain
+      .filter((l) => !(`${short(l.elementClass)} ${short(l.domain)}` in AMBIGUOUS))
+      .map((l) => [short(l.elementClass), short(l.domain), short(l.template), l]),
+  )('finds a %s in %s as Python does: %s', (_class, _domain, _template, lookup) => {
+    expect(framework.elementTemplate(lookup.elementClass, lookup.domain)?.iri ?? null).toBe(lookup.template)
+  })
+
+  it.each(Object.entries(AMBIGUOUS))('finds nothing for a %s, which could be %s', (key, choices) => {
+    const [elementClass, domain] = key.split(' ').map(bgf) as [string, string]
+    const pythonChoice = python.lookups.byClassAndDomain.find((l) => l.elementClass === elementClass && l.domain === domain)!.template
+    expect(pythonChoice).toBe(bgf(choices.at(-1)!))
+    expect(framework.elementTemplate(elementClass, domain)).toBeUndefined()
+    expect(framework.templatesOfClass(elementClass, domain).map((t) => t.iri)).toEqual(choices.map(bgf))
+  })
+
+  it('says why a class and domain finds nothing', () => {
+    expect(framework.templateIssue(bgf('Reaction'), bgf('Chemical'))).toBe(
+      'bgf:Reaction in bgf:Chemical is ambiguous: it could be bgf:ChemicalReaction, bgf:NKETransporter. Give the template instead.',
+    )
+    expect(framework.templateIssue(bgf('Resistance'), bgf('Chemical'))).toBe('bgf:Resistance has no template in bgf:Chemical')
+    expect(framework.templatesOfClass(bgf('Resistance'), bgf('Chemical'))).toEqual([])
+    expect(framework.templateIssue(bgf('Resistance'), bgf('Electrical'))).toBeUndefined()
+  })
 
   it('resolves every element type in the 14 examples to the template Python does', () => {
     const elements = python.lookups.examples.filter((l) => 'element' in l)
@@ -97,10 +122,6 @@ describe('elementTemplate()', () => {
     expect(framework.elementTemplate(bgf('Resistance'), bgf('Chemical'))).toBeUndefined()
   })
 
-  it('uses the last template by IRI where a domain has more than one of a class, as Python does', () => {
-    expect(framework.elementTemplate(bgf('Reaction'), bgf('Chemical'))!.iri).toBe(bgf('NKETransporter'))
-    expect(framework.elementTemplate(bgf('QuantityStore'), bgf('Hydraulic'))!.iri).toBe(bgf('HydraulicStorage'))
-  })
 })
 
 //==============================================================================

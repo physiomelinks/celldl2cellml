@@ -9,7 +9,7 @@ import type { ParseOptions } from '@physiomelinks/math-ast'
 
 import { IssueLog } from '../issues.js'
 import type { RdfGraph, ResultRow } from '../rdf/graph.js'
-import { BGF, fragment } from '../rdf/namespaces.js'
+import { BGF, curie, fragment } from '../rdf/namespaces.js'
 import {
   COMPOSITE_TEMPLATE_DEFINITIONS,
   DECLARED_DOMAINS,
@@ -81,8 +81,8 @@ export class BondgraphFramework {
   readonly elementTemplates = new Map<string, ElementTemplate>()
   readonly compositeTemplates = new Map<string, CompositeTemplate>()
   readonly junctions = new Map<string, JunctionStructure>()
-  /** Element templates by element class and domain, as `${class} ${domain}`. */
-  readonly #byClassAndDomain = new Map<string, ElementTemplate>()
+  /** Element templates by element class and domain, as `${class} ${domain}`, in IRI order. */
+  readonly #byClassAndDomain = new Map<string, ElementTemplate[]>()
 
   /**
    * Build the framework from a graph holding the ontology and templates.
@@ -153,9 +153,9 @@ export class BondgraphFramework {
         this.log.report(error.message, iri)
       }
     }
-    // In IRI order, so the last template of a class in a domain wins, as in Python
     for (const template of this.elementTemplates.values()) {
-      this.#byClassAndDomain.set(`${template.elementClass} ${template.domain.iri}`, template)
+      const key = `${template.elementClass} ${template.domain.iri}`
+      this.#byClassAndDomain.set(key, [...(this.#byClassAndDomain.get(key) ?? []), template])
     }
   }
 
@@ -200,13 +200,37 @@ export class BondgraphFramework {
    *   such as `bgf:ChemicalStorageNode` or `bgf:ElectricalResistor`.
    *   Composites are checked first.
    * - With a domain, `elementType` is an element class, such as
-   *   `bgf:Resistance` in `bgf:Electrical`. Where a domain has more than one
-   *   template of a class, the last by IRI is used, as in Python: a
-   *   `bgf:Reaction` in `bgf:Chemical` is a `bgf:NKETransporter`.
+   *   `bgf:Resistance` in `bgf:Electrical`. Where the domain has more than one
+   *   template of that class, such as a `bgf:Reaction` in `bgf:Chemical`,
+   *   nothing is found: `templatesOfClass()` gives the choices, for reporting.
+   *   Python uses the last by IRI instead (here `bgf:NKETransporter`).
    */
   elementTemplate(elementType: string, domain?: string): BondgraphElementTemplate | undefined {
-    if (domain !== undefined) return this.#byClassAndDomain.get(`${elementType} ${domain}`)
+    if (domain !== undefined) {
+      const templates = this.templatesOfClass(elementType, domain)
+      return templates.length === 1 ? templates[0] : undefined
+    }
     return this.compositeTemplates.get(elementType) ?? this.elementTemplates.get(elementType)
+  }
+
+  /** Every element template of a class in a domain, in IRI order. More than one makes `elementTemplate(class, domain)` ambiguous. */
+  templatesOfClass(elementClass: string, domain: string): readonly ElementTemplate[] {
+    return this.#byClassAndDomain.get(`${elementClass} ${domain}`) ?? []
+  }
+
+  /**
+   * The issue to report when `elementTemplate(class, domain)` finds nothing:
+   * that the class has no template in the domain, or more than one.
+   * `undefined` when it finds one.
+   */
+  templateIssue(elementClass: string, domain: string): string | undefined {
+    const templates = this.templatesOfClass(elementClass, domain)
+    if (templates.length === 1) return undefined
+    if (templates.length > 1) {
+      const choices = templates.map((template) => curie(template.iri)).join(', ')
+      return `${curie(elementClass)} in ${curie(domain)} is ambiguous: it could be ${choices}. Give the template instead.`
+    }
+    return `${curie(elementClass)} has no template in ${curie(domain)}`
   }
 
   /** A junction structure by IRI, such as `bgf:OneNode`. */
