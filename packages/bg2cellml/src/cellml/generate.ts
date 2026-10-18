@@ -7,7 +7,7 @@
  *   from `@physiomelinks/cellml-units` and initial values in each variable's
  *   units (6.1, `model.ts`);
  * - write equations with `toMathML` from `@physiomelinks/math-ast`, using
- *   `cnUnits` to give every `<cn>` a `cellml:units` (6.2);
+ *   `cnUnits` to give every `<cn>` a `cellml:units` (6.2, `equations.ts`);
  * - validate with libCellML's Validator and Analyser, and return their
  *   messages as issues (6.3);
  * - return metadata linking variables to bond graph elements (6.4);
@@ -35,8 +35,9 @@ export interface GenerateOptions {
 }
 
 /**
- * The CellML 2.0 for a model with no issues. So far (plan chunk 6.1) it has
- * the units and the `main` component's variables, but no equations.
+ * The CellML 2.0 for a model with no issues: its units, and the `main`
+ * component's variables and equations. Not yet validated (6.3) and without
+ * metadata (6.4).
  */
 export function generateCellML(libcellml: LibCellML, model: BondgraphModel, _options: GenerateOptions = {}): CellMLResult {
   const log = new IssueLog()

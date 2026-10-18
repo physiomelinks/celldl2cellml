@@ -20,6 +20,14 @@ export {
   type CellMLVariableKind,
 } from './cellml/model.js'
 export {
+  EQUATION_GROUPS,
+  NUMBER_UNITS,
+  addEquations,
+  leftSideKey,
+  type CellMLEquation,
+  type EquationGroup,
+} from './cellml/equations.js'
+export {
   BondgraphFramework,
   elementTemplateOf,
   isCompositeTemplate,

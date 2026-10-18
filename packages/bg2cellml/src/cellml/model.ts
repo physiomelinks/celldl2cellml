@@ -32,6 +32,7 @@ import {
 } from '@physiomelinks/cellml-units'
 
 import { VOI_NAME } from '../framework/templates.js'
+import { addEquations, type CellMLEquation } from './equations.js'
 import { cleanName, type Value, type VariableDefinition } from '../framework/variables.js'
 import type { IssueLog } from '../issues.js'
 import type { BondgraphElement, ModelVariable } from '../model/elements.js'
@@ -169,6 +170,8 @@ export interface CellMLModelBuild {
   /** The `main` component's variables, in order. */
   readonly variables: readonly CellMLVariable[]
   readonly units: UnitsDefinitions
+  /** The equations written into `main`, in order. */
+  readonly equations: readonly CellMLEquation[]
 }
 
 interface Candidate {
@@ -187,8 +190,8 @@ const capitalise = (text: string): string => text.charAt(0).toUpperCase() + text
 
 /**
  * Build the CellML model's units and its `main` component's variables
- * (plan chunk 6.1). Problems are reported in `log`; a variable with one is
- * left out.
+ * (plan chunk 6.1), and its equations (6.2, `equations.ts`). Problems are
+ * reported in `log`; a variable or equation with one is left out.
  */
 export function buildCellMLModel(libcellml: LibCellML, model: BondgraphModel, log: IssueLog): CellMLModelBuild {
   const cellml = new libcellml.Model()
@@ -205,7 +208,11 @@ export function buildCellMLModel(libcellml: LibCellML, model: BondgraphModel, lo
     if (variable !== undefined) variables.push(variable)
   }
   cellml.linkUnits()
-  return { model: cellml, component, variables, units }
+
+  const equations: CellMLEquation[] = []
+  const build: CellMLModelBuild = { model: cellml, component, variables, units, equations }
+  equations.push(...addEquations(build, model, log))
+  return build
 }
 
 /** The variables for `main`, in Python's order, each symbol once. */

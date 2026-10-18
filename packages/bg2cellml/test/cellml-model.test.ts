@@ -246,6 +246,7 @@ function fakeModel(elements: FakeSource[], junctions: FakeSource[] = []): Bondgr
     iri: MODEL_IRI,
     elements: new Map(elements.map((element) => [element.iri, { domain, ...element }])),
     junctions: new Map(junctions.map((junction) => [junction.iri, junction])),
+    equations: [],
   } as unknown as BondgraphModel
 }
 

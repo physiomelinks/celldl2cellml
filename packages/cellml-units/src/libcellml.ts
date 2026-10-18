@@ -54,6 +54,11 @@ export interface Component {
   variableCount(): number
   variableByIndex(index: number): Variable | null
   variableByName(name: string): Variable | null
+  /** The component's MathML, as text. */
+  math(): string
+  setMath(math: string): void
+  /** Adds MathML text after what the component already has. */
+  appendMath(math: string): void
   delete?(): void
 }
 

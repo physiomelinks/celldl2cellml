@@ -47,13 +47,16 @@ const { cellml, metadata, issues, exception } = await converter.celldl2cellml(ce
 | `src/model/equations.ts` | The model's equations: constitutive relations, elements acting as junctions, junctions, transformers and gyrators | `build_expressions`, `build_equations` | Done (5.5) |
 | `src/model/model.ts` | Loading a model (`until` stops at a stage, for tests) | `bondgraph/model*.py` | Done |
 | `src/cellml/model.ts` | The CellML model's units and `main` component variables | `CellMLModel`, `symbol_sort_key` | Done (6.1) |
-| `src/cellml/generate.ts` | CellML 2.0 through libCellML, plus metadata | `cellml/__init__.py` | Variables only; equations, checks and metadata to come |
+| `src/cellml/equations.ts` | The equations as MathML in `main`, grouped and ordered as Python | `__equations_to_mathml` | Done (6.2) |
+| `src/cellml/generate.ts` | CellML 2.0 through libCellML, plus metadata | `cellml/__init__.py` | Variables and equations; checks and metadata to come |
 
 ## Differences from the Python version
 
 - **CellML 2.0, written by libCellML.** It is validated and analysed before it's returned.
 - **Units are converted.** Prefixed units work, and values are scaled to their variable's units. See `@physiomelinks/cellml-units`.
 - **Units are named as `@physiomelinks/cellml-units` names them.** `C_per_s` rather than Python's `coulomb_per_second`; units that are a CellML built-in (`coulomb`, `farad`, `mole`) are used without a definition. There is no `dim` units, as CellML 2.0 has `dimensionless` built in. Two UCUM codes with one name share a definition if they are the same units (`mol/s`, `s-1.mol`), and otherwise the second is numbered (`mol_per_s_1`). Variable names, `main-<name>` ids and their order (`symbol_sort_key`) are Python's.
+- **Numbers are `dimensionless`.** Every `<cn>` gets `cellml:units`: `dimensionless` (Python's is its own `dim`), or, for a number given `cellml:units` in a source's MathML, those units read as a UCUM code. Equations are grouped (element ODEs, element algebraics, junction algebraics) and sorted by left side as in Python, one `<math>` each; numbers are written as given (`50 * 2`), where sympy folds them (`100`).
+- **Equations naming unknown variables are reported.** Python writes them anyway, giving CellML that can't be valid; this happens with a resistor or reaction whose port has no bond, whose relation keeps the template's potential.
 - **Clashing variables are reported.** Python writes one CellML variable per symbol, keeping the first; so do we, but two variables with one symbol and different units or values, or a variable named as `t` or a domain constant, are reported (Python would write two variables with one name for the latter). Two domains whose constant of one name differs are reported too.
 - **Known bugs fixed.** Bond labels and bond counts work, ports with only outputs get the right expression, and plain numbers such as `10.0` are accepted as values (Python rejects them under oxigraph). They're listed at the top of `src/model/model.ts`.
 - **Symbols are substituted all at once.** Python renames a relation's names one at a time and fails if a symbol is already there; here a symbol that would give two variables one name is reported. A variable given another element's intrinsic variable must be in the same units, not just pint-equal ones. A source's MathML may use only its own variables, the domain's constants and `t`.
