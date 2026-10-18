@@ -8,6 +8,18 @@ export {
 export { CELLDL_METADATA_ID, extractBgRdf, type DOMParserLike } from './celldl.js'
 export { generateCellML, type CellMLResult, type GenerateOptions } from './cellml/generate.js'
 export {
+  MAIN_COMPONENT,
+  UnitsDefinitions,
+  VOI_UNITS,
+  buildCellMLModel,
+  cellmlModelName,
+  freeBuild,
+  symbolSortKey,
+  type CellMLModelBuild,
+  type CellMLVariable,
+  type CellMLVariableKind,
+} from './cellml/model.js'
+export {
   BondgraphFramework,
   elementTemplateOf,
   isCompositeTemplate,

@@ -3,20 +3,22 @@
  * `cellml/__init__.py`, which wrote CellML 1.1 by hand with lxml.
  *
  * The plan:
- * - build a libCellML Model with one `main` component, as now;
- * - make units with `@physiomelinks/cellml-units`, converting initial values
- *   into each variable's units;
+ * - build a libCellML Model with one `main` component, as now, with units
+ *   from `@physiomelinks/cellml-units` and initial values in each variable's
+ *   units (6.1, `model.ts`);
  * - write equations with `toMathML` from `@physiomelinks/math-ast`, using
- *   `cnUnits` to give every `<cn>` a `cellml:units`;
+ *   `cnUnits` to give every `<cn>` a `cellml:units` (6.2);
  * - validate with libCellML's Validator and Analyser, and return their
- *   messages as issues;
+ *   messages as issues (6.3);
+ * - return metadata linking variables to bond graph elements (6.4);
  * - print with libCellML's Printer.
  */
 
 import type { LibCellML } from '@physiomelinks/cellml-units'
 
-import type { Issue } from '../issues.js'
+import { IssueLog, type Issue } from '../issues.js'
 import type { BondgraphModel } from '../model/model.js'
+import { buildCellMLModel, freeBuild } from './model.js'
 
 export interface CellMLResult {
   readonly cellml?: string
@@ -32,10 +34,22 @@ export interface GenerateOptions {
   metadata?: boolean
 }
 
-export function generateCellML(
-  _libcellml: LibCellML,
-  _model: BondgraphModel,
-  _options: GenerateOptions = {},
-): CellMLResult {
-  throw new Error('generateCellML() is not implemented yet')
+/**
+ * The CellML 2.0 for a model with no issues. So far (plan chunk 6.1) it has
+ * the units and the `main` component's variables, but no equations.
+ */
+export function generateCellML(libcellml: LibCellML, model: BondgraphModel, _options: GenerateOptions = {}): CellMLResult {
+  const log = new IssueLog()
+  const build = buildCellMLModel(libcellml, model, log)
+  try {
+    if (log.hasIssues) return { issues: log.issues }
+    const printer = new libcellml.Printer()
+    try {
+      return { cellml: printer.printModel(build.model, false), issues: [] }
+    } finally {
+      printer.delete?.()
+    }
+  } finally {
+    freeBuild(build)
+  }
 }

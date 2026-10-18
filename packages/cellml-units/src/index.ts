@@ -1,4 +1,15 @@
-export type { LibCellML, Units, UnitsConstructor } from './libcellml.js'
+export type {
+  Component,
+  LibCellML,
+  Logger,
+  LoggerIssue,
+  Model,
+  Parser,
+  Printer,
+  Units,
+  UnitsConstructor,
+  Variable,
+} from './libcellml.js'
 export {
   AFFINE_SYMBOLS,
   ARBITRARY_SYMBOLS,

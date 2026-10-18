@@ -46,12 +46,15 @@ const { cellml, metadata, issues, exception } = await converter.celldl2cellml(ce
 | `src/model/element-variables.ts` | Element values, symbols and references, unit conversion, relations in the elements' symbols | `assign_variables` | Done (5.4) |
 | `src/model/equations.ts` | The model's equations: constitutive relations, elements acting as junctions, junctions, transformers and gyrators | `build_expressions`, `build_equations` | Done (5.5) |
 | `src/model/model.ts` | Loading a model (`until` stops at a stage, for tests) | `bondgraph/model*.py` | Done |
-| `src/cellml/` | CellML 2.0 through libCellML, plus metadata | `cellml/__init__.py` | Stub |
+| `src/cellml/model.ts` | The CellML model's units and `main` component variables | `CellMLModel`, `symbol_sort_key` | Done (6.1) |
+| `src/cellml/generate.ts` | CellML 2.0 through libCellML, plus metadata | `cellml/__init__.py` | Variables only; equations, checks and metadata to come |
 
 ## Differences from the Python version
 
 - **CellML 2.0, written by libCellML.** It is validated and analysed before it's returned.
 - **Units are converted.** Prefixed units work, and values are scaled to their variable's units. See `@physiomelinks/cellml-units`.
+- **Units are named as `@physiomelinks/cellml-units` names them.** `C_per_s` rather than Python's `coulomb_per_second`; units that are a CellML built-in (`coulomb`, `farad`, `mole`) are used without a definition. There is no `dim` units, as CellML 2.0 has `dimensionless` built in. Two UCUM codes with one name share a definition if they are the same units (`mol/s`, `s-1.mol`), and otherwise the second is numbered (`mol_per_s_1`). Variable names, `main-<name>` ids and their order (`symbol_sort_key`) are Python's.
+- **Clashing variables are reported.** Python writes one CellML variable per symbol, keeping the first; so do we, but two variables with one symbol and different units or values, or a variable named as `t` or a domain constant, are reported (Python would write two variables with one name for the latter). Two domains whose constant of one name differs are reported too.
 - **Known bugs fixed.** Bond labels and bond counts work, ports with only outputs get the right expression, and plain numbers such as `10.0` are accepted as values (Python rejects them under oxigraph). They're listed at the top of `src/model/model.ts`.
 - **Symbols are substituted all at once.** Python renames a relation's names one at a time and fails if a symbol is already there; here a symbol that would give two variables one name is reported. A variable given another element's intrinsic variable must be in the same units, not just pint-equal ones. A source's MathML may use only its own variables, the domain's constants and `t`.
 - **Equations are tidied, and solved for a variable.** Every equation built from the network is canonicalised, as sympy tidies Python's. With bond counts, Python can make `2*v_r_1` an equation's left side, which isn't valid CellML; here that equation is `v_r_1 = -v_q_2/2`. A port with only outputs gets the negated sum of its outputs, where Python's gives 0 (bug 4); with bonds joined to reactions as they are, no model reaches that case.
@@ -67,7 +70,7 @@ const { cellml, metadata, issues, exception } = await converter.celldl2cellml(ce
 - **Values an element can't use are reported.** A second `bgf:hasValue`, a value on an element with no intrinsic variable, and MathML as the value of anything but a source. Python ignores them. A `bgf:variableValue` or `bgf:parameterValue` for a name the element doesn't have is reported when the model is read.
 - **An element's ports share its flow variable.** Python gives each port its own copy, with the same name.
 - **A template's `rdfs:label` is its `label`.** Python holds it as the template's symbol, which nothing else uses.
-- **Domain constants, and template parameters and variables, are sorted by name.** Python's order depends on its oxigraph build and how it orders blank nodes.
+- **Domain constants, and template parameters and variables, are sorted by name.** Python's order depends on its oxigraph build and how it orders blank nodes. So in CellML `F` comes before `RT`.
 - **The framework can come from any RDF store.** `loadFramework({ quads })` takes oxigraph quads or those of any RDF/JS library, from any named graphs, and gives the same framework as Turtle.
 - **Output text differs.** The equations are the same mathematically, but terms may be ordered differently. Parity is checked by simulation.
 
