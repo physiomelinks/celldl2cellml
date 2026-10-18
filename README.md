@@ -4,8 +4,8 @@ Generates CellML 2.0 from [BG-RDF](https://github.com/CellDL/BG-RDF) bond graph 
 
 It ports the Python [bg2cellml](https://github.com/CellDL/BG-Tools) so that [PhLynx](https://github.com/physiomelinks/PhLynx) and the [CellDL Editor](https://github.com/CellDL/CellDLEditor) can convert bond graphs in the browser. The Python version has to run in Pyodide, which needs about 24 MB of WebAssembly and wheels.
 
-> [!WARNING]
-> This is an early skeleton. The layout, interfaces and some building blocks exist; the conversion itself doesn't work yet.
+> [!NOTE]
+> Not yet published. The converter is complete and checked against the Python version (see the bg2cellml README); [`examples/browser`](examples/browser) checks it in browsers.
 
 ## Packages
 
@@ -35,6 +35,8 @@ To work on one package, use `yarn workspace @physiomelinks/math-ast test:watch`.
 
 `bg-rdf` is a git submodule of [CellDL/BG-RDF](https://github.com/CellDL/BG-RDF), pinned to a release tag. Tests load the framework from `bg-rdf/schema/ontology.ttl` and `bg-rdf/templates/`, and use `bg-rdf/examples/` as test models. The packages don't bundle it: at run time the host application supplies the framework.
 
+[`examples/browser`](examples/browser) is a private workspace, never published: a Vite page that runs the converter in a browser with oxigraph's web build and libcellml.js, with a Playwright check in Chromium, Firefox and WebKit (`yarn workspace @physiomelinks/browser-check test:browsers`). Its README records the browsers checked and the download size against Pyodide's.
+
 Each package is self-contained, with its own `package.json`, `README.md` and `LICENSE`, so it can move to its own repository later.
 
 ## Plan
@@ -44,7 +46,7 @@ Each package is self-contained, with its own `package.json`, `README.md` and `LI
 3. **cellml-units.** Implement `unitsName`, `toCellMLUnits`, `compatible` and `convertValue`.
 4. **bg2cellml.** Port the framework loader, then the model, then the CellML writer.
 5. **Parity.** Simulate both outputs with libOpenCOR and compare.
-6. **Adoption.** Replace `@celldl/editor-python-tools` in the CellDL Editor, and use the package in PhLynx.
+6. **Adoption.** Check the converter in browsers (`examples/browser`), then replace `@celldl/editor-python-tools` in the CellDL Editor, and use the package in PhLynx.
 
 ## Licence
 

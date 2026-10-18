@@ -18,3 +18,17 @@ jobs:
       - run: yarn build
       - run: yarn test
 
+  browsers:
+    # Work plan chunk 8.1: the converter in Chromium, Firefox and WebKit (examples/browser)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: corepack enable && yarn install --immutable
+      - run: yarn build
+      - run: yarn workspace @physiomelinks/browser-check playwright install --with-deps chromium firefox webkit
+      - run: yarn workspace @physiomelinks/browser-check test:browsers

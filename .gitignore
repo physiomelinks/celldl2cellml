@@ -18,6 +18,8 @@ __pycache__/
 dist/
 *.tsbuildinfo
 coverage/
+test-results/
+playwright-report/
 
 # Logs
 *.log

@@ -35,7 +35,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@physiomelinks/bg2cellml@workspace:packages/bg2cellml":
+"@physiomelinks/bg2cellml@workspace:^, @physiomelinks/bg2cellml@workspace:packages/bg2cellml":
   version: 0.0.0-use.local
   resolution: "@physiomelinks/bg2cellml@workspace:packages/bg2cellml"
   dependencies:
@@ -50,6 +50,22 @@ __metadata:
   peerDependencies:
     libcellml.js: ">=0.7.1"
     oxigraph: ">=0.5.9 <0.6"
+  languageName: unknown
+  linkType: soft
+
+"@physiomelinks/browser-check@workspace:examples/browser":
+  version: 0.0.0-use.local
+  resolution: "@physiomelinks/browser-check@workspace:examples/browser"
+  dependencies:
+    "@physiomelinks/bg2cellml": "workspace:^"
+    "@physiomelinks/cellml-units": "workspace:^"
+    "@playwright/test": "npm:^1.64.1"
+    "@types/node": "npm:^24.0.0"
+    "@xmldom/xmldom": "npm:^0.9.8"
+    libcellml.js: "npm:^0.7.1"
+    oxigraph: "npm:^0.5.9"
+    typescript: "npm:^5.9.3"
+    vite: "npm:^8.3.4"
   languageName: unknown
   linkType: soft
 
@@ -75,6 +91,17 @@ __metadata:
     vitest: "npm:^4.0.18"
   languageName: unknown
   linkType: soft
+
+"@playwright/test@npm:^1.64.1":
+  version: 1.64.1
+  resolution: "@playwright/test@npm:1.64.1"
+  dependencies:
+    playwright: "npm:1.64.1"
+  bin:
+    playwright: cli.js
+  checksum: 10c0/0a1a853d76d6c532cafaf0366a5448584b766737ebd39bbd23dc0580f3d3b6ef4c833082af47a792e7fc2501f444debdfaad37a87a76cc5b195f3803fc80ea3c
+  languageName: node
+  linkType: hard
 
 "@rolldown/binding-android-arm-eabi@npm:1.2.14":
   version: 1.2.14
@@ -678,6 +705,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"playwright-core@npm:1.64.1":
+  version: 1.64.1
+  resolution: "playwright-core@npm:1.64.1"
+  bin:
+    playwright-core: cli.js
+  checksum: 10c0/91c4f5ed1cff4b0e18b6ac62f66770f5f1b6c204d4aebd6a321c07466dca18a70822ac692597c6059705a703f9768097ac551df179fb49294d639509148e04f3
+  languageName: node
+  linkType: hard
+
+"playwright@npm:1.64.1":
+  version: 1.64.1
+  resolution: "playwright@npm:1.64.1"
+  dependencies:
+    playwright-core: "npm:1.64.1"
+  bin:
+    playwright: cli.js
+  checksum: 10c0/edf52d0a79feca37bf383e841a467aa68750684128218eac560063991c9e4b615a94901f580cd8a088bb05fd53008ab4a0e5e8d976067698b60ae5d1de2459f3
+  languageName: node
+  linkType: hard
+
 "postcss@npm:^8.5.29":
   version: 8.5.30
   resolution: "postcss@npm:8.5.30"
@@ -869,7 +916,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^6.0.0 || ^7.0.0 || ^8.0.0":
+"vite@npm:^6.0.0 || ^7.0.0 || ^8.0.0, vite@npm:^8.3.4":
   version: 8.3.4
   resolution: "vite@npm:8.3.4"
   dependencies:
