@@ -36,6 +36,13 @@ export const DOMAIN_QUERY = `
         OPTIONAL { ?domain rdfs:label ?label }
     } ORDER BY ?domain`
 
+/** Every declared domain, to report those `DOMAIN_QUERY` misses. Not in the Python version. */
+export const DECLARED_DOMAINS = `
+    SELECT DISTINCT ?domain
+    WHERE { ?domain a bgf:PhysicalDomain }
+    ORDER BY ?domain`
+
+/** Python's query has no ORDER BY, so the order of constants depends on the oxigraph build; here they are sorted by name. */
 export const domainConstantsQuery = (domain: string): string => `
     SELECT DISTINCT ?name ?value
     WHERE {
@@ -45,7 +52,7 @@ export const domainConstantsQuery = (domain: string): string => `
                 bgf:varName ?name ;
                 bgf:hasValue ?value
             ] .
-    }`
+    } ORDER BY ?name`
 
 export const ELEMENT_TEMPLATE_DEFINITIONS = `
     SELECT DISTINCT ?uri ?element_class ?label ?domain ?relation

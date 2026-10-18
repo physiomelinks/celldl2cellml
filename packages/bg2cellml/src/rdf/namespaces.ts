@@ -29,6 +29,10 @@ export const BGF = {
   OneNode: bgf('OneNode'),
   ZeroNode: bgf('ZeroNode'),
   TransformNode: bgf('TransformNode'),
+  // Variable types
+  FlowVariable: bgf('FlowVariable'),
+  PotentialVariable: bgf('PotentialVariable'),
+  QuantityVariable: bgf('QuantityVariable'),
   // Ports
   InwardPort: bgf('InwardPort'),
   OutwardPort: bgf('OutwardPort'),

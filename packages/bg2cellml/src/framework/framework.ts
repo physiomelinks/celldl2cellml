@@ -7,23 +7,24 @@
 import type { Equation } from '@physiomelinks/math-ast'
 
 import { IssueLog } from '../issues.js'
-import type { RdfGraph } from '../rdf/graph.js'
+import type { RdfGraph, ResultRow } from '../rdf/graph.js'
+import { BGF, fragment } from '../rdf/namespaces.js'
+import { DECLARED_DOMAINS, DOMAIN_QUERY, domainConstantsQuery } from '../rdf/queries.js'
+import { DeclarationError, makeVariable, type VariableDefinition } from './variables.js'
 
-/** A variable declared by a domain or template. `units` and `value` are UCUM. */
-export interface VariableDefinition {
-  readonly name: string
-  readonly units?: string
-  readonly value?: { readonly magnitude: number; readonly units: string }
-  readonly type?: string
-}
+export type { Value, VariableDefinition } from './variables.js'
 
 export interface Domain {
   readonly iri: string
+  /** The IRI's fragment, such as `Chemical`; Python's `Domain.name`. */
+  readonly name: string
   readonly label?: string
   readonly flow: VariableDefinition
   readonly potential: VariableDefinition
   readonly quantity: VariableDefinition
   readonly constants: readonly VariableDefinition[]
+  /** The flow, potential and quantity names, such as `v`, `u` and `q`. */
+  readonly intrinsicSymbols: readonly string[]
 }
 
 export interface PortTemplate {
@@ -67,10 +68,45 @@ export class BondgraphFramework {
    * Build the framework from a graph holding the ontology and templates.
    * Problems are reported in `log` rather than thrown.
    *
-   * To do: port `__load_templates`, `Domain.from_rdf_graph` and `ElementTemplate.from_rdf_graph`.
+   * Element templates, junctions and composites are to come (chunks 4.2 and 4.3).
    */
-  static fromGraph(_graph: RdfGraph): BondgraphFramework {
-    throw new Error('BondgraphFramework.fromGraph() is not implemented yet')
+  static fromGraph(graph: RdfGraph): BondgraphFramework {
+    const framework = new BondgraphFramework()
+    framework.#loadDomains(graph)
+    return framework
+  }
+
+  /**
+   * Each domain's flow, potential and quantity, and its constants. A domain
+   * with a problem is reported and left out, rather than failing the whole
+   * framework as in Python.
+   */
+  #loadDomains(graph: RdfGraph): void {
+    const rows = new Map<string, ResultRow[]>()
+    for (const row of graph.select(DOMAIN_QUERY)) {
+      const iri = row.get('domain')!.value
+      rows.set(iri, [...(rows.get(iri) ?? []), row])
+    }
+
+    for (const [iri, [row, ...others]] of rows) {
+      if (others.length > 0) {
+        this.log.report(`Domain <${iri}> has more than one flow, potential, quantity or label`, iri)
+        continue
+      }
+      try {
+        this.domains.set(iri, domainFromRow(graph, iri, row!))
+      } catch (error) {
+        if (!(error instanceof DeclarationError)) throw error
+        this.log.report(error.message, iri)
+      }
+    }
+
+    for (const declared of graph.select(DECLARED_DOMAINS)) {
+      const iri = declared.get('domain')!.value
+      if (!rows.has(iri)) {
+        this.log.report(`Domain <${iri}> needs a flow, a potential and a quantity, each with a bgf:varName and bgf:hasUnits`, iri)
+      }
+    }
   }
 
   /** The template for an element's type, in its domain if one is given. Composite templates are checked first. */
@@ -78,3 +114,36 @@ export class BondgraphFramework {
     throw new Error('BondgraphFramework.elementTemplate() is not implemented yet')
   }
 }
+
+//==============================================================================
+
+/** A domain from a row of `DOMAIN_QUERY`, with its constants. Throws a `DeclarationError` for a bad declaration. */
+function domainFromRow(graph: RdfGraph, iri: string, row: ResultRow): Domain {
+  const variable = (kind: 'flow' | 'potential' | 'quantity', type: string): VariableDefinition =>
+    makeVariable(iri, row.get(`${kind}Name`)!.value, { units: row.get(`${kind}Units`)!, type })
+  const flow = variable('flow', BGF.FlowVariable)
+  const potential = variable('potential', BGF.PotentialVariable)
+  const quantity = variable('quantity', BGF.QuantityVariable)
+
+  const constants: VariableDefinition[] = []
+  for (const constant of graph.select(domainConstantsQuery(iri))) {
+    const defined = makeVariable(iri, constant.get('name')!.value, { value: constant.get('value')! })
+    if (constants.some((other) => other.name === defined.name)) {
+      throw new DeclarationError(`Domain <${iri}> has more than one constant named ${defined.name}`)
+    }
+    constants.push(defined)
+  }
+
+  const label = row.get('label')?.value
+  return {
+    iri,
+    name: fragment(iri),
+    ...(label === undefined ? {} : { label }),
+    flow,
+    potential,
+    quantity,
+    constants,
+    intrinsicSymbols: [flow.name, potential.name, quantity.name],
+  }
+}
+

@@ -14,8 +14,10 @@ export {
   type ElementTemplate,
   type JunctionStructure,
   type PortTemplate,
+  type Value,
   type VariableDefinition,
 } from './framework/framework.js'
+export { DeclarationError, cleanName, makeVariable, readUnits, readValue } from './framework/variables.js'
 export { BondgraphModel, type ModelElement } from './model/model.js'
 export { BondNetwork } from './model/network.js'
 export { IssueLog, type Issue } from './issues.js'
