@@ -61,6 +61,8 @@ export class BondgraphJunction {
   transform?: 'transformer' | 'gyrator'
   /** For a transform node, `TRANSFORMER_EQUATIONS` or `GYRATOR_EQUATIONS`, in terms of the names in `variables`. */
   relation?: readonly Equation[]
+  /** The junction's equations, once the model's are built. */
+  readonly equations: Equation[] = []
 
   constructor(iri: string, type: string, options: { symbol: string; label?: string; value?: Value }) {
     this.iri = iri

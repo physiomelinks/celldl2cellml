@@ -19,7 +19,7 @@
  */
 
 import { compatible, convertValue, type LibCellML } from '@physiomelinks/cellml-units'
-import type { Equation, ParseOptions } from '@physiomelinks/math-ast'
+import type { ParseOptions } from '@physiomelinks/math-ast'
 
 import type { BondgraphFramework } from '../framework/framework.js'
 import { IssueLog } from '../issues.js'
@@ -29,11 +29,13 @@ import { buildNetwork, inferBonds, loadBonds, type BondgraphBond, type NetworkNo
 import { assignDomains } from './domains.js'
 import { assignElementVariables } from './element-variables.js'
 import { loadElements, type BondgraphElement } from './elements.js'
+import { buildEquations, type ModelEquation } from './equations.js'
 import { assignJunctionVariables, loadJunctions, type BondgraphJunction } from './junctions.js'
 import { prettyUri } from './names.js'
 import { BondNetwork } from './network.js'
 
 export { type BondgraphBond, type NetworkNode } from './bonds.js'
+export { type EquationProvenance, type ModelEquation } from './equations.js'
 export { BondgraphElement, ModelVariable, type ElementPort, type PowerPort, type ValueAssignment } from './elements.js'
 export {
   BondgraphJunction,
@@ -53,10 +55,10 @@ export interface ModelRuntime {
 
 /**
  * How far to load a model, for testing a stage at a time: its elements; its
- * junctions, bonds and network; domains and junction variables; or (the
- * default) everything, including element variables.
+ * junctions, bonds and network; domains and junction variables; element
+ * variables; or (the default) everything, including the equations.
  */
-export type ModelStage = 'elements' | 'network' | 'domains' | 'variables'
+export type ModelStage = 'elements' | 'network' | 'domains' | 'variables' | 'equations'
 
 export interface ModelLoadOptions {
   readonly until?: ModelStage
@@ -80,7 +82,8 @@ export class BondgraphModel {
   readonly bonds: BondgraphBond[] = []
   /** Element ports and junctions, joined by the bonds. */
   network = new BondNetwork<NetworkNode>()
-  readonly equations: readonly Equation[] = []
+  /** For each element its constitutive relation and own equations, then each junction's, as Python orders them. */
+  readonly equations: ModelEquation[] = []
   readonly graph: RdfGraph
 
   private constructor(graph: RdfGraph) {
@@ -94,8 +97,8 @@ export class BondgraphModel {
    * So far this finds the model's elements (5.1), and its junctions and bonds,
    * and builds the bond network (5.2), spreads domains through it and assigns
    * the junctions' variables (5.3), then the elements' variables, with
-   * values in their units and relations in their symbols (5.4). Equations
-   * come next.
+   * values in their units and relations in their symbols (5.4), and builds
+   * the equations (5.5).
    */
   static fromTurtle(
     framework: BondgraphFramework,
@@ -104,7 +107,7 @@ export class BondgraphModel {
     baseIri: string,
     options: ModelLoadOptions = {},
   ): BondgraphModel {
-    const until = options.until ?? 'variables'
+    const until = options.until ?? 'equations'
     const model = new BondgraphModel(new RdfGraph(runtime.oxigraph))
     try {
       model.graph.load(turtle, baseIri)
@@ -144,7 +147,11 @@ export class BondgraphModel {
     assignJunctionVariables(model.junctions, units)
     if (until === 'domains') return model
 
-    assignElementVariables({ ...units, elements: model.elements, junctions: model.junctions })
+    const all = { ...units, elements: model.elements, junctions: model.junctions }
+    assignElementVariables(all)
+    if (until === 'variables') return model
+
+    model.equations.push(...buildEquations(all))
     return model
   }
 

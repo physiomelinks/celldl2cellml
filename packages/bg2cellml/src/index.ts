@@ -43,6 +43,8 @@ export {
   TRANSFORM_RATIO_NAME,
   type BondgraphBond,
   type ElementPort,
+  type EquationProvenance,
+  type ModelEquation,
   type NetworkNode,
   type PowerPort,
   type ModelElement,

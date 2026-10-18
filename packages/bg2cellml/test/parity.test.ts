@@ -28,7 +28,8 @@ const ENABLED = new Set<string>([])
 /**
  * Cases whose references are wrong because of a bug in the Python version,
  * which this version doesn't copy. They're expected to differ until the
- * references are regenerated from a fixed BG-Tools.
+ * references are regenerated from a fixed BG-Tools. Their equations match
+ * the patched Python's (test/equations.test.ts).
  */
 const DIFFERS_FROM_PYTHON: Readonly<Record<string, string>> = {
   example_B2: 'Python ignores bgf:bondCount on bonds (model.py:233); two bonds have a count of 2',

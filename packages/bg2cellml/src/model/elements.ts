@@ -135,6 +135,8 @@ export class BondgraphElement {
   flowExpression?: AstNode
   /** Once variables are assigned, the right side of the relation's equation for the element's potential, if it has one. */
   potentialExpression?: AstNode
+  /** For a source or composite element, the equations it gives as the junction it acts as. */
+  readonly equations: Equation[] = []
 
   constructor(
     iri: string,
