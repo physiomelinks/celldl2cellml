@@ -77,11 +77,15 @@ function variablesOf(model: Model): VariableRow[] {
   expect(model.componentCount()).toBe(1)
   const component = model.componentByIndex(0)!
   expect(component.name()).toBe('main')
-  return Array.from({ length: component.variableCount() }, (_, i) => {
+  const variables = Array.from({ length: component.variableCount() }, (_, i) => {
     const variable = component.variableByIndex(i)!
     const value = variable.initialValue()
-    return { name: variable.name(), units: variable.units()!, ...(value === '' ? {} : { initialValue: Number(value) }) }
+    const staged = { name: variable.name(), units: variable.units()!, ...(value === '' ? {} : { initialValue: Number(value) }) }
+    variable.delete?.()
+    return staged
   })
+  component.delete?.()
+  return variables
 }
 
 /** Python's domain constants come in query order (`RT`, `F`); ours by name, as the framework holds them. */
@@ -411,13 +415,13 @@ describe('UnitsDefinitions', () => {
   })
 
   it('defines prefixed and scaled units, which send Python into recursion', () => {
-    const { units, names } = definitions()
+    const { model, units, names } = definitions()
     expect(['mmol/s', 'mL', 'uF', 'min'].map((code) => units.unitsFor(code))).toEqual(['mmol_per_s', 'mL', 'uF', 'min'])
     expect(names()).toEqual(['mmol_per_s', 'mL', 'uF', 'min'])
   })
 
   it('shares a definition between codes with the same name and units', () => {
-    const { units, names } = definitions()
+    const { model, units, names } = definitions()
     expect(units.unitsFor('mol/s')).toBe('mol_per_s')
     expect(units.unitsFor('s-1.mol')).toBe('mol_per_s')
     expect(units.unitsFor('mol/s')).toBe('mol_per_s')
