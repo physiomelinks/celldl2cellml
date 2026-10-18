@@ -9,6 +9,9 @@ export { CELLDL_METADATA_ID, extractBgRdf, type DOMParserLike } from './celldl.j
 export { generateCellML, type CellMLResult, type GenerateOptions } from './cellml/generate.js'
 export {
   BondgraphFramework,
+  elementTemplateOf,
+  isCompositeTemplate,
+  type BondgraphElementTemplate,
   type FrameworkRuntime,
   type CompositeTemplate,
   type Domain,

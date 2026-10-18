@@ -257,8 +257,55 @@ def framework_fixture(framework, sympy_to_mathml) -> dict:
                            for (element_class, domain), template in private('element_domains').items()],
     }
 
-def write_framework(framework, sympy_to_mathml) -> dict:
+EXAMPLE_ELEMENTS = """
+    SELECT DISTINCT ?uri ?type ?domain
+    WHERE {
+        ?model a bgf:BondgraphModel ; bgf:hasBondElement ?uri .
+        ?uri a ?type .
+        OPTIONAL { ?uri bgf:hasDomain ?domain }
+    } ORDER BY ?uri ?type"""
+
+EXAMPLE_JUNCTIONS = """
+    SELECT DISTINCT ?uri ?type
+    WHERE {
+        ?model a bgf:BondgraphModel ; bgf:hasJunctionStructure ?uri .
+        ?uri a ?type .
+    } ORDER BY ?uri ?type"""
+
+def lookups_fixture(framework, rdf) -> dict:
+    """What `element_template()` and `junction()` give, for every template and composite, and in each example."""
+    RdfGraph, namedNode, NAMESPACES = rdf
+    bgf = NAMESPACES['bgf']
+    found = lambda template: None if template is None else template.uri.value
+    private = lambda name: getattr(framework, f'_BondgraphFramework__{name}')
+    by_type = {iri: found(framework.element_template(namedNode(iri), None))
+               for iri in [*private('element_templates'), *private('composite_elements')]}
+    by_class_and_domain = []
+    classes = sorted({t.element_class for t in private('element_templates').values()})
+    for element_class in classes:
+        for domain in private('domains'):
+            by_class_and_domain.append({'elementClass': element_class, 'domain': domain,
+                                        'template': found(framework.element_template(namedNode(element_class), namedNode(domain)))})
+    examples = []
+    for name in SIMULATIONS:
+        path = BG_RDF / 'examples' / f'{name}.ttl'
+        graph = RdfGraph(NAMESPACES)
+        graph.load(source_iri(path), path.read_text())
+        for row in graph.query(EXAMPLE_ELEMENTS):
+            if row['type'].value.startswith(bgf):
+                domain = row.get('domain')
+                examples.append({'example': name, 'element': row['uri'].value, 'type': row['type'].value,
+                                 'domain': None if domain is None else domain.value,
+                                 'template': found(framework.element_template(row['type'], domain))})
+        for row in graph.query(EXAMPLE_JUNCTIONS):
+            if row['type'].value.startswith(bgf):
+                examples.append({'example': name, 'junction': row['uri'].value, 'type': row['type'].value,
+                                 'known': framework.junction(row['type'].value) is not None})
+    return {'byType': by_type, 'byClassAndDomain': by_class_and_domain, 'examples': examples}
+
+def write_framework(framework, sympy_to_mathml, rdf) -> dict:
     fixture = framework_fixture(framework, sympy_to_mathml)
+    fixture['lookups'] = lookups_fixture(framework, rdf)
     (OUTPUT_DIR / 'framework.json').write_text(json.dumps(fixture, indent=1) + '\n')
     print(f'framework: {len(fixture["domains"])} domains, {len(fixture["elementTemplates"])} element templates, '
           f'{len(fixture["junctions"])} junctions, {len(fixture["compositeTemplates"])} composites')
@@ -372,7 +419,9 @@ def main():
     from bg2cellml.rdf import RdfGraph
 
     framework = load_framework((RdfGraph, BondgraphFramework, BGF_ONTOLOGY_URI, BGF_TEMPLATE_URI_PREFIX))
-    framework_entry = write_framework(framework, sympy_to_mathml)
+    from bg2cellml.bondgraph.namespaces import NAMESPACES
+    from bg2cellml.rdf import namedNode
+    framework_entry = write_framework(framework, sympy_to_mathml, (RdfGraph, namedNode, NAMESPACES))
     if args.framework_only:
         manifest_path = OUTPUT_DIR / 'manifest.json'
         manifest = json.loads(manifest_path.read_text())

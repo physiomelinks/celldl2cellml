@@ -5,7 +5,7 @@ Generates CellML 2.0 from [BG-RDF](https://github.com/CellDL/BG-RDF) bond graph 
 It ports the Python [bg2cellml](https://github.com/CellDL/BG-Tools) (v0.11.2) so the CellDL Editor and PhLynx don't need Pyodide, which is about 24 MB of downloads. It keeps the `celldl2cellml()` interface of `@celldl/editor-python-tools`, so switching should only need a change of import.
 
 > [!WARNING]
-> This is an early skeleton. The RDF wrapper, SPARQL queries, bond network and CellDL extraction work, and the framework loads its domains and element templates. Loading junctions, composites and models, and generating CellML, aren't implemented yet.
+> This is an early skeleton. The RDF wrapper, SPARQL queries, bond network and CellDL extraction work, and the framework loads in full: domains, element templates, junctions and composites. Loading models, and generating CellML, aren't implemented yet.
 
 ## Usage
 
@@ -36,7 +36,7 @@ const { cellml, metadata, issues, exception } = await converter.celldl2cellml(ce
 | `src/converter.ts` | `Converter`: loads the framework, runs `celldl2cellml` | `editor-python-tools` glue | Done (calls stubs) |
 | `src/celldl.ts` | `extractBgRdf`: Turtle from a CellDL SVG | `cli/bgtool get_bgrdf` | Done |
 | `src/rdf/` | `RdfGraph` over oxigraph, namespaces, SPARQL queries | `rdf/`, query strings | Done |
-| `src/framework/` | Domains, element templates, junctions, composites | `bondgraph/framework*.py` | Domains and element templates done |
+| `src/framework/` | Domains, element templates, junctions, composites | `bondgraph/framework*.py` | Done |
 | `src/model/network.ts` | `BondNetwork`, the directed graph of ports and junctions | networkx `DiGraph` | Done |
 | `src/model/model.ts` | Elements, junctions, bonds and their equations | `bondgraph/model*.py` | Stub |
 | `src/cellml/` | CellML 2.0 through libCellML, plus metadata | `cellml/__init__.py` | Stub |

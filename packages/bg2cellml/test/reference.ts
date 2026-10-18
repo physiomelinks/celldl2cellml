@@ -117,6 +117,18 @@ export interface PythonFramework {
   compositeTemplates: Record<string, PythonLabelled & { template: string }>
   /** The template `element_template(class, domain)` gives. */
   elementDomains: { elementClass: string; domain: string; template: string }[]
+  /** What Python's `element_template()` and `junction()` give, as IRIs; `null` for nothing. */
+  lookups: {
+    /** `element_template(iri, None)` for every element template and composite. */
+    byType: Record<string, string | null>
+    /** `element_template(class, domain)` for every element class and domain. */
+    byClassAndDomain: { elementClass: string; domain: string; template: string | null }[]
+    /** Each `bgf:` type of each element and junction in the 14 examples. */
+    examples: (
+      | { example: string; element: string; type: string; domain: string | null; template: string | null }
+      | { example: string; junction: string; type: string; known: boolean }
+    )[]
+  }
 }
 
 export function loadPythonFramework(manifest: Manifest = loadManifest()): PythonFramework {

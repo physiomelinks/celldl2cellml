@@ -10,7 +10,14 @@ import type { ParseOptions } from '@physiomelinks/math-ast'
 import { IssueLog } from '../issues.js'
 import type { RdfGraph, ResultRow } from '../rdf/graph.js'
 import { BGF, fragment } from '../rdf/namespaces.js'
-import { DECLARED_DOMAINS, DOMAIN_QUERY, ELEMENT_TEMPLATE_DEFINITIONS, domainConstantsQuery } from '../rdf/queries.js'
+import {
+  COMPOSITE_TEMPLATE_DEFINITIONS,
+  DECLARED_DOMAINS,
+  DOMAIN_QUERY,
+  ELEMENT_TEMPLATE_DEFINITIONS,
+  JUNCTION_STRUCTURES,
+  domainConstantsQuery,
+} from '../rdf/queries.js'
 import { elementTemplateFromRow, type ElementTemplate, type TemplateOptions } from './templates.js'
 import { DeclarationError, makeVariable, type VariableDefinition } from './variables.js'
 
@@ -36,15 +43,36 @@ export interface Domain {
   readonly intrinsicSymbols: readonly string[]
 }
 
+/**
+ * An element template combined with the junction an element of it implies,
+ * such as `bgf:ChemicalStorageNode`: a `bgf:ChemicalConcentration` with a
+ * zero node.
+ */
 export interface CompositeTemplate {
   readonly iri: string
   readonly label?: string
   readonly template: ElementTemplate
 }
 
+/**
+ * A class of junction: `bgf:OneNode`, `bgf:ZeroNode`, `bgf:TransformNode`,
+ * or anything else under `bgf:JunctionStructure`, as in Python.
+ */
 export interface JunctionStructure {
   readonly iri: string
   readonly label?: string
+}
+
+/** A template that `elementTemplate()` found: an element template, or a composite of one. */
+export type BondgraphElementTemplate = ElementTemplate | CompositeTemplate
+
+export function isCompositeTemplate(template: BondgraphElementTemplate): template is CompositeTemplate {
+  return 'template' in template
+}
+
+/** The element template itself, for a composite or not. */
+export function elementTemplateOf(template: BondgraphElementTemplate): ElementTemplate {
+  return isCompositeTemplate(template) ? template.template : template
 }
 
 export class BondgraphFramework {
@@ -53,12 +81,12 @@ export class BondgraphFramework {
   readonly elementTemplates = new Map<string, ElementTemplate>()
   readonly compositeTemplates = new Map<string, CompositeTemplate>()
   readonly junctions = new Map<string, JunctionStructure>()
+  /** Element templates by element class and domain, as `${class} ${domain}`. */
+  readonly #byClassAndDomain = new Map<string, ElementTemplate>()
 
   /**
    * Build the framework from a graph holding the ontology and templates.
    * Problems are reported in `log` rather than thrown.
-   *
-   * Junctions and composites are to come (chunk 4.3).
    */
   static fromGraph(graph: RdfGraph, runtime: FrameworkRuntime): BondgraphFramework {
     const framework = new BondgraphFramework()
@@ -67,6 +95,8 @@ export class BondgraphFramework {
       compatible: (a, b) => compatible(runtime.libcellml, a, b),
       ...(runtime.domParser === undefined ? {} : { domParser: runtime.domParser }),
     })
+    framework.#loadJunctions(graph)
+    framework.#loadCompositeTemplates(graph)
     return framework
   }
 
@@ -76,11 +106,7 @@ export class BondgraphFramework {
    * framework as in Python.
    */
   #loadDomains(graph: RdfGraph): void {
-    const rows = new Map<string, ResultRow[]>()
-    for (const row of graph.select(DOMAIN_QUERY)) {
-      const iri = row.get('domain')!.value
-      rows.set(iri, [...(rows.get(iri) ?? []), row])
-    }
+    const rows = groupRows(graph.select(DOMAIN_QUERY), 'domain')
 
     for (const [iri, [row, ...others]] of rows) {
       if (others.length > 0) {
@@ -109,13 +135,7 @@ export class BondgraphFramework {
    * reported and left out.
    */
   #loadElementTemplates(graph: RdfGraph, options: TemplateOptions): void {
-    const rows = new Map<string, ResultRow[]>()
-    for (const row of graph.select(ELEMENT_TEMPLATE_DEFINITIONS)) {
-      const iri = row.get('uri')!.value
-      rows.set(iri, [...(rows.get(iri) ?? []), row])
-    }
-
-    for (const [iri, [row, ...others]] of rows) {
+    for (const [iri, [row, ...others]] of groupRows(graph.select(ELEMENT_TEMPLATE_DEFINITIONS), 'uri')) {
       if (others.length > 0) {
         this.log.report(`<${iri}> has more than one element class, domain, constitutive relation or label`, iri)
         continue
@@ -133,14 +153,67 @@ export class BondgraphFramework {
         this.log.report(error.message, iri)
       }
     }
+    // In IRI order, so the last template of a class in a domain wins, as in Python
+    for (const template of this.elementTemplates.values()) {
+      this.#byClassAndDomain.set(`${template.elementClass} ${template.domain.iri}`, template)
+    }
   }
 
-  /** The template for an element's type, in its domain if one is given. Composite templates are checked first. */
-  elementTemplate(_elementType: string, _domain?: string): ElementTemplate | CompositeTemplate | undefined {
-    throw new Error('BondgraphFramework.elementTemplate() is not implemented yet')
+  /**
+   * Every class under `bgf:JunctionStructure`. As in Python, that includes
+   * `bgf:JunctionStructure` itself and the composites' junction classes, such
+   * as `bgf:ZeroStorageNode`, as well as one, zero and transform nodes.
+   */
+  #loadJunctions(graph: RdfGraph): void {
+    for (const [iri, [row, ...others]] of groupRows(graph.select(JUNCTION_STRUCTURES), 'junction')) {
+      if (others.length > 0) {
+        this.log.report(`Junction <${iri}> has more than one label`, iri)
+        continue
+      }
+      const label = row!.get('label')?.value
+      this.junctions.set(iri, { iri, ...(label === undefined ? {} : { label }) })
+    }
+  }
+
+  /** Composite templates, each with the element template it is a subclass of. */
+  #loadCompositeTemplates(graph: RdfGraph): void {
+    for (const [iri, [row, ...others]] of groupRows(graph.select(COMPOSITE_TEMPLATE_DEFINITIONS), 'uri')) {
+      if (others.length > 0) {
+        this.log.report(`Composite <${iri}> has more than one element template or label`, iri)
+        continue
+      }
+      const templateIri = row!.get('template')!.value
+      const template = this.elementTemplates.get(templateIri)
+      if (template === undefined) {
+        this.log.report(`Unknown BondElement <${templateIri}> for composite <${iri}>`, iri)
+        continue
+      }
+      const label = row!.get('label')?.value
+      this.compositeTemplates.set(iri, { iri, ...(label === undefined ? {} : { label }), template })
+    }
+  }
+
+  /**
+   * The template for an element's type, as Python's `element_template()`:
+   *
+   * - With no domain, `elementType` is a composite or an element template,
+   *   such as `bgf:ChemicalStorageNode` or `bgf:ElectricalResistor`.
+   *   Composites are checked first.
+   * - With a domain, `elementType` is an element class, such as
+   *   `bgf:Resistance` in `bgf:Electrical`. Where a domain has more than one
+   *   template of a class, the last by IRI is used, as in Python: a
+   *   `bgf:Reaction` in `bgf:Chemical` is a `bgf:NKETransporter`.
+   */
+  elementTemplate(elementType: string, domain?: string): BondgraphElementTemplate | undefined {
+    if (domain !== undefined) return this.#byClassAndDomain.get(`${elementType} ${domain}`)
+    return this.compositeTemplates.get(elementType) ?? this.elementTemplates.get(elementType)
+  }
+
+  /** A junction structure by IRI, such as `bgf:OneNode`. */
+  junction(iri: string): JunctionStructure | undefined {
+    return this.junctions.get(iri)
   }
 }
-
 //==============================================================================
 
 /** A domain from a row of `DOMAIN_QUERY`, with its constants. Throws a `DeclarationError` for a bad declaration. */
@@ -171,5 +244,15 @@ function domainFromRow(graph: RdfGraph, iri: string, row: ResultRow): Domain {
     constants,
     intrinsicSymbols: [flow.name, potential.name, quantity.name],
   }
+}
+
+/** Query rows grouped by the IRI in `key`, in query order. */
+function groupRows(rows: readonly ResultRow[], key: string): Map<string, ResultRow[]> {
+  const groups = new Map<string, ResultRow[]>()
+  for (const row of rows) {
+    const iri = row.get(key)!.value
+    groups.set(iri, [...(groups.get(iri) ?? []), row])
+  }
+  return groups
 }
 

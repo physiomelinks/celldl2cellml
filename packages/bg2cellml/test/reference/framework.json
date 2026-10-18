@@ -2483,5 +2483,685 @@
    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource"
   }
- ]
+ ],
+ "lookups": {
+  "byType": {
+   "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalFlow": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalFlow",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalPotential": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalPotential",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#CurrentSource": "https://bg-rdf.org/ontologies/bondgraph-framework#CurrentSource",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#ElasticVessel": "https://bg-rdf.org/ontologies/bondgraph-framework#ElasticVessel",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicFlow": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicFlow",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicPotential": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicPotential",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistor": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistor",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorage": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorage",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalFlow": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalFlow",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalPotential": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalPotential",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporter": "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporter",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#OldOsmosis": "https://bg-rdf.org/ontologies/bondgraph-framework#OldOsmosis",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporter": "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporter",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReactionNode": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReactionNode",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitiveNode": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitiveNode",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductiveNode": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductiveNode",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicElasticStorageNode": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicElasticStorageNode",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistanceNode": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistanceNode",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorageNode": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorageNode",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitiveNode": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitiveNode",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductiveNode": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductiveNode",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistiveNode": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistiveNode",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporterNode": "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporterNode",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#OldOsmosisNode": "https://bg-rdf.org/ontologies/bondgraph-framework#OldOsmosisNode",
+   "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporterNode": "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporterNode"
+  },
+  "byClassAndDomain": [
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalFlow"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#CurrentSource"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicFlow"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowSource",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalFlow"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+    "template": null
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+    "template": null
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowStore",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalPotential"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicPotential"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalPotential"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicStorage"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Reaction",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#NKETransporter"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Reaction",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "template": null
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Reaction",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#OsmoticTransporter"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Reaction",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+    "template": null
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+    "template": null
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Hydraulic",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#HydraulicResistor"
+   },
+   {
+    "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Mechanical",
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor"
+   }
+  ],
+  "examples": [
+   {
+    "example": "RCR",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#C_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor"
+   },
+   {
+    "example": "RCR",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_0",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor"
+   },
+   {
+    "example": "RCR",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor"
+   },
+   {
+    "example": "RCR",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_0",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource"
+   },
+   {
+    "example": "RCR",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+    "known": true
+   },
+   {
+    "example": "RCR",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#v_0",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+    "known": true
+   },
+   {
+    "example": "RCR_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR_reduced.ttl#C_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitiveNode"
+   },
+   {
+    "example": "RCR_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR_reduced.ttl#R_0",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode"
+   },
+   {
+    "example": "RCR_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR_reduced.ttl#R_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode"
+   },
+   {
+    "example": "RCR_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR_reduced.ttl#u_0",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource"
+   },
+   {
+    "example": "example_A1",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1.ttl#C",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor"
+   },
+   {
+    "example": "example_A1",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1.ttl#L",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor"
+   },
+   {
+    "example": "example_A1",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1.ttl#R",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor"
+   },
+   {
+    "example": "example_A1",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1.ttl#u_C",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+    "known": true
+   },
+   {
+    "example": "example_A1",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1.ttl#u_L",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+    "known": true
+   },
+   {
+    "example": "example_A1",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1.ttl#v_R",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+    "known": true
+   },
+   {
+    "example": "example_A1_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1_reduced.ttl#C",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitiveNode"
+   },
+   {
+    "example": "example_A1_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1_reduced.ttl#L",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductiveNode"
+   },
+   {
+    "example": "example_A1_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A1_reduced.ttl#R",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode"
+   },
+   {
+    "example": "example_A2",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2.ttl#C",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor"
+   },
+   {
+    "example": "example_A2",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2.ttl#L",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor"
+   },
+   {
+    "example": "example_A2",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2.ttl#R",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor"
+   },
+   {
+    "example": "example_A2",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2.ttl#v_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+    "known": true
+   },
+   {
+    "example": "example_A2_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2_reduced.ttl#C",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitiveNode"
+   },
+   {
+    "example": "example_A2_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2_reduced.ttl#L",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductiveNode"
+   },
+   {
+    "example": "example_A2_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A2_reduced.ttl#R",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistiveNode"
+   },
+   {
+    "example": "example_A3",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.ttl#L_e",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductor"
+   },
+   {
+    "example": "example_A3",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.ttl#L_m",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductor"
+   },
+   {
+    "example": "example_A3",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.ttl#R_e",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor"
+   },
+   {
+    "example": "example_A3",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.ttl#R_m",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistor"
+   },
+   {
+    "example": "example_A3",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.ttl#q_C_m",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitor"
+   },
+   {
+    "example": "example_A3",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.ttl#u_in_e",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource"
+   },
+   {
+    "example": "example_A3",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.ttl#GY",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#TransformNode",
+    "known": true
+   },
+   {
+    "example": "example_A3",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.ttl#u_C_m",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+    "known": true
+   },
+   {
+    "example": "example_A3",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.ttl#v_1_e",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+    "known": true
+   },
+   {
+    "example": "example_A3",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3.ttl#v_2_m",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+    "known": true
+   },
+   {
+    "example": "example_A3_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#L_e",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalInductiveNode"
+   },
+   {
+    "example": "example_A3_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#L_m",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalInductiveNode"
+   },
+   {
+    "example": "example_A3_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#R_e",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode"
+   },
+   {
+    "example": "example_A3_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#R_m",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalResistiveNode"
+   },
+   {
+    "example": "example_A3_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#q_C_m",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#MechanicalCapacitiveNode"
+   },
+   {
+    "example": "example_A3_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#u_in_e",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource"
+   },
+   {
+    "example": "example_A3_reduced",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_A3_reduced.ttl#GY",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#TransformNode",
+    "known": true
+   },
+   {
+    "example": "example_B1",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#Re_r",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction"
+   },
+   {
+    "example": "example_B1",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#q_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration"
+   },
+   {
+    "example": "example_B1",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#q_2",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration"
+   },
+   {
+    "example": "example_B1",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#u_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+    "known": true
+   },
+   {
+    "example": "example_B1",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#u_2",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+    "known": true
+   },
+   {
+    "example": "example_B1",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#v_r_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+    "known": true
+   },
+   {
+    "example": "example_B1",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1.ttl#v_r_2",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+    "known": true
+   },
+   {
+    "example": "example_B1_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReactionNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReactionNode"
+   },
+   {
+    "example": "example_B1_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode"
+   },
+   {
+    "example": "example_B1_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_2",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode"
+   },
+   {
+    "example": "example_B2",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#Re_c",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction"
+   },
+   {
+    "example": "example_B2",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#q_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration"
+   },
+   {
+    "example": "example_B2",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#q_2",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration"
+   },
+   {
+    "example": "example_B2",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#q_3",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration"
+   },
+   {
+    "example": "example_B2",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#q_4",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration"
+   },
+   {
+    "example": "example_B2",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#u_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+    "known": true
+   },
+   {
+    "example": "example_B2",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#u_2",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+    "known": true
+   },
+   {
+    "example": "example_B2",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#u_3",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+    "known": true
+   },
+   {
+    "example": "example_B2",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#u_4",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+    "known": true
+   },
+   {
+    "example": "example_B2",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#v_r_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+    "known": true
+   },
+   {
+    "example": "example_B2",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2.ttl#v_r_2",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+    "known": true
+   },
+   {
+    "example": "example_B2_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2_reduced.ttl#Re_c",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReactionNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReactionNode"
+   },
+   {
+    "example": "example_B2_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2_reduced.ttl#q_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode"
+   },
+   {
+    "example": "example_B2_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2_reduced.ttl#q_2",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode"
+   },
+   {
+    "example": "example_B2_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2_reduced.ttl#q_3",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode"
+   },
+   {
+    "example": "example_B2_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B2_reduced.ttl#q_4",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalStorageNode"
+   },
+   {
+    "example": "example_RC",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC.ttl#R_0",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor"
+   },
+   {
+    "example": "example_RC",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC.ttl#V_in",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource"
+   },
+   {
+    "example": "example_RC",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC.ttl#q_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor"
+   },
+   {
+    "example": "example_RC",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC.ttl#I_R",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+    "known": true
+   },
+   {
+    "example": "example_RC",
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC.ttl#V_C",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+    "known": true
+   },
+   {
+    "example": "example_RC_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC_reduced.ttl#R_0",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistiveNode"
+   },
+   {
+    "example": "example_RC_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC_reduced.ttl#V_in",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource"
+   },
+   {
+    "example": "example_RC_reduced",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_RC_reduced.ttl#q_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitiveNode",
+    "domain": null,
+    "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitiveNode"
+   }
+  ]
+ }
 }

@@ -40,5 +40,6 @@ Numbers are rounded to 9 significant figures. Regenerating on a different platfo
 
 - **Units** are given as pint names them (`joule / mole`), and as a scale and SI base units in UCUM (`1`, `m2.kg.mol-1.s-2`). The tests check a UCUM code against these with libCellML, so `J/L` and `kPa` both match pint's `joule / liter`.
 - **Constitutive relations** list their variables in order of first appearance, and each equation as sympy prints it and as sympy's Content MathML.
+- **Lookups** record what Python's `element_template()` gives for every template and composite, and for every element class in every domain, and what it and `junction()` give for each element and junction type in the 14 examples.
 - **Symbols and labels** are as Python has them. Python passes a template's or junction's `rdfs:label` where its symbol belongs, so `symbol` is often a label such as `Chemical concentration`.
 
