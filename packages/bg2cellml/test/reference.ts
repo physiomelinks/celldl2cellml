@@ -45,6 +45,8 @@ export interface ReferenceCase {
   pmrCheck?: { model: string; agrees: boolean; problems: string[] }
   /** What the Python bg2cellml did with a variant. */
   python?: { status: 'matches' | 'differs' | 'error'; problems?: string[]; error?: string }
+  /** File in test/reference/ with the model as Python builds it. Absent where Python can't build the model. */
+  intermediate?: string
 }
 
 export interface Manifest {
@@ -129,6 +131,91 @@ export interface PythonFramework {
       | { example: string; junction: string; type: string; known: boolean }
     )[]
   }
+}
+
+//==============================================================================
+// Models as the Python bg2cellml builds them (models/<case>.json)
+
+/** An RDF term, as a model gave it. */
+export type PythonTerm = { iri: string } | { literal: string; datatype: string | null }
+
+/** An equation as sympy prints it, and as sympy's Content MathML. */
+export interface PythonEquation {
+  text: string
+  mathml: string
+}
+
+/** An element as `BondgraphElement.__init__` leaves it, before the bond network is built. */
+export interface PythonModelElement {
+  iri: string
+  symbol: string
+  label: string | null
+  /** The element template; for a composite, the template it wraps. */
+  template: string
+  elementClass: string
+  domain: string
+  /** `bgf:OneNode` or `bgf:ZeroNode` for sources and composites. */
+  impliedJunction: string | null
+  /** By the port's IRI in the model: the element's IRI, with `_` and the port id if the template names its ports. */
+  ports: Record<string, PythonPort>
+  /** By name as the template declares it. */
+  variables: Record<string, PythonVariable>
+  portVariableNames: string[]
+  /** Parameter and variable values as read, by name. Python assigns them once the network is built. */
+  values: Record<string, { value: PythonTerm; symbol: string | null }>
+  intrinsicVariable: PythonVariable | null
+  /** Symbols of the domain's flow and potential among the element's variables. */
+  flow: string | null
+  potential: string | null
+  constitutiveRelation: PythonEquation[] | null
+}
+
+export interface PythonModelJunction {
+  iri: string
+  type: string
+  symbol: string
+  label: string | null
+  value: PythonTerm | null
+}
+
+/** Python swaps a bond's label and count, so `label` holds any `bgf:bondCount` and `bondCount` is always 1. */
+export interface PythonBond {
+  iri: string
+  source: string
+  target: string
+  label: string | number | null
+  bondCount: number
+}
+
+export interface PythonNetworkNode {
+  type: string
+  label: string
+  portType: string | null
+  element: string | null
+  junction: string | null
+  domain: string | null
+  powerPort: { flow: string; potential: string } | null
+}
+
+export interface PythonModel {
+  case: string
+  sourceSha256: string
+  model: { iri: string; label: string | null }
+  issues: string[]
+  /** As loaded, in Python's order (elements by IRI). */
+  elements: PythonModelElement[]
+  junctions: PythonModelJunction[]
+  bonds: PythonBond[]
+  network: { nodes: Record<string, PythonNetworkNode>; edges: { source: string; target: string; bondCount: number }[] }
+  /** Every element's and junction's variables once assigned, by IRI then name. */
+  variables: { elements: Record<string, Record<string, PythonVariable>>; junctions: Record<string, Record<string, PythonVariable>> }
+  /** `cr`: a constitutive relation, `be`: a bond element's, `js`: a junction's. */
+  equations: (PythonEquation & { provenance: 'cr' | 'be' | 'js' })[]
+}
+
+export function loadPythonModel(c: ReferenceCase): PythonModel {
+  if (c.intermediate === undefined) throw new Error(`Python can't build ${c.name}, so it has no intermediate fixture`)
+  return JSON.parse(readFileSync(`${REFERENCE_DIR}${c.intermediate}`, 'utf8')) as PythonModel
 }
 
 export function loadPythonFramework(manifest: Manifest = loadManifest()): PythonFramework {

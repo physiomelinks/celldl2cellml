@@ -1,0 +1,870 @@
+{
+ "case": "RCR",
+ "sourceSha256": "78e657c1b7b8339aa3e8706326ac5d4b5c1ca4819bedad6a834de8058cf78172",
+ "model": {
+  "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_C_R_circuit",
+  "label": null
+ },
+ "issues": [],
+ "elements": [
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#C_1",
+   "symbol": "C_1",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor",
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "impliedJunction": null,
+   "ports": {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#C_1": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalCapacitor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_C_1",
+       "symbol": "v_C_1",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "coulomb / second",
+        "scale": 1.0,
+        "base": "A"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u_C_1",
+       "symbol": "u_C_1",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / coulomb",
+        "scale": 1.0,
+        "base": "A-1.m2.kg.s-3"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "variables": {
+    "v": {
+     "name": "v_C_1",
+     "symbol": "v_C_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_C_1",
+     "symbol": "u_C_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    },
+    "C": {
+     "name": "C_C_1",
+     "symbol": "C_C_1",
+     "type": null,
+     "units": {
+      "pint": "coulomb ** 2 / joule",
+      "scale": 1.0,
+      "base": "A2.m-2.kg-1.s4"
+     },
+     "value": null
+    },
+    "q": {
+     "name": "q_C_1",
+     "symbol": "q_C_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+     "units": {
+      "pint": "coulomb",
+      "scale": 1.0,
+      "base": "A.s"
+     },
+     "value": {
+      "magnitude": 0.0,
+      "units": {
+       "pint": "coulomb",
+       "scale": 1.0,
+       "base": "A.s"
+      }
+     }
+    }
+   },
+   "portVariableNames": [
+    "u",
+    "v"
+   ],
+   "values": {
+    "C": {
+     "value": {
+      "literal": "0.001 F",
+      "datatype": "https://w3id.org/cdt/ucum"
+     },
+     "symbol": null
+    }
+   },
+   "intrinsicVariable": {
+    "name": "q_C_1",
+    "symbol": "q_C_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+    "units": {
+     "pint": "coulomb",
+     "scale": 1.0,
+     "base": "A.s"
+    },
+    "value": {
+     "magnitude": 0.0,
+     "units": {
+      "pint": "coulomb",
+      "scale": 1.0,
+      "base": "A.s"
+     }
+    }
+   },
+   "flow": "v_C_1",
+   "potential": "u_C_1",
+   "constitutiveRelation": [
+    {
+     "text": "Derivative(q, t) = v",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>q</ci></apply><ci>v</ci></apply></math>"
+    },
+    {
+     "text": "u = q/C",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><divide/><ci>q</ci><ci>C</ci></apply></apply></math>"
+    }
+   ]
+  },
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_0",
+   "symbol": "R_0",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "impliedJunction": null,
+   "ports": {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_0": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_R_0",
+       "symbol": "v_R_0",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "coulomb / second",
+        "scale": 1.0,
+        "base": "A"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u_R_0",
+       "symbol": "u_R_0",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / coulomb",
+        "scale": 1.0,
+        "base": "A-1.m2.kg.s-3"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "variables": {
+    "v": {
+     "name": "v_R_0",
+     "symbol": "v_R_0",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_R_0",
+     "symbol": "u_R_0",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    },
+    "R": {
+     "name": "R_R_0",
+     "symbol": "R_R_0",
+     "type": null,
+     "units": {
+      "pint": "joule * second / coulomb ** 2",
+      "scale": 1.0,
+      "base": "A-2.m2.kg.s-3"
+     },
+     "value": null
+    }
+   },
+   "portVariableNames": [
+    "u",
+    "v"
+   ],
+   "values": {
+    "R": {
+     "value": {
+      "literal": "10 Ohm",
+      "datatype": "https://w3id.org/cdt/ucum"
+     },
+     "symbol": null
+    }
+   },
+   "intrinsicVariable": null,
+   "flow": "v_R_0",
+   "potential": "u_R_0",
+   "constitutiveRelation": [
+    {
+     "text": "v = u/R",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v</ci><apply><divide/><ci>u</ci><ci>R</ci></apply></apply></math>"
+    }
+   ]
+  },
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_1",
+   "symbol": "R_1",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "impliedJunction": null,
+   "ports": {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_1": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ElectricalResistor",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_R_1",
+       "symbol": "v_R_1",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "coulomb / second",
+        "scale": 1.0,
+        "base": "A"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u_R_1",
+       "symbol": "u_R_1",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / coulomb",
+        "scale": 1.0,
+        "base": "A-1.m2.kg.s-3"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "variables": {
+    "v": {
+     "name": "v_R_1",
+     "symbol": "v_R_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_R_1",
+     "symbol": "u_R_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    },
+    "R": {
+     "name": "R_R_1",
+     "symbol": "R_R_1",
+     "type": null,
+     "units": {
+      "pint": "joule * second / coulomb ** 2",
+      "scale": 1.0,
+      "base": "A-2.m2.kg.s-3"
+     },
+     "value": null
+    }
+   },
+   "portVariableNames": [
+    "u",
+    "v"
+   ],
+   "values": {
+    "R": {
+     "value": {
+      "literal": "100 Ohm",
+      "datatype": "https://w3id.org/cdt/ucum"
+     },
+     "symbol": null
+    }
+   },
+   "intrinsicVariable": null,
+   "flow": "v_R_1",
+   "potential": "u_R_1",
+   "constitutiveRelation": [
+    {
+     "text": "v = u/R",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v</ci><apply><divide/><ci>u</ci><ci>R</ci></apply></apply></math>"
+    }
+   ]
+  },
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_0",
+   "symbol": "u_0",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource",
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+   "impliedJunction": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+   "ports": {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_0": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#VoltageSource",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_u_0",
+       "symbol": "v_u_0",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "coulomb / second",
+        "scale": 1.0,
+        "base": "A"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u_0",
+       "symbol": "u_0",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / coulomb",
+        "scale": 1.0,
+        "base": "A-1.m2.kg.s-3"
+       },
+       "value": {
+        "magnitude": 11.0,
+        "units": {
+         "pint": "volt",
+         "scale": 1.0,
+         "base": "A-1.m2.kg.s-3"
+        }
+       }
+      }
+     }
+    }
+   },
+   "variables": {
+    "v": {
+     "name": "v_u_0",
+     "symbol": "v_u_0",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_0",
+     "symbol": "u_0",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": {
+      "magnitude": 11.0,
+      "units": {
+       "pint": "volt",
+       "scale": 1.0,
+       "base": "A-1.m2.kg.s-3"
+      }
+     }
+    }
+   },
+   "portVariableNames": [
+    "u",
+    "v"
+   ],
+   "values": {},
+   "intrinsicVariable": {
+    "name": "u_0",
+    "symbol": "u_0",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+    "units": {
+     "pint": "joule / coulomb",
+     "scale": 1.0,
+     "base": "A-1.m2.kg.s-3"
+    },
+    "value": {
+     "magnitude": 11.0,
+     "units": {
+      "pint": "volt",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     }
+    }
+   },
+   "flow": "v_u_0",
+   "potential": "u_0",
+   "constitutiveRelation": null
+  }
+ ],
+ "junctions": [
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_1",
+   "type": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+   "symbol": "u_1",
+   "label": null,
+   "value": null
+  },
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#v_0",
+   "type": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+   "symbol": "v_0",
+   "label": null,
+   "value": null
+  }
+ ],
+ "bonds": [
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_0.v_0",
+   "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_0",
+   "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#v_0",
+   "label": null,
+   "bondCount": 1
+  },
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#v_0.R_0",
+   "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#v_0",
+   "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_0",
+   "label": null,
+   "bondCount": 1
+  },
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#v_0.u_1",
+   "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#v_0",
+   "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_1",
+   "label": null,
+   "bondCount": 1
+  },
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_1.C_1",
+   "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_1",
+   "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#C_1",
+   "label": null,
+   "bondCount": 1
+  },
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_1.R_1",
+   "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_1",
+   "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_1",
+   "label": null,
+   "bondCount": 1
+  }
+ ],
+ "network": {
+  "nodes": {
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#C_1": {
+    "type": "bgf:ElectricalCapacitor",
+    "label": "C_1",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#C_1",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "powerPort": {
+     "flow": "v_C_1",
+     "potential": "u_C_1"
+    }
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_0": {
+    "type": "bgf:ElectricalResistor",
+    "label": "R_0",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_0",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "powerPort": {
+     "flow": "v_R_0",
+     "potential": "u_R_0"
+    }
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_1": {
+    "type": "bgf:ElectricalResistor",
+    "label": "R_1",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#Resistance",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_1",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "powerPort": {
+     "flow": "v_R_1",
+     "potential": "u_R_1"
+    }
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_0": {
+    "type": "bgf:VoltageSource",
+    "label": "u_0",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialSource",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_0",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "powerPort": {
+     "flow": "v_u_0",
+     "potential": "u_0"
+    }
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_1": {
+    "type": "bgf:ZeroNode",
+    "label": "u_1",
+    "portType": null,
+    "element": null,
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_1",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "powerPort": null
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#v_0": {
+    "type": "bgf:OneNode",
+    "label": "v_0",
+    "portType": null,
+    "element": null,
+    "junction": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#v_0",
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Electrical",
+    "powerPort": null
+   }
+  },
+  "edges": [
+   {
+    "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_0",
+    "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#v_0",
+    "bondCount": 1
+   },
+   {
+    "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_1",
+    "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#C_1",
+    "bondCount": 1
+   },
+   {
+    "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_1",
+    "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_1",
+    "bondCount": 1
+   },
+   {
+    "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#v_0",
+    "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_0",
+    "bondCount": 1
+   },
+   {
+    "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#v_0",
+    "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_1",
+    "bondCount": 1
+   }
+  ]
+ },
+ "variables": {
+  "elements": {
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#C_1": {
+    "v": {
+     "name": "v_C_1",
+     "symbol": "v_C_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_C_1",
+     "symbol": "u_C_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    },
+    "C": {
+     "name": "C_C_1",
+     "symbol": "C_C_1",
+     "type": null,
+     "units": {
+      "pint": "coulomb ** 2 / joule",
+      "scale": 1.0,
+      "base": "A2.m-2.kg-1.s4"
+     },
+     "value": {
+      "magnitude": 0.001,
+      "units": {
+       "pint": "farad",
+       "scale": 1.0,
+       "base": "A2.m-2.kg-1.s4"
+      }
+     }
+    },
+    "q": {
+     "name": "q_C_1",
+     "symbol": "q_C_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+     "units": {
+      "pint": "coulomb",
+      "scale": 1.0,
+      "base": "A.s"
+     },
+     "value": {
+      "magnitude": 0.0,
+      "units": {
+       "pint": "coulomb",
+       "scale": 1.0,
+       "base": "A.s"
+      }
+     }
+    }
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_0": {
+    "v": {
+     "name": "v_R_0",
+     "symbol": "v_R_0",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_R_0",
+     "symbol": "u_R_0",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    },
+    "R": {
+     "name": "R_R_0",
+     "symbol": "R_R_0",
+     "type": null,
+     "units": {
+      "pint": "joule * second / coulomb ** 2",
+      "scale": 1.0,
+      "base": "A-2.m2.kg.s-3"
+     },
+     "value": {
+      "magnitude": 10.0,
+      "units": {
+       "pint": "ohm",
+       "scale": 1.0,
+       "base": "A-2.m2.kg.s-3"
+      }
+     }
+    }
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#R_1": {
+    "v": {
+     "name": "v_R_1",
+     "symbol": "v_R_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_R_1",
+     "symbol": "u_R_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    },
+    "R": {
+     "name": "R_R_1",
+     "symbol": "R_R_1",
+     "type": null,
+     "units": {
+      "pint": "joule * second / coulomb ** 2",
+      "scale": 1.0,
+      "base": "A-2.m2.kg.s-3"
+     },
+     "value": {
+      "magnitude": 100.0,
+      "units": {
+       "pint": "ohm",
+       "scale": 1.0,
+       "base": "A-2.m2.kg.s-3"
+      }
+     }
+    }
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_0": {
+    "v": {
+     "name": "v_u_0",
+     "symbol": "v_u_0",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_0",
+     "symbol": "u_0",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": {
+      "magnitude": 11.0,
+      "units": {
+       "pint": "volt",
+       "scale": 1.0,
+       "base": "A-1.m2.kg.s-3"
+      }
+     }
+    }
+   }
+  },
+  "junctions": {
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#u_1": {
+    "": {
+     "name": "u_1",
+     "symbol": "u_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / coulomb",
+      "scale": 1.0,
+      "base": "A-1.m2.kg.s-3"
+     },
+     "value": null
+    }
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/RCR.ttl#v_0": {
+    "": {
+     "name": "v_0",
+     "symbol": "v_0",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "coulomb / second",
+      "scale": 1.0,
+      "base": "A"
+     },
+     "value": null
+    }
+   }
+  }
+ },
+ "equations": [
+  {
+   "provenance": "cr",
+   "text": "Derivative(q_C_1, t) = v_C_1",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>q_C_1</ci></apply><ci>v_C_1</ci></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "u_C_1 = q_C_1/C_C_1",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_C_1</ci><apply><divide/><ci>q_C_1</ci><ci>C_C_1</ci></apply></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "v_R_0 = u_R_0/R_R_0",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v_R_0</ci><apply><divide/><ci>u_R_0</ci><ci>R_R_0</ci></apply></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "v_R_1 = u_R_1/R_R_1",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v_R_1</ci><apply><divide/><ci>u_R_1</ci><ci>R_R_1</ci></apply></apply></math>"
+  },
+  {
+   "provenance": "be",
+   "text": "v_u_0 = -v_0",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v_u_0</ci><apply><minus/><ci>v_0</ci></apply></apply></math>"
+  },
+  {
+   "provenance": "js",
+   "text": "v_R_1 = v_0 - v_C_1",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v_R_1</ci><apply><minus/><ci>v_0</ci><ci>v_C_1</ci></apply></apply></math>"
+  },
+  {
+   "provenance": "js",
+   "text": "u_1 = u_C_1",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_1</ci><ci>u_C_1</ci></apply></math>"
+  },
+  {
+   "provenance": "js",
+   "text": "u_1 = u_R_1",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_1</ci><ci>u_R_1</ci></apply></math>"
+  },
+  {
+   "provenance": "js",
+   "text": "u_R_0 = u_0 - u_1",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_R_0</ci><apply><minus/><ci>u_0</ci><ci>u_1</ci></apply></apply></math>"
+  },
+  {
+   "provenance": "js",
+   "text": "v_0 = v_R_0",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v_0</ci><ci>v_R_0</ci></apply></math>"
+  }
+ ]
+}

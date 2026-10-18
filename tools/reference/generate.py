@@ -12,6 +12,11 @@ It also writes framework.json: the BG-RDF framework as the Python version loads
 it (domains, element templates, junctions and composites), for testing the
 framework loader. `--framework-only` rewrites just that file.
 
+And for each case the Python version can build, models/<case>.json: the model's
+elements, junctions and bonds as loaded, its bond network, its variables and its
+equations, for testing the model a stage at a time before any CellML exists.
+`--fixtures-only` rewrites framework.json and these, without simulating.
+
 Example models come from the bg-rdf submodule. Variant models in
 packages/bg2cellml/test/models/ trigger bugs in the Python version; each names
 the example it should simulate exactly like. For those, the Python result is
@@ -312,6 +317,136 @@ def write_framework(framework, sympy_to_mathml, rdf) -> dict:
     return {'reference': 'framework.json'}
 
 # ------------------------------------------------------------------------------
+# Intermediate fixtures: each model as the Python version builds it, before any
+# CellML, so the model can be tested a stage at a time (plan chunk 5.0).
+
+def term_fixture(term):
+    """An RDF term: `{'iri': ...}`, or `{'literal': ..., 'datatype': ...}`."""
+    if term is None:
+        return None
+    if hasattr(term, 'datatype'):
+        datatype = term.datatype
+        return {'literal': term.value, 'datatype': None if datatype is None else datatype.value}
+    return {'iri': term.value}
+
+def equation_fixture(equation, sympy_to_mathml) -> dict:
+    return {'text': str(equation), 'mathml': sympy_to_mathml(equation.sympy_equation())}
+
+def port_fixture(port) -> dict:
+    return {
+        'iri': port._PowerPort__uri.value,
+        'direction': term_value(port.direction),
+        'bondCount': port._PowerPort__bond_count,
+        'flow': {'name': port.flow.name, 'variable': variable_fixture(port.flow.variable)},
+        'potential': {'name': port.potential.name, 'variable': variable_fixture(port.potential.variable)},
+    }
+
+def loaded_element_fixture(element, sympy_to_mathml) -> dict:
+    """An element as `BondgraphElement.__init__` leaves it, before the bond network exists."""
+    private = lambda name, default=None: getattr(element, f'_BondgraphElement__{name}', default)
+    relation = private('constitutive_relation')
+    return {
+        'iri': element.uri.value,
+        'symbol': element.symbol,
+        'label': term_value(element.label),
+        # For a composite, Python keeps the element template it wraps
+        'template': element.type,
+        'elementClass': element.element_class,
+        'domain': element.domain.uri.value,
+        'impliedJunction': element.implied_junction,
+        'ports': {port_id: port_fixture(port) for port_id, port in element.power_ports.items()},
+        'variables': {name: variable_fixture(v) for name, v in element.variables.items()},
+        'portVariableNames': sorted(private('port_variable_names')),
+        # Parameter and variable values, as read: assigned once the network is built
+        'values': {name: {'value': term_fixture(v.value), 'symbol': v.symbol}
+                   for name, v in private('variable_values').items()},
+        'intrinsicVariable': variable_fixture(private('intrinsic_variable')),
+        'flow': None if element.flow is None else element.flow.symbol,
+        'potential': None if element.potential is None else element.potential.symbol,
+        'constitutiveRelation': None if relation is None
+                                else [equation_fixture(eq, sympy_to_mathml) for eq in relation.equations],
+    }
+
+def loaded_junction_fixture(junction) -> dict:
+    return {
+        'iri': junction.uri.value,
+        'type': junction.type,
+        'symbol': junction.symbol,
+        'label': term_value(junction.label),
+        'value': term_fixture(junction._BondgraphJunction__value),
+    }
+
+def bond_fixture(bond) -> dict:
+    # Python swaps a bond's label and count (model.py:233): `label` holds the
+    # bgf:bondCount, and `bondCount` is always 1
+    return {'iri': term_value(bond.uri), 'source': bond.source_id, 'target': bond.target_id,
+            'label': term_value(bond.label), 'bondCount': bond.bond_count}
+
+def network_fixture(graph) -> dict:
+    nodes = {}
+    for node, data in graph.nodes(data=True):
+        port = data.get('power_port')
+        nodes[node] = {
+            'type': data.get('type'),
+            'label': data.get('label'),
+            'portType': data.get('port_type'),
+            'element': None if 'element' not in data else data['element'].uri.value,
+            'junction': None if 'junction' not in data else data['junction'].uri.value,
+            'domain': None if 'domain' not in data else data['domain'].uri.value,
+            'powerPort': None if port is None else {'flow': port.flow.variable.symbol,
+                                                    'potential': port.potential.variable.symbol},
+        }
+    edges = [{'source': s, 'target': t, 'bondCount': d.get('bond_count')} for s, t, d in graph.edges(data=True)]
+    return {'nodes': nodes, 'edges': edges}
+
+def model_fixture(framework, BondgraphModel, sympy_to_mathml, name: str, path: Path) -> dict:
+    """
+    A model as the Python version builds it: its elements, junctions and bonds
+    as loaded (5.1, 5.2), the bond network (5.2, 5.3), every element and
+    junction variable once assigned (5.3, 5.4), and the equations (5.5).
+    """
+    loaded = {}
+    make_bond_network = BondgraphModel._BondgraphModel__make_bond_network
+    def snapshot(model):
+        private = lambda name: getattr(model, f'_BondgraphModel__{name}')
+        loaded['elements'] = [loaded_element_fixture(e, sympy_to_mathml) for e in private('elements').values()]
+        loaded['junctions'] = [loaded_junction_fixture(j) for j in private('junctions').values()]
+        loaded['bonds'] = [bond_fixture(b) for b in private('bonds')]
+        make_bond_network(model)
+    BondgraphModel._BondgraphModel__make_bond_network = snapshot
+    try:
+        model = framework.make_bondgraph_model(source_iri(path), path.read_text())
+    finally:
+        BondgraphModel._BondgraphModel__make_bond_network = make_bond_network
+    return {
+        'case': name,
+        'sourceSha256': sha256(path),
+        'model': {'iri': model.uri.value, 'label': term_value(model.label)},
+        'issues': [issue.reason for issue in model.issues],
+        **loaded,
+        'network': network_fixture(model.network_graph),
+        'variables': {
+            'elements': {e.uri.value: {n: variable_fixture(v) for n, v in e.variables.items()} for e in model.elements},
+            'junctions': {j.uri.value: {n: variable_fixture(v) for n, v in j.variables.items()} for j in model.junctions},
+        },
+        'equations': [{'provenance': eq.provenance, **equation_fixture(eq, sympy_to_mathml)} for eq in model.equations],
+    }
+
+def write_model_fixture(case: dict, python) -> None:
+    """Write `models/<case>.json`, and name it in the case. Cases Python can't build get none."""
+    framework, BondgraphModel, sympy_to_mathml = python
+    path = REPO_ROOT / case['source']
+    case.pop('intermediate', None)
+    try:
+        fixture = model_fixture(framework, BondgraphModel, sympy_to_mathml, case['name'], path)
+    except Exception as e:
+        print(f'{case["name"]}: no intermediate fixture ({type(e).__name__}: {e})')
+        return
+    (OUTPUT_DIR / 'models').mkdir(exist_ok=True)
+    (OUTPUT_DIR / 'models' / f'{case["name"]}.json').write_text(json.dumps(fixture, indent=1) + '\n')
+    case['intermediate'] = f'models/{case["name"]}.json'
+
+# ------------------------------------------------------------------------------
 
 def python_cellml(framework, path: Path) -> str:
     model = framework.make_bondgraph_model(source_iri(path), path.read_text())
@@ -408,6 +543,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     parser.add_argument('--bg-tools', required=True, type=Path, help='Checkout of CellDL/BG-Tools to use as the reference')
     parser.add_argument('--framework-only', action='store_true', help='Only rewrite framework.json')
+    parser.add_argument('--fixtures-only', action='store_true',
+                        help='Only rewrite framework.json and the models/ fixtures, without simulating')
     args = parser.parse_args()
 
     bg_tools = args.bg_tools.resolve()
@@ -415,6 +552,7 @@ def main():
     from bg2cellml import __version__ as bg2cellml_version
     from bg2cellml.bondgraph.framework import (BGF_ONTOLOGY_URI, BGF_TEMPLATE_URI_PREFIX,
                                                BondgraphFramework)
+    from bg2cellml.bondgraph.model import BondgraphModel
     from bg2cellml.mathml import sympy_to_mathml
     from bg2cellml.rdf import RdfGraph
 
@@ -422,12 +560,16 @@ def main():
     from bg2cellml.bondgraph.namespaces import NAMESPACES
     from bg2cellml.rdf import namedNode
     framework_entry = write_framework(framework, sympy_to_mathml, (RdfGraph, namedNode, NAMESPACES))
-    if args.framework_only:
+    python = (framework, BondgraphModel, sympy_to_mathml)
+    if args.framework_only or args.fixtures_only:
         manifest_path = OUTPUT_DIR / 'manifest.json'
         manifest = json.loads(manifest_path.read_text())
         if manifest['generator']['bgToolsCommit'] != git(bg_tools, 'rev-parse', 'HEAD'):
-            raise RuntimeError('--framework-only needs the BG-Tools commit the other references came from')
+            raise RuntimeError(f'--{"framework" if args.framework_only else "fixtures"}-only needs the BG-Tools commit the other references came from')
         manifest['framework'] = framework_entry
+        if args.fixtures_only:
+            for case in manifest['cases']:
+                write_model_fixture(case, python)
         manifest_path.write_text(json.dumps(manifest, indent=2) + '\n')
         return
 
@@ -479,6 +621,9 @@ def main():
             'python': python,
         })
         print(f'{name}: Python {python["status"]}')
+
+    for case in cases:
+        write_model_fixture(case, python)
 
     bg_rdf_files = (['schema/ontology.ttl'] + [f'templates/{t}' for t in BG_RDF_TEMPLATES])
     manifest = {

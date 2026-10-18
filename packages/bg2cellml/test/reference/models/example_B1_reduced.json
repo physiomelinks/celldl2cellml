@@ -1,0 +1,743 @@
+{
+ "case": "example_B1_reduced",
+ "sourceSha256": "b5801af3bc9914eebd4a303522d767f7b38e4ab1987eee2038298c5fb08d8262",
+ "model": {
+  "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Simple_reaction",
+  "label": null
+ },
+ "issues": [],
+ "elements": [
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re",
+   "symbol": "Re",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction",
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#Reaction",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+   "impliedJunction": "https://bg-rdf.org/ontologies/bondgraph-framework#OneNode",
+   "ports": {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re_f": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction_f",
+     "direction": "https://bg-rdf.org/ontologies/bondgraph-framework#InwardPort",
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_Re",
+       "symbol": "v_Re",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "mole / second",
+        "scale": 1.0,
+        "base": "mol.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u_f",
+      "variable": {
+       "name": "u_f_Re",
+       "symbol": "u_f_Re",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / mole",
+        "scale": 1.0,
+        "base": "m2.kg.mol-1.s-2"
+       },
+       "value": null
+      }
+     }
+    },
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re_r": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalReaction_r",
+     "direction": "https://bg-rdf.org/ontologies/bondgraph-framework#OutwardPort",
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_Re",
+       "symbol": "v_Re",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "mole / second",
+        "scale": 1.0,
+        "base": "mol.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u_r",
+      "variable": {
+       "name": "u_r_Re",
+       "symbol": "u_r_Re",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / mole",
+        "scale": 1.0,
+        "base": "m2.kg.mol-1.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "variables": {
+    "v": {
+     "name": "v_Re",
+     "symbol": "v_Re",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "mole / second",
+      "scale": 1.0,
+      "base": "mol.s-1"
+     },
+     "value": null
+    },
+    "u_f": {
+     "name": "u_f_Re",
+     "symbol": "u_f_Re",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / mole",
+      "scale": 1.0,
+      "base": "m2.kg.mol-1.s-2"
+     },
+     "value": null
+    },
+    "u_r": {
+     "name": "u_r_Re",
+     "symbol": "u_r_Re",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / mole",
+      "scale": 1.0,
+      "base": "m2.kg.mol-1.s-2"
+     },
+     "value": null
+    },
+    "kappa": {
+     "name": "kappa_Re",
+     "symbol": "kappa_Re",
+     "type": null,
+     "units": {
+      "pint": "mole / second",
+      "scale": 1.0,
+      "base": "mol.s-1"
+     },
+     "value": null
+    }
+   },
+   "portVariableNames": [
+    "u_f",
+    "u_r",
+    "v"
+   ],
+   "values": {
+    "kappa": {
+     "value": {
+      "literal": "0.1 mol/s",
+      "datatype": "https://w3id.org/cdt/ucum"
+     },
+     "symbol": "kappa_r"
+    }
+   },
+   "intrinsicVariable": null,
+   "flow": "v_Re",
+   "potential": null,
+   "constitutiveRelation": [
+    {
+     "text": "v = kappa*(exp(u_f/RT) - exp(u_r/RT))",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v</ci><apply><times/><ci>&#954;</ci><apply><minus/><apply><exp/><apply><divide/><ci>u_f</ci><ci>RT</ci></apply></apply><apply><exp/><apply><divide/><ci>u_r</ci><ci>RT</ci></apply></apply></apply></apply></apply></math>"
+    }
+   ]
+  },
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_1",
+   "symbol": "q_1",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration",
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+   "impliedJunction": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+   "ports": {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_1": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_q_1",
+       "symbol": "v_q_1",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "mole / second",
+        "scale": 1.0,
+        "base": "mol.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u_q_1",
+       "symbol": "u_q_1",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / mole",
+        "scale": 1.0,
+        "base": "m2.kg.mol-1.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "variables": {
+    "v": {
+     "name": "v_q_1",
+     "symbol": "v_q_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "mole / second",
+      "scale": 1.0,
+      "base": "mol.s-1"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_q_1",
+     "symbol": "u_q_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / mole",
+      "scale": 1.0,
+      "base": "m2.kg.mol-1.s-2"
+     },
+     "value": null
+    },
+    "K": {
+     "name": "K_q_1",
+     "symbol": "K_q_1",
+     "type": null,
+     "units": {
+      "pint": "1 / mole",
+      "scale": 1.0,
+      "base": "mol-1"
+     },
+     "value": null
+    },
+    "q": {
+     "name": "q_1",
+     "symbol": "q_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     },
+     "value": {
+      "magnitude": 1.0,
+      "units": {
+       "pint": "mole",
+       "scale": 1.0,
+       "base": "mol"
+      }
+     }
+    }
+   },
+   "portVariableNames": [
+    "u",
+    "v"
+   ],
+   "values": {
+    "K": {
+     "value": {
+      "literal": "1 mol-1",
+      "datatype": "https://w3id.org/cdt/ucum"
+     },
+     "symbol": null
+    }
+   },
+   "intrinsicVariable": {
+    "name": "q_1",
+    "symbol": "q_1",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+    "units": {
+     "pint": "mole",
+     "scale": 1.0,
+     "base": "mol"
+    },
+    "value": {
+     "magnitude": 1.0,
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     }
+    }
+   },
+   "flow": "v_q_1",
+   "potential": "u_q_1",
+   "constitutiveRelation": [
+    {
+     "text": "Derivative(q, t) = v",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>q</ci></apply><ci>v</ci></apply></math>"
+    },
+    {
+     "text": "u = RT*log(K*q)",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><times/><ci>RT</ci><apply><ln/><apply><times/><ci>K</ci><ci>q</ci></apply></apply></apply></apply></math>"
+    }
+   ]
+  },
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_2",
+   "symbol": "q_2",
+   "label": null,
+   "template": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration",
+   "elementClass": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+   "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+   "impliedJunction": "https://bg-rdf.org/ontologies/bondgraph-framework#ZeroNode",
+   "ports": {
+    "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_2": {
+     "iri": "https://bg-rdf.org/ontologies/bondgraph-framework#ChemicalConcentration",
+     "direction": null,
+     "bondCount": 1,
+     "flow": {
+      "name": "v",
+      "variable": {
+       "name": "v_q_2",
+       "symbol": "v_q_2",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+       "units": {
+        "pint": "mole / second",
+        "scale": 1.0,
+        "base": "mol.s-1"
+       },
+       "value": null
+      }
+     },
+     "potential": {
+      "name": "u",
+      "variable": {
+       "name": "u_q_2",
+       "symbol": "u_q_2",
+       "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+       "units": {
+        "pint": "joule / mole",
+        "scale": 1.0,
+        "base": "m2.kg.mol-1.s-2"
+       },
+       "value": null
+      }
+     }
+    }
+   },
+   "variables": {
+    "v": {
+     "name": "v_q_2",
+     "symbol": "v_q_2",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "mole / second",
+      "scale": 1.0,
+      "base": "mol.s-1"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_q_2",
+     "symbol": "u_q_2",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / mole",
+      "scale": 1.0,
+      "base": "m2.kg.mol-1.s-2"
+     },
+     "value": null
+    },
+    "K": {
+     "name": "K_q_2",
+     "symbol": "K_q_2",
+     "type": null,
+     "units": {
+      "pint": "1 / mole",
+      "scale": 1.0,
+      "base": "mol-1"
+     },
+     "value": null
+    },
+    "q": {
+     "name": "q_2",
+     "symbol": "q_2",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     },
+     "value": {
+      "magnitude": 0.0,
+      "units": {
+       "pint": "mole",
+       "scale": 1.0,
+       "base": "mol"
+      }
+     }
+    }
+   },
+   "portVariableNames": [
+    "u",
+    "v"
+   ],
+   "values": {
+    "K": {
+     "value": {
+      "literal": "1 mol-1",
+      "datatype": "https://w3id.org/cdt/ucum"
+     },
+     "symbol": null
+    }
+   },
+   "intrinsicVariable": {
+    "name": "q_2",
+    "symbol": "q_2",
+    "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+    "units": {
+     "pint": "mole",
+     "scale": 1.0,
+     "base": "mol"
+    },
+    "value": {
+     "magnitude": 0.0,
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     }
+    }
+   },
+   "flow": "v_q_2",
+   "potential": "u_q_2",
+   "constitutiveRelation": [
+    {
+     "text": "Derivative(q, t) = v",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>q</ci></apply><ci>v</ci></apply></math>"
+    },
+    {
+     "text": "u = RT*log(K*q)",
+     "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u</ci><apply><times/><ci>RT</ci><apply><ln/><apply><times/><ci>K</ci><ci>q</ci></apply></apply></apply></apply></math>"
+    }
+   ]
+  }
+ ],
+ "junctions": [],
+ "bonds": [
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_1.Re_f",
+   "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_1",
+   "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re_f",
+   "label": null,
+   "bondCount": 1
+  },
+  {
+   "iri": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re_r.q_2",
+   "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re_r",
+   "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_2",
+   "label": null,
+   "bondCount": 1
+  }
+ ],
+ "network": {
+  "nodes": {
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re_f": {
+    "type": "bgf:ChemicalReaction",
+    "label": "Re",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#Reaction",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+    "powerPort": {
+     "flow": "v_Re",
+     "potential": "u_f_Re"
+    }
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re_r": {
+    "type": "bgf:ChemicalReaction",
+    "label": "Re",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#Reaction",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+    "powerPort": {
+     "flow": "v_Re",
+     "potential": "u_r_Re"
+    }
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_1": {
+    "type": "bgf:ChemicalConcentration",
+    "label": "q_1",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_1",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+    "powerPort": {
+     "flow": "v_q_1",
+     "potential": "u_q_1"
+    }
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_2": {
+    "type": "bgf:ChemicalConcentration",
+    "label": "q_2",
+    "portType": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityStore",
+    "element": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_2",
+    "junction": null,
+    "domain": "https://bg-rdf.org/ontologies/bondgraph-framework#Chemical",
+    "powerPort": {
+     "flow": "v_q_2",
+     "potential": "u_q_2"
+    }
+   }
+  },
+  "edges": [
+   {
+    "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re_r",
+    "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_2",
+    "bondCount": 1
+   },
+   {
+    "source": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_1",
+    "target": "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re_f",
+    "bondCount": 1
+   }
+  ]
+ },
+ "variables": {
+  "elements": {
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#Re": {
+    "v": {
+     "name": "v_Re",
+     "symbol": "v_Re",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "mole / second",
+      "scale": 1.0,
+      "base": "mol.s-1"
+     },
+     "value": null
+    },
+    "u_f": {
+     "name": "u_f_Re",
+     "symbol": "u_f_Re",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / mole",
+      "scale": 1.0,
+      "base": "m2.kg.mol-1.s-2"
+     },
+     "value": null
+    },
+    "u_r": {
+     "name": "u_r_Re",
+     "symbol": "u_r_Re",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / mole",
+      "scale": 1.0,
+      "base": "m2.kg.mol-1.s-2"
+     },
+     "value": null
+    },
+    "kappa": {
+     "name": "kappa_Re",
+     "symbol": "kappa_r",
+     "type": null,
+     "units": {
+      "pint": "mole / second",
+      "scale": 1.0,
+      "base": "mol.s-1"
+     },
+     "value": {
+      "magnitude": 0.1,
+      "units": {
+       "pint": "mole / second",
+       "scale": 1.0,
+       "base": "mol.s-1"
+      }
+     }
+    }
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_1": {
+    "v": {
+     "name": "v_q_1",
+     "symbol": "v_q_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "mole / second",
+      "scale": 1.0,
+      "base": "mol.s-1"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_q_1",
+     "symbol": "u_q_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / mole",
+      "scale": 1.0,
+      "base": "m2.kg.mol-1.s-2"
+     },
+     "value": null
+    },
+    "K": {
+     "name": "K_q_1",
+     "symbol": "K_q_1",
+     "type": null,
+     "units": {
+      "pint": "1 / mole",
+      "scale": 1.0,
+      "base": "mol-1"
+     },
+     "value": {
+      "magnitude": 1.0,
+      "units": {
+       "pint": "1 / mole",
+       "scale": 1.0,
+       "base": "mol-1"
+      }
+     }
+    },
+    "q": {
+     "name": "q_1",
+     "symbol": "q_1",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     },
+     "value": {
+      "magnitude": 1.0,
+      "units": {
+       "pint": "mole",
+       "scale": 1.0,
+       "base": "mol"
+      }
+     }
+    }
+   },
+   "https://github.com/CellDL/BG-RDF/blob/v2026-04-12/examples/example_B1_reduced.ttl#q_2": {
+    "v": {
+     "name": "v_q_2",
+     "symbol": "v_q_2",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#FlowVariable",
+     "units": {
+      "pint": "mole / second",
+      "scale": 1.0,
+      "base": "mol.s-1"
+     },
+     "value": null
+    },
+    "u": {
+     "name": "u_q_2",
+     "symbol": "u_q_2",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#PotentialVariable",
+     "units": {
+      "pint": "joule / mole",
+      "scale": 1.0,
+      "base": "m2.kg.mol-1.s-2"
+     },
+     "value": null
+    },
+    "K": {
+     "name": "K_q_2",
+     "symbol": "K_q_2",
+     "type": null,
+     "units": {
+      "pint": "1 / mole",
+      "scale": 1.0,
+      "base": "mol-1"
+     },
+     "value": {
+      "magnitude": 1.0,
+      "units": {
+       "pint": "1 / mole",
+       "scale": 1.0,
+       "base": "mol-1"
+      }
+     }
+    },
+    "q": {
+     "name": "q_2",
+     "symbol": "q_2",
+     "type": "https://bg-rdf.org/ontologies/bondgraph-framework#QuantityVariable",
+     "units": {
+      "pint": "mole",
+      "scale": 1.0,
+      "base": "mol"
+     },
+     "value": {
+      "magnitude": 0.0,
+      "units": {
+       "pint": "mole",
+       "scale": 1.0,
+       "base": "mol"
+      }
+     }
+    }
+   }
+  },
+  "junctions": {}
+ },
+ "equations": [
+  {
+   "provenance": "cr",
+   "text": "v_Re = kappa_r*(exp(u_f_Re/RT) - exp(u_r_Re/RT))",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v_Re</ci><apply><times/><ci>kappa_r</ci><apply><minus/><apply><exp/><apply><divide/><ci>u_f_Re</ci><ci>RT</ci></apply></apply><apply><exp/><apply><divide/><ci>u_r_Re</ci><ci>RT</ci></apply></apply></apply></apply></apply></math>"
+  },
+  {
+   "provenance": "be",
+   "text": "u_f_Re = u_q_1",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_f_Re</ci><ci>u_q_1</ci></apply></math>"
+  },
+  {
+   "provenance": "be",
+   "text": "u_r_Re = u_q_2",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_r_Re</ci><ci>u_q_2</ci></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "Derivative(q_1, t) = v_q_1",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>q_1</ci></apply><ci>v_q_1</ci></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "u_q_1 = RT*log(K_q_1*q_1)",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_q_1</ci><apply><times/><ci>RT</ci><apply><ln/><apply><times/><ci>K_q_1</ci><ci>q_1</ci></apply></apply></apply></apply></math>"
+  },
+  {
+   "provenance": "be",
+   "text": "v_q_1 = -kappa_r*(exp(u_f_Re/RT) - exp(u_r_Re/RT))",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v_q_1</ci><apply><minus/><apply><times/><ci>kappa_r</ci><apply><minus/><apply><exp/><apply><divide/><ci>u_f_Re</ci><ci>RT</ci></apply></apply><apply><exp/><apply><divide/><ci>u_r_Re</ci><ci>RT</ci></apply></apply></apply></apply></apply></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "Derivative(q_2, t) = v_q_2",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>q_2</ci></apply><ci>v_q_2</ci></apply></math>"
+  },
+  {
+   "provenance": "cr",
+   "text": "u_q_2 = RT*log(K_q_2*q_2)",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>u_q_2</ci><apply><times/><ci>RT</ci><apply><ln/><apply><times/><ci>K_q_2</ci><ci>q_2</ci></apply></apply></apply></apply></math>"
+  },
+  {
+   "provenance": "be",
+   "text": "v_q_2 = kappa_r*(exp(u_f_Re/RT) - exp(u_r_Re/RT))",
+   "mathml": "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"><apply><eq/><ci>v_q_2</ci><apply><times/><ci>kappa_r</ci><apply><minus/><apply><exp/><apply><divide/><ci>u_f_Re</ci><ci>RT</ci></apply></apply><apply><exp/><apply><divide/><ci>u_r_Re</ci><ci>RT</ci></apply></apply></apply></apply></apply></math>"
+  }
+ ]
+}

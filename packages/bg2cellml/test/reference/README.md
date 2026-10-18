@@ -12,6 +12,7 @@ Results from the Python [bg2cellml](https://github.com/CellDL/BG-Tools) 0.11.2, 
 | `<example>.json` | Simulation settings, and the states, rates and algebraic variables by name, at up to 101 time points |
 | `python/<example>.cellml` | The CellML 1.1 the Python version generated, for inspection |
 | `framework.json` | The BG-RDF framework as the Python version loads it: domains, element templates with their ports, parameters, variables and constitutive relations, junctions, composites, and which template each element class and domain gives |
+| `models/<case>.json` | The model as the Python version builds it, for each case it can build: elements, junctions and bonds as loaded, the bond network, every variable once assigned, and the equations |
 
 ## Cases
 
@@ -42,4 +43,15 @@ Numbers are rounded to 9 significant figures. Regenerating on a different platfo
 - **Constitutive relations** list their variables in order of first appearance, and each equation as sympy prints it and as sympy's Content MathML.
 - **Lookups** record what Python's `element_template()` gives for every template and composite, and for every element class in every domain, and what it and `junction()` give for each element and junction type in the 14 examples.
 - **Symbols and labels** are as Python has them. Python passes a template's or junction's `rdfs:label` where its symbol belongs, so `symbol` is often a label such as `Chemical concentration`.
+
+## The models
+
+`models/<case>.json` lets the JavaScript model be tested a stage at a time, before it produces CellML. Like `framework.json`, it's read from the Python objects, some of them private. Each has:
+
+- **`elements`, `junctions` and `bonds`, as loaded:** a snapshot taken just before the bond network is built. Elements are in IRI order, as Python's query has them. An element's `values` are its parameter and variable values as read, which Python only assigns once the network exists; its `variables` are at that point unassigned, apart from a store's or source's own value. For a composite, `template` is the element template it wraps, as Python keeps it.
+- **`network`:** the nodes (element ports and junctions, with their domains) and the bonds between them, once built.
+- **`variables`:** every element's and junction's variables once assigned, by IRI and name.
+- **`equations`:** every equation, in Python's order, with its provenance (`cr` a constitutive relation, `be` a bond element's, `js` a junction's), as sympy prints it and as sympy's Content MathML.
+
+Python's bugs show here as they are. Its bonds hold any `bgf:bondCount` as their `label`, and have a `bondCount` of 1 (model.py:233). `RC_labelled_bonds` and `RC_plain_number` have no fixture, as Python can't build them.
 

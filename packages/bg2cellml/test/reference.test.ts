@@ -7,6 +7,7 @@ import {
   compareResults,
   loadManifest,
   loadPythonFramework,
+  loadPythonModel,
   loadReference,
   requireBgRdf,
   sha256,
@@ -32,6 +33,11 @@ describe('reference results', () => {
     }
   })
 
+  it('include the model as Python builds it, for every case Python can build', () => {
+    const built = manifest.cases.filter((c) => c.intermediate !== undefined).map((c) => c.name)
+    expect(built).toEqual([...manifest.cases.filter((c) => c.kind === 'example').map((c) => c.name), 'RC_prefixed_values'])
+  })
+
   describe.each(manifest.cases)('$name', (c) => {
     it('has an unchanged source model', () => {
       const path = `${REPO_ROOT}${c.source}`
@@ -48,6 +54,17 @@ describe('reference results', () => {
       expect(Object.keys(reference.states).length).toBeGreaterThan(0)
       expect(compareResults(reference, reference, manifest.tolerance)).toEqual([])
     })
+
+    if (c.intermediate !== undefined) {
+      it('has an intermediate fixture from the same source, with no issues', () => {
+        const model = loadPythonModel(c)
+        expect(model.case).toBe(c.name)
+        expect(model.sourceSha256, `${c.intermediate} is stale: regenerate the references`).toBe(c.sourceSha256)
+        expect(model.issues).toEqual([])
+        expect(model.elements.length).toBeGreaterThan(0)
+        expect(model.equations.length).toBeGreaterThan(0)
+      })
+    }
 
     if (c.pmrCheck) {
       it('agrees with the hand-built PMR model', () => {
