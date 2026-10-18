@@ -20,6 +20,7 @@ dist/
 coverage/
 test-results/
 playwright-report/
+/stats/
 
 # Logs
 *.log

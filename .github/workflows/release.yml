@@ -1,0 +1,54 @@
+name: Release
+
+# Publishes any package whose version in main isn't on npm yet, with npm
+# trusted publishing (no token) and provenance. Versions and changelogs are
+# made beforehand with `yarn changeset version`; see RELEASING.md.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write # to push the release tags
+  id-token: write # for npm trusted publishing and provenance
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: true
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - run: corepack enable && yarn install --immutable
+      - run: yarn build
+      - run: yarn test
+      # The packed packages must install into an empty project and work before anything is published
+      - run: node tools/release/check-install.mjs --packed
+      - name: Publish what isn't on npm yet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          yarn changeset publish
+          git push origin --tags
+        env:
+          # Yarn exchanges the workflow's OIDC token for a publish token, and signs provenance
+          YARN_NPM_PUBLISH_REGISTRY: https://registry.npmjs.org
+          YARN_NPM_PUBLISH_PROVENANCE: 'true'
+      # The released version, from npm this time (a new version can take a minute to appear)
+      - name: Install the released version from npm
+        run: |
+          version="$(node -p "require('./packages/bg2cellml/package.json').version")"
+          for attempt in 1 2 3 4 5; do
+            node tools/release/check-install.mjs --version "$version" && exit 0
+            sleep 30
+          done
+          exit 1

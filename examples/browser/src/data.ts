@@ -1,10 +1,14 @@
 /**
  * The BG-RDF framework and every case's source, as text, bundled from the
- * repository by Vite. The page imports this dynamically, so it builds into
- * its own chunk and the converter's own size can be measured without it.
+ * repository by Vite, with the case list. The page imports this dynamically,
+ * so it builds into its own chunk and the converter's own size can be
+ * measured without it.
  */
 
 import { CASES, ONTOLOGY, TEMPLATES } from './cases.js'
+
+// The case list comes from the reference manifest, so it rides in this chunk too
+export { CASES, ONTOLOGY, TEMPLATES, templateName } from './cases.js'
 
 const RAW = {
   ...import.meta.glob('../../../bg-rdf/schema/ontology.ttl', { query: '?raw', import: 'default', eager: true }),

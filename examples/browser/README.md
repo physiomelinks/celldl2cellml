@@ -23,7 +23,7 @@ Then, in this directory (or with `yarn workspace @physiomelinks/browser-check <s
 
 ```sh
 yarn dev             # the page at http://localhost:5173/, to open in any browser
-yarn build           # the production build, in dist/
+yarn build           # the production build, in dist/, with dist/stats.html (see below)
 yarn preview         # serves dist/ at http://localhost:4173/
 yarn size            # the build's download size, raw, gzip and brotli
 yarn test:browsers   # the Playwright check, in Chromium, Firefox and WebKit
@@ -66,11 +66,28 @@ From `yarn size` on the production build. Pyodide's 24 MB is unpacked (pyodide.a
 |---|---:|---:|---:|
 | oxigraph (.wasm) | 4.05 | 1.45 | 0.98 |
 | libcellml.js (.wasm) | 2.30 | 0.65 | 0.48 |
-| Converter, its packages and both modules' glue (.js) | 0.22 | 0.07 | 0.06 |
-| **Converter** | **6.57** | **2.17** | **1.52** |
-| Page data: BG-RDF framework and cases (.js) | 0.14 | 0.02 | 0.02 |
+| Converter, its packages and both modules' glue (.js) | 0.21 | 0.07 | 0.06 |
+| **Converter** | **6.55** | **2.16** | **1.52** |
+| Page data: BG-RDF framework and cases (.js) | 0.15 | 0.02 | 0.02 |
 
 The converter is 6.6 MB raw against Pyodide's 24 MB: 27% of it. An application that already loads one of the modules downloads less: the CellDL Editor already has oxigraph, so for it the converter adds about 2.5 MB raw (0.5 MB as brotli); PhLynx already loads libcellml.js, so for it the converter adds about 4.3 MB raw.
+
+### What the JavaScript is made of
+
+`yarn build` also writes `dist/stats.html`, a treemap from [rollup-plugin-visualizer](https://github.com/btd/rollup-plugin-visualizer) of every module in the page's JavaScript; open it in a browser. Its sizes are each module's code before minifying, with gzip and brotli estimates. The `.wasm` files aren't modules, so they aren't in it. For the packages on their own, `yarn stats` at the repository root makes one report per package.
+
+In the converter's chunk (19 October 2026, before minifying):
+
+| Part | Code (kB) | gzip (kB) | brotli (kB) |
+|---|---:|---:|---:|
+| libcellml.js (Emscripten glue) | 187.8 | 46.9 | 39.8 |
+| @physiomelinks/bg2cellml | 86.7 | 29.3 | 25.5 |
+| oxigraph (wasm-bindgen glue) | 38.4 | 6.6 | 5.9 |
+| @physiomelinks/math-ast | 33.0 | 10.5 | 9.2 |
+| @physiomelinks/cellml-units | 14.4 | 5.3 | 4.7 |
+| The page, and Vite's and rolldown's helpers | 10.9 | 4.6 | 3.9 |
+
+The three packages are 134 kB of the 371 kB; libcellml.js's JavaScript is bigger than all three together.
 
 ## Notes
 

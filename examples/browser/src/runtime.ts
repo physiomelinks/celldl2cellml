@@ -8,7 +8,7 @@ import type { LibCellML } from '@physiomelinks/cellml-units'
 import createLibCellML from 'libcellml.js'
 import initOxigraph, * as oxigraph from 'oxigraph/web.js'
 
-import { ONTOLOGY, TEMPLATES, templateName } from './cases.js'
+import type { Case } from './cases.js'
 
 export interface LoadTimes {
   /** Milliseconds to fetch, compile and start each module. */
@@ -24,6 +24,8 @@ export interface Loaded {
   times: LoadTimes
   /** A bundled file's text, by path from the repository root. */
   bundled: (path: string) => string
+  /** The bundled cases. */
+  cases: readonly Case[]
 }
 
 async function timed<T>(work: () => Promise<T> | T): Promise<[T, number]> {
@@ -43,14 +45,15 @@ export async function loadConverter(): Promise<Loaded> {
   if (missing.length > 0) throw new Error(`Not bundled: ${missing.join(', ')}`)
   const runtime: Runtime = { libcellml, oxigraph }
   const converter = new Converter(runtime)
-  const templates = Object.fromEntries(TEMPLATES.map((path) => [templateName(path), data.bundled(path)]))
+  const templates = Object.fromEntries(data.TEMPLATES.map((path) => [data.templateName(path), data.bundled(path)]))
   const [frameworkIssues, frameworkMs] = await timed(() =>
-    converter.loadFramework({ ontology: data.bundled(ONTOLOGY), templates }),
+    converter.loadFramework({ ontology: data.bundled(data.ONTOLOGY), templates }),
   )
   return {
     converter,
     frameworkIssues,
     times: { oxigraph: oxigraphMs, libcellml: libcellmlMs, framework: frameworkMs },
     bundled: data.bundled,
+    cases: data.CASES,
   }
 }

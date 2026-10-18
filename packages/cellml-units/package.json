@@ -1,13 +1,27 @@
 {
   "name": "@physiomelinks/cellml-units",
   "description": "Turn UCUM unit codes into CellML 2.0 units, and compare and convert them with libCellML.",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "license": "Apache-2.0",
+  "author": {
+    "name": "Hugh Sorby",
+    "email": "h.sorby@auckland.ac.nz"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/physiomelinks/bg-2-cellml.git",
     "directory": "packages/cellml-units"
   },
+  "homepage": "https://github.com/physiomelinks/bg-2-cellml/tree/main/packages/cellml-units#readme",
+  "bugs": {
+    "url": "https://github.com/physiomelinks/bg-2-cellml/issues"
+  },
+  "keywords": [
+    "cellml",
+    "ucum",
+    "units",
+    "libcellml"
+  ],
   "type": "module",
   "exports": {
     ".": {
@@ -18,8 +32,10 @@
   },
   "files": [
     "dist",
+    "src",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsc --build",

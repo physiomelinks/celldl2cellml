@@ -21,11 +21,15 @@
     "clean": "tsc --build --clean",
     "typecheck": "tsc --build --noEmit",
     "test": "yarn workspaces foreach --all --topological --parallel run test",
-    "reference": "uv run --project tools/reference python tools/reference/generate.py"
+    "reference": "uv run --project tools/reference python tools/reference/generate.py",
+    "stats": "node tools/stats/build.mjs"
   },
   "devDependencies": {
+    "@changesets/cli": "^3.0.3",
     "@types/node": "^24.0.0",
+    "rollup-plugin-visualizer": "^7.1.1",
     "typescript": "^5.9.3",
+    "vite": "^8.3.4",
     "vitest": "^4.0.18"
   },
   "engines": {

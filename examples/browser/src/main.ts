@@ -4,7 +4,7 @@
  * `window.browserCheck` is what the Playwright test drives.
  */
 
-import { CASES, type Case, type CaseResult } from './cases.js'
+import type { Case, CaseResult } from './cases.js'
 import { loadConverter, type Loaded, type LoadTimes } from './runtime.js'
 
 export interface BrowserCheck {
@@ -97,7 +97,7 @@ async function convertAll(): Promise<CaseResult[]> {
   rows.replaceChildren()
   const results: CaseResult[] = []
   const startAll = performance.now()
-  for (const c of CASES) {
+  for (const c of loaded.cases) {
     const result = await convert(loaded, c.name, loaded.bundled(c.source), c)
     results.push(result)
     addRow(c.kind, result)

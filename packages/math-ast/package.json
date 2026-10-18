@@ -1,13 +1,28 @@
 {
   "name": "@physiomelinks/math-ast",
   "description": "A small expression tree for Content MathML: read, build, compare, substitute, tidy and write equations.",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "license": "Apache-2.0",
+  "author": {
+    "name": "Hugh Sorby",
+    "email": "h.sorby@auckland.ac.nz"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/physiomelinks/bg-2-cellml.git",
     "directory": "packages/math-ast"
   },
+  "homepage": "https://github.com/physiomelinks/bg-2-cellml/tree/main/packages/math-ast#readme",
+  "bugs": {
+    "url": "https://github.com/physiomelinks/bg-2-cellml/issues"
+  },
+  "keywords": [
+    "mathml",
+    "content-mathml",
+    "expression",
+    "ast",
+    "cellml"
+  ],
   "type": "module",
   "exports": {
     ".": {
@@ -18,8 +33,10 @@
   },
   "files": [
     "dist",
+    "src",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsc --build",

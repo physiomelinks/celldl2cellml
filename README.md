@@ -5,7 +5,7 @@ Generates CellML 2.0 from [BG-RDF](https://github.com/CellDL/BG-RDF) bond graph 
 It ports the Python [bg2cellml](https://github.com/CellDL/BG-Tools) so that [PhLynx](https://github.com/physiomelinks/PhLynx) and the [CellDL Editor](https://github.com/CellDL/CellDLEditor) can convert bond graphs in the browser. The Python version has to run in Pyodide, which needs about 24 MB of WebAssembly and wheels.
 
 > [!NOTE]
-> Not yet published. The converter is complete and checked against the Python version (see the bg2cellml README); [`examples/browser`](examples/browser) checks it in browsers.
+> The converter is complete and checked against the Python version (see the bg2cellml README); [`examples/browser`](examples/browser) checks it in browsers.
 
 ## Packages
 
@@ -31,7 +31,9 @@ yarn build        # tsc --build, in dependency order
 yarn test         # Vitest in every package
 ```
 
-To work on one package, use `yarn workspace @physiomelinks/math-ast test:watch`.
+To work on one package, use `yarn workspace @physiomelinks/math-ast test:watch`. `yarn stats` writes a [rollup-plugin-visualizer](https://github.com/btd/rollup-plugin-visualizer) treemap of each package, bundled as an application would bundle it, to `stats/<package>.html`.
+
+Releases use [Changesets](https://github.com/changesets/changesets): add one with `yarn changeset` alongside a change. [RELEASING.md](RELEASING.md) covers versions, changelogs and publishing to npm.
 
 `bg-rdf` is a git submodule of [CellDL/BG-RDF](https://github.com/CellDL/BG-RDF), pinned to a release tag. Tests load the framework from `bg-rdf/schema/ontology.ttl` and `bg-rdf/templates/`, and use `bg-rdf/examples/` as test models. The packages don't bundle it: at run time the host application supplies the framework.
 

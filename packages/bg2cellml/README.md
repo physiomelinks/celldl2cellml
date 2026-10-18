@@ -5,9 +5,13 @@ Generates CellML 2.0 from [BG-RDF](https://github.com/CellDL/BG-RDF) bond graph 
 It ports the Python [bg2cellml](https://github.com/CellDL/BG-Tools) (v0.11.2) so the CellDL Editor and PhLynx don't need Pyodide, which is about 24 MB of downloads. It keeps the `celldl2cellml()` interface of `@celldl/editor-python-tools`, so switching should only need a change of import.
 
 > [!NOTE]
-> Not yet published. The converter is complete: it reads the BG-RDF framework and models, builds the bond network and equations, and writes CellML 2.0 with libCellML, with metadata. Every BG-RDF example and variant simulates as the Python version's CellML does, or, where Python has a bug, as a hand-worked reference and the PMR model do (see below).
+> The converter is complete: it reads the BG-RDF framework and models, builds the bond network and equations, and writes CellML 2.0 with libCellML, with metadata. Every BG-RDF example and variant simulates as the Python version's CellML does, or, where Python has a bug, as a hand-worked reference and the PMR model do (see below).
 
 ## Usage
+
+```sh
+npm install @physiomelinks/bg2cellml libcellml.js oxigraph
+```
 
 The WebAssembly modules, libcellml.js and oxigraph, are peer dependencies. The host application loads them once and passes them in.
 
@@ -30,6 +34,8 @@ const { cellml, metadata, issues, exception } = await converter.celldl2cellml(ce
   metadata: true,
 })
 ```
+
+In Node, also pass a `domParser` (`new DOMParser()` from `@xmldom/xmldom`); browsers have their own. With Vite, keep both modules out of dependency pre-bundling (`optimizeDeps: { exclude: ['libcellml.js', 'oxigraph'] }`), as each finds its `.wasm` from its own URL. [`examples/browser`](https://github.com/physiomelinks/bg-2-cellml/tree/main/examples/browser) in the repository is a complete page.
 
 ## Layout
 

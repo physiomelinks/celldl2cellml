@@ -27,7 +27,8 @@ function files(dir, prefix = '') {
 }
 
 const sizes = new Map()
-for (const file of files(DIST)) {
+// stats.html is the visualizer's report and source maps aren't downloaded, so neither counts
+for (const file of files(DIST).filter((f) => f !== 'stats.html' && !f.endsWith('.map'))) {
   const bytes = readFileSync(join(DIST, file))
   const row = sizes.get(part(file)) ?? { raw: 0, gzip: 0, brotli: 0 }
   row.raw += bytes.length

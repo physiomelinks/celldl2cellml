@@ -6,6 +6,10 @@ It replaces pint and ucumvert in the Python [bg2cellml](https://github.com/CellD
 
 ## Usage
 
+```sh
+npm install @physiomelinks/cellml-units libcellml.js
+```
+
 ```js
 import { compatible, convertValue, parseUcum, toCellMLUnits, unitsName } from '@physiomelinks/cellml-units'
 

@@ -6,6 +6,10 @@ It replaces the parts of sympy that the Python [bg2cellml](https://github.com/Ce
 
 ## Usage
 
+```sh
+npm install @physiomelinks/math-ast
+```
+
 ```js
 import { parseMathML, readMathML, substitute, toEquations, toMathML } from '@physiomelinks/math-ast'
 
