@@ -22,6 +22,8 @@ converter.loadFramework({
   ontology: ontologyTurtle,                          // BG-RDF schema/ontology.ttl
   templates: { 'electrical.ttl': electricalTurtle },  // BG-RDF templates/*.ttl
 })
+// or, from statements already in an RDF store, such as the CellDL Editor's:
+converter.loadFramework({ quads: store.match(null, null, null, null) })
 
 const { cellml, metadata, issues, exception } = await converter.celldl2cellml(celldlSvg, {
   sourceUri: 'https://example.org/rc.celldl',
@@ -50,7 +52,8 @@ const { cellml, metadata, issues, exception } = await converter.celldl2cellml(ce
 - **Templates are checked more closely.** Every parameter and variable must appear in the constitutive relation (Python only compares counts), and ports without a direction, duplicate ports and duplicate names are reported (Python drops or overwrites them).
 - **An ambiguous element class is reported.** An element given as a class and domain (`bgf:Reaction` in `bgf:Chemical`) where the domain has more than one template of that class finds nothing, and `templateIssue()` says which templates it could be. Python silently uses the last by IRI.
 - **A template's `rdfs:label` is its `label`.** Python holds it as the template's symbol, which nothing else uses.
-- **Domain constants are sorted by name.** Python's order depends on its oxigraph build.
+- **Domain constants, and template parameters and variables, are sorted by name.** Python's order depends on its oxigraph build and how it orders blank nodes.
+- **The framework can come from any RDF store.** `loadFramework({ quads })` takes oxigraph quads or those of any RDF/JS library, from any named graphs, and gives the same framework as Turtle.
 - **Output text differs.** The equations are the same mathematically, but terms may be ordered differently. Parity is checked by simulation.
 
 ## Licence

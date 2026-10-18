@@ -34,5 +34,5 @@ export {
 export { BondgraphModel, type ModelElement } from './model/model.js'
 export { BondNetwork } from './model/network.js'
 export { IssueLog, type Issue } from './issues.js'
-export { RdfGraph, type OxigraphModule, type ResultRow, type Term } from './rdf/graph.js'
+export { RdfGraph, type OxigraphModule, type QuadLike, type ResultRow, type Term, type TermLike } from './rdf/graph.js'
 export { BGF, CDT, NAMESPACES, curie, fragment } from './rdf/namespaces.js'

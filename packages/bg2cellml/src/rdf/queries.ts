@@ -84,6 +84,7 @@ export const COMPOSITE_TEMPLATE_DEFINITIONS = `
         OPTIONAL { ?uri rdfs:label ?label }
     } ORDER BY ?uri`
 
+/** Sorted by name, as Python's order depends on how its store orders blank nodes. */
 export const templateParametersQuery = (template: string): string => `
     SELECT DISTINCT ?name ?units ?value
     WHERE {
@@ -91,8 +92,9 @@ export const templateParametersQuery = (template: string): string => `
         ?variable bgf:varName ?name .
         OPTIONAL { ?variable bgf:hasUnits ?units }
         OPTIONAL { ?variable bgf:hasValue ?value }
-    }`
+    } ORDER BY ?name`
 
+/** Sorted by name, as Python's order depends on how its store orders blank nodes. */
 export const templateVariablesQuery = (template: string): string => `
     SELECT DISTINCT ?name ?units ?value
     WHERE {
@@ -100,7 +102,7 @@ export const templateVariablesQuery = (template: string): string => `
         ?variable bgf:varName ?name .
         OPTIONAL { ?variable bgf:hasUnits ?units }
         OPTIONAL { ?variable bgf:hasValue ?value }
-    }`
+    } ORDER BY ?name`
 
 export const templatePortBondsQuery = (template: string): string => `
     SELECT DISTINCT ?portId ?direction ?bondCount

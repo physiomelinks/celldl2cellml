@@ -6,14 +6,13 @@
  */
 
 import type { LibCellML } from '@physiomelinks/cellml-units'
-import type * as Oxigraph from 'oxigraph'
 
 import { extractBgRdf, type DOMParserLike } from './celldl.js'
 import { generateCellML } from './cellml/generate.js'
 import { BondgraphFramework } from './framework/framework.js'
 import { BondgraphModel } from './model/model.js'
 import { BGF_ONTOLOGY_IRI, BGF_TEMPLATE_IRI_PREFIX } from './rdf/namespaces.js'
-import { RdfGraph, type OxigraphModule } from './rdf/graph.js'
+import { RdfGraph, type OxigraphModule, type QuadLike } from './rdf/graph.js'
 
 /** The WebAssembly modules the converter needs. The host application loads them once. */
 export interface Runtime {
@@ -27,8 +26,11 @@ export interface Runtime {
 export type FrameworkSource =
   /** The ontology and template files as Turtle, with templates keyed by file name such as `electrical.ttl`. */
   | { ontology: string; templates: Readonly<Record<string, string>> }
-  /** Statements already in an RDF store, such as the CellDL Editor's. */
-  | { quads: Iterable<Oxigraph.Quad> }
+  /**
+   * Statements already in an RDF store, such as the CellDL Editor's: oxigraph
+   * quads, or those of any RDF/JS library. Named graphs are merged.
+   */
+  | { quads: Iterable<QuadLike> }
 
 export interface CellMLGenerationOptions {
   sourceUri: string
@@ -52,6 +54,11 @@ export class Converter {
 
   constructor(runtime: Runtime) {
     this.#runtime = runtime
+  }
+
+  /** The BG-RDF framework, once `loadFramework()` has loaded it. */
+  get framework(): BondgraphFramework | undefined {
+    return this.#framework
   }
 
   /** Load the BG-RDF framework. Returns any issues found. */
