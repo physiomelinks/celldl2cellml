@@ -59,7 +59,12 @@ function parse(cellml: string, strict: boolean): { model: Model; issues: string[
   try {
     const model = parser.parseModel(cellml)
     parsed.push(model)
-    const issues = Array.from({ length: parser.issueCount() }, (_, i) => parser.issue(i).description())
+    const issues = Array.from({ length: parser.issueCount() }, (_, i) => {
+      const issue = parser.issue(i)
+      const description = issue.description()
+      issue.delete?.()
+      return description
+    })
     return { model, issues }
   } finally {
     parser.delete?.()
@@ -127,6 +132,8 @@ function expectSameVariables(ours: Model, python: Model): void {
     const message = `${row.name}: ${row.units.name()} and ${theirs.units.name()}`
     expect(libcellml.Units.equivalent(row.units, theirs.units), message).toBe(true)
     expect(row.initialValue, `${row.name}'s initial value`).toBe(theirs.initialValue)
+    row.units.delete?.()
+    theirs.units.delete?.()
   })
 }
 
@@ -177,7 +184,11 @@ describe('example_RC', () => {
     const component = ours.componentByIndex(0)!
     expect(component.id()).toBe('main')
     const rows = variablesOf(ours)
-    expect(rows.map((row) => [row.name, row.units.name(), row.initialValue])).toEqual([
+    expect(rows.map((row) => { 
+      const name = row.units.name()
+      row.units.delete?.()
+      return [row.name, name, row.initialValue]
+    })).toEqual([
       ['t', 'second', undefined],
       ['C_q_1', 'C2_per_J', 0.001],
       ['I_R', 'C_per_s', undefined],
@@ -191,11 +202,19 @@ describe('example_RC', () => {
       ['u_q_1', 'J_per_C', undefined],
       ['v_q_1', 'C_per_s', undefined],
     ])
-    expect(component.variableByName('C_q_1')!.id()).toBe('main-C_q_1')
+    const variable = component.variableByName('C_q_1')
+    expect(variable!.id()).toBe('main-C_q_1')
+    variable.delete?.()
+    component.delete?.()
   })
 
   it('defines each units once, and no dim units', () => {
-    const names = Array.from({ length: ours.unitsCount() }, (_, i) => ours.unitsByIndex(i)!.name())
+    const names = Array.from({ length: ours.unitsCount() }, (_, i) => {
+      const units = ours.unitsByIndex(i)
+      const name =units!.name()
+      units.delete?.()
+      return name
+    })
     expect(names).toEqual(['C2_per_J', 'C_per_s', 'J_per_C', 'J_s_per_C2'])
   })
 })

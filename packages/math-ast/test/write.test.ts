@@ -209,8 +209,16 @@ describe('libCellML accepts what is written', () => {
     validator.validateModel(parsed)
     const issues: string[] = []
     for (const logger of [parser, validator]) {
-      for (let i = 0; i < logger.issueCount(); i += 1) issues.push(logger.issue(i).description())
+      for (let i = 0; i < logger.issueCount(); i += 1) {
+        const issue = logger.issue(i)
+        issues.push(issue.description())
+        issue.delete?.()
+      }
     }
+    parser.delete?.()
+    validator.delete?.()
+    parsed.delete?.()
+
     return issues
   }
 
