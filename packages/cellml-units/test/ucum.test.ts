@@ -161,8 +161,49 @@ describe('unitsName', () => {
     readFileSync(fileURLToPath(new URL('./fixtures/phlynx-names.json', import.meta.url)), 'utf8'),
   ) as { names: Record<string, string> }
 
-  it.each(Object.entries(fixture.names))('names %s as PhLynx does: %s', (code, name) => {
-    expect(unitsName(code, new Set([...CELLML_BUILT_IN_UNITS, 'celsius', 'fahrenheit']))).toBe(name)
+  /**
+   * Where unitsName deliberately differs from PhLynx: a single symbol that is
+   * exactly a CellML built-in units is named as that units, so it needs no
+   * definition. PhLynx names `F` `F` and defines it as farad.
+   */
+  const BUILT_IN: Record<string, string> = {
+    mol: 'mole',
+    L: 'litre',
+    Ohm: 'ohm',
+    F: 'farad',
+    C: 'coulomb',
+    A: 'ampere',
+    J: 'joule',
+    V: 'volt',
+    H: 'henry',
+    m: 'metre',
+    s: 'second',
+  }
+
+  it.each(Object.entries(fixture.names).filter(([code]) => !(code in BUILT_IN)))(
+    'names %s as PhLynx does: %s',
+    (code, name) => {
+      expect(unitsName(code, new Set([...CELLML_BUILT_IN_UNITS, 'celsius', 'fahrenheit']))).toBe(name)
+    },
+  )
+
+  it.each(Object.entries(BUILT_IN))('names %s as the built-in units %s, where PhLynx defines new units', (code, name) => {
+    expect(fixture.names[code]).toBe(code)
+    expect(unitsName(code)).toBe(name)
+  })
+
+  it('uses built-in units only where the expression is exactly one', () => {
+    expect(unitsName('kg')).toBe('kilogram')
+    expect(unitsName('g')).toBe('gram')
+    expect(unitsName('eq')).toBe('mole')
+    // A prefix, an exponent, a scale or a second symbol needs a definition
+    expect(unitsName('mF')).toBe('mF')
+    expect(unitsName('Mg')).toBe('Mg')
+    expect(unitsName('s2')).toBe('s2')
+    expect(unitsName('min')).toBe('min')
+    expect(unitsName('%')).toBe('percent')
+    expect(unitsName('10*3.s')).toBe('kilo_s')
+    expect(unitsName('C/s')).toBe('C_per_s')
   })
 
   it('covers every BG-RDF units code in the fixture', () => {

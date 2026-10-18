@@ -26,7 +26,7 @@ parseUcum('mL/s')         // { code, factor: 1, symbols: [{ label: 'mL', exponen
 |---|---|---|
 | Reading UCUM | `parseUnitExpression`, `resolveSymbol` (PhLynx's), `parseUcum` (throws a `UcumError`) | Done |
 | Symbols | `UCUM_ATOMS`, `UCUM_PREFIXES`, `PREFIX_POWERS`, `AFFINE_SYMBOLS`, `CELLML_BUILT_IN_UNITS` | Done |
-| Naming | `unitsName`, `nameUnits`, `sanitiseName`, `uniqueName` | Done |
+| Naming | `unitsName`, `builtInUnits`, `nameUnits`, `sanitiseName`, `uniqueName` | Done |
 | Building units | `toCellMLUnits` | To do (3.2) |
 | Comparing and converting | `compatible`, `convertValue` | To do (3.3) |
 
@@ -43,15 +43,16 @@ As PhLynx reads them:
 
 ## Naming
 
-`unitsName` names units as PhLynx does: the symbols as written, positive powers first, then `per_` and each negative power.
+`unitsName` names units as PhLynx does: the symbols as written, positive powers first, then `per_` and each negative power. The one deliberate difference: a code that is exactly a CellML built-in units, such as `F`, is named as that units (`farad`), so the model needs no units definition for it. PhLynx names it `F` and defines `F` as farad. `builtInUnits` gives the built-in name, if there is one. A prefix, an exponent, a scale or a second symbol (`mF`, `s2`, `min`, `C/s`) still needs a definition. Compound codes keep the names the modeller wrote, even when they equal a built-in units: `C/s` is `C_per_s`, not `ampere`. libCellML compares units by what they are, not by name.
 
 | Code | Name |
 |---|---|
+| `F`, `mol`, `kg` | `farad`, `mole`, `kilogram` (CellML built-in units) |
 | `mol/s` | `mol_per_s` |
 | `L2.s-1.J-1` | `L2_per_s_per_J` |
 | `J.s.C-1.m-1` | `J_s_per_C_per_m` |
 | `mol-1` | `per_mol` |
-| `F` | `F` |
+| `uF` | `uF` |
 | `m.m/s` | `m2_per_s` (repeated symbols combine) |
 | `10*9/L` | `giga_per_L` (a factor gets a prefix word where there is one) |
 | `mm[Hg]` | `mmHg` |
@@ -59,7 +60,7 @@ As PhLynx reads them:
 
 Every name is a valid CellML identifier, and equal expressions get equal names. `uniqueName` adds `_1`, `_2`, ... when a name is already taken in a model.
 
-A test checks `unitsName` against PhLynx's own output for every BG-RDF units code and 15 harder cases (`test/fixtures/phlynx-names.json`, from PhLynx commit 68bf007).
+A test checks `unitsName` against PhLynx's own output for every BG-RDF units code and 15 harder cases (`test/fixtures/phlynx-names.json`, from PhLynx commit 68bf007), except the 11 codes that are built-in units.
 
 ## Bugs in the Python version that this package fixes
 

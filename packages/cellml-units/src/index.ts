@@ -21,4 +21,4 @@ export {
   type UcumUnits,
   type WrittenSymbol,
 } from './ucum.js'
-export { compatible, convertValue, toCellMLUnits, unitsName } from './units.js'
+export { builtInUnits, compatible, convertValue, toCellMLUnits, unitsName } from './units.js'

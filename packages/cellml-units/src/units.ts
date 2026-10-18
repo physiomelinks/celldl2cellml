@@ -2,10 +2,27 @@ import type { LibCellML, Units } from './libcellml.js'
 import { nameUnits, parseUcum, type UcumUnits } from './ucum.js'
 
 /**
- * The CellML name for a UCUM units expression, as PhLynx names it:
- * `mol/s` is `mol_per_s`, `L2.s-1.J-1` is `L2_per_s_per_J`, `mm[Hg]` is
- * `mmHg`, `10*9/L` is `giga_per_L`.
+ * The CellML built-in units a single resolved symbol is exactly, if any:
+ * `F` is `farad`, `s` is `second`, `kg` is `kilogram`. A prefix, an exponent
+ * or a scale (`mF`, `s2`, `min`, `%`) means it isn't.
+ */
+export function builtInUnits(units: UcumUnits): string | undefined {
+  const [only] = units.symbols
+  if (units.symbols.length !== 1 || units.factor !== 1 || only!.exponent !== 1) return undefined
+  const atom = only!.atom
+  if (atom === undefined || atom.factor !== 1) return undefined
+  if (only!.prefix === 0) return atom.units
+  // kilogram is CellML's one prefixed built-in units
+  return atom.units === 'gram' && only!.prefix === 3 ? 'kilogram' : undefined
+}
+
+/**
+ * The CellML name for a UCUM units expression.
  *
+ * - An expression that is exactly a CellML built-in units is that units, so it
+ *   needs no definition: `F` is `farad`, `mol` is `mole`, `kg` is `kilogram`.
+ * - Otherwise the name is PhLynx's: `mol/s` is `mol_per_s`, `L2.s-1.J-1` is
+ *   `L2_per_s_per_J`, `mm[Hg]` is `mmHg`, `10*9/L` is `giga_per_L`.
  * - An expression that is exactly a units name the caller already has
  *   (`names`), or an affine temperature (`Cel`), is that name.
  * - An expression whose symbols cancel to nothing (`1`, `m/m`) is `dimensionless`.
@@ -14,6 +31,8 @@ import { nameUnits, parseUcum, type UcumUnits } from './ucum.js'
  */
 export function unitsName(code: string | UcumUnits, names: ReadonlySet<string> = new Set()): string {
   const units = typeof code === 'string' ? parseUcum(code, names) : code
+  const builtIn = builtInUnits(units)
+  if (builtIn !== undefined) return builtIn
   const [only] = units.symbols
   if (units.symbols.length === 1 && units.factor === 1 && only!.exponent === 1 && only!.atom === undefined) {
     return only!.library ?? only!.affine!
