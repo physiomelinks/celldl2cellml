@@ -116,7 +116,18 @@ describe('element manifest', () => {
     expect(elements['R_0']).toBeUndefined()
   })
 
-  it('is empty when the model has errors', async () => {
+  it('is given when the CellML could not be built', async () => {
+    // A one node named `t` clashes with the variable of integration
+    const rc = caseNamed('example_RC')
+    const result = await converter.convert(readSource(rc).replaceAll(':I_R', ':t'), { sourceUri: rc.baseIri, rdfSource: true })
+    expect(result.cellml).toBeUndefined()
+    expect(result.errors.map((issue) => issue.stage)).toContain('build')
+    expect(Object.keys(result.elements).sort()).toEqual(['R_0', 'V_C', 'V_in', 'q_1', 't'])
+    expect(result.elements['t']!.variables).toEqual([])
+    expect(result.elements['q_1']).toMatchObject({ primary: 'q_1' })
+  })
+
+  it('is empty when the source could not be read', async () => {
     const result = await converter.convert('this is not Turtle', { rdfSource: true })
     expect(result.elements).toEqual({})
   })
