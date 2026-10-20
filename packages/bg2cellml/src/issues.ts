@@ -41,6 +41,7 @@ export class IssueLog {
     this.reportIssue({ message, ...(subject === undefined ? {} : { subject }), ...(cause === undefined ? {} : { cause }) })
   }
 
+  /** Report an issue, with `elementId` set when its subject is in the model's document. */
   reportIssue(report: IssueReport): void {
     const issue: { -readonly [K in keyof Issue]: Issue[K] } = {
       message: report.message,

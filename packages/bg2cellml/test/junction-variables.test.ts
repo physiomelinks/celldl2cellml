@@ -177,6 +177,7 @@ describe('junction variables', () => {
       :b2 bgf:hasSource :v ; bgf:hasTarget :R_0 .
       :b3 bgf:hasSource :u ; bgf:hasTarget :w .`)
     expect(messages(model)).toEqual(['Value for variable w has incompatible units (V != C/s)'])
+    expect(model.log.issues[0]).toMatchObject({ stage: 'units', elementId: 'w' })
     const v = model.junctions.get(id('v'))!.variables.get('')!
     // In the variable's units, which Python doesn't convert to
     expect(v).toMatchObject({ name: 'v', units: 'C/s', type: bgf('FlowVariable'), value: { magnitude: 0.002, units: 'C/s' } })

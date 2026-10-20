@@ -56,7 +56,9 @@ export function valueInUnits(
   const { units } = variable
   if (value.units === undefined || value.units === units) return { magnitude: value.magnitude, units }
   if (!compatibleUnits(context, units, value.units)) {
-    if (report) context.log.report(`Value for variable ${variable.name} has incompatible units (${units} != ${value.units})`, subject)
+    if (report) {
+      context.log.reportIssue({ message: `Value for variable ${variable.name} has incompatible units (${units} != ${value.units})`, stage: 'units', subject })
+    }
     return undefined
   }
   return { magnitude: context.convert(value.magnitude, value.units, units), units }
@@ -125,7 +127,7 @@ function assignVariables(element: BondgraphElement, context: VariableAssignmentC
     } else if (other.intrinsicVariable === undefined) {
       log.report(`Value for ${name} is an element with no intrinsic variable: <${target}>`, iri)
     } else if (!equivalentUnits(context, variable.units, other.intrinsicVariable.units)) {
-      log.report(`Units incompatible for ${name} value: <${target}>`, iri)
+      log.reportIssue({ message: `Units incompatible for ${name} value: <${target}>`, stage: 'units', subject: iri })
     } else {
       element.variables.set(variableName, other.intrinsicVariable)
     }

@@ -324,7 +324,7 @@ function makeElement(
 
   const intrinsic = element.intrinsicVariable
   if (state !== undefined && intrinsic !== undefined && state.units !== undefined && !compatible(context, intrinsic.units, state.units)) {
-    log.report(`Value for variable ${intrinsic.name} has incompatible units (${intrinsic.units} != ${state.units})`, iri)
+    log.reportIssue({ message: `Value for variable ${intrinsic.name} has incompatible units (${intrinsic.units} != ${state.units})`, stage: 'units', subject: iri })
   }
   return element
 }
