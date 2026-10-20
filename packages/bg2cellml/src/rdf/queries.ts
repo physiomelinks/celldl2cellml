@@ -73,6 +73,13 @@ export const JUNCTION_STRUCTURES = `
         OPTIONAL { ?junction rdfs:label ?label }
     } ORDER BY ?junction`
 
+/** The BG-RDF ontology's `owl:versionInfo`, such as `2026-04-12`. Not in Python. */
+export const FRAMEWORK_VERSION = `
+    SELECT ?version
+    WHERE {
+        <https://bg-rdf.org/ontologies/bondgraph-framework> owl:versionInfo ?version .
+    } ORDER BY ?version`
+
 export const COMPOSITE_TEMPLATE_DEFINITIONS = `
     SELECT DISTINCT ?uri ?template ?label
     WHERE {

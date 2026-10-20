@@ -7,10 +7,10 @@
  * model, and for each element or junction variable with a `bgf:` type, that
  * the CellML variable `bqmodel:isDerivedFrom` the element or junction and has
  * that type. Labelled elements and junctions get their `rdfs:label`. CellML
- * variables are named by their ids, `<cellml file>#main-<name>`.
+ * variables are named by their ids, `<cellml file>#<component>-<name>`.
  *
  * The annotation lists, for each element or junction, the CellML variables
- * made from it (`main/<name>`), in the order the variables are written.
+ * made from it (`<component>/<name>`, `main/<name>` by default), in the order the variables are written.
  *
  * Differences from Python:
  * - Python's metadata() fails for every BG-RDF model: it adds a `diagram`
@@ -24,7 +24,7 @@
 import { NAMESPACES } from '../rdf/namespaces.js'
 import { toTurtle, type Triple } from '../rdf/turtle.js'
 import type { BondgraphModel } from '../model/model.js'
-import { MAIN_COMPONENT, type CellMLModelBuild } from './model.js'
+import type { CellMLModelBuild } from './model.js'
 
 /** The CellML file's IRI when none is given, as Python's `CELLML_MODEL_URI`. */
 export const CELLML_MODEL_URI = 'file:///CELLML_MODEL_URI'
@@ -91,7 +91,7 @@ export function annotation(build: CellMLModelBuild): ElementAnnotation[] {
     if (variable.kind !== 'variable' || variable.source === undefined) continue
     const iri = variable.source.iri
     if (!variables.has(iri)) variables.set(iri, [])
-    variables.get(iri)!.push(`${MAIN_COMPONENT}/${variable.name}`)
+    variables.get(iri)!.push(`${build.componentName}/${variable.name}`)
   }
   return [...variables].map(([iri, names]) => ({ [iri]: { variables: names } }))
 }

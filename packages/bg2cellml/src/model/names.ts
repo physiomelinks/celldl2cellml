@@ -5,6 +5,7 @@
 
 import type { Domain } from '../framework/framework.js'
 import { cleanName } from '../framework/variables.js'
+import { documentOf } from '../issues.js'
 import { fragment } from '../rdf/namespaces.js'
 
 /** Models the CellDL Editor makes live under here; `prettyUri` drops it. */
@@ -68,4 +69,15 @@ export function prettyUri(iri: string): string {
 /** `symbol (#fragment)`, as Python's `pretty_name`. */
 export function prettyName(symbol: string, iri: string): string {
   return `${symbol} (${prettyUri(iri)})`
+}
+
+/**
+ * An element's id in its diagram: its IRI's fragment, such as a CellDL `<g id>`,
+ * when the IRI is in the model's document; otherwise `undefined`. The same
+ * whether the source's Turtle uses relative or absolute IRIs.
+ */
+export function elementIdOf(iri: string, modelIri: string): string | undefined {
+  const hash = iri.indexOf('#')
+  if (hash < 0 || iri.slice(0, hash) !== documentOf(modelIri)) return undefined
+  return iri.slice(hash + 1) || undefined
 }

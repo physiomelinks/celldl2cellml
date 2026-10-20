@@ -38,6 +38,8 @@ export interface GenerateOptions {
   cellmlUri?: string
   /** Also return metadata. */
   metadata?: boolean
+  /** The component's name and id, a CellML identifier; `main` if not given. */
+  componentName?: string
 }
 
 /**
@@ -52,7 +54,7 @@ export interface GenerateOptions {
  */
 export function generateCellML(libcellml: LibCellML, model: BondgraphModel, options: GenerateOptions = {}): CellMLResult {
   const log = new IssueLog('build', model.iri || undefined)
-  const build = buildCellMLModel(libcellml, model, log)
+  const build = buildCellMLModel(libcellml, model, log, options.componentName === undefined ? {} : { componentName: options.componentName })
   try {
     if (log.hasIssues) return { issues: log.issues }
     const check = checkCellMLModel(libcellml, build.model, log)

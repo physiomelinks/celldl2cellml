@@ -1,3 +1,5 @@
+import { elementIdOf } from './model/names.js'
+
 /** How serious an issue is. Only errors stop a model being used; libCellML's messages are `info`. */
 export type IssueSeverity = 'error' | 'warning' | 'info'
 
@@ -66,9 +68,7 @@ export class IssueLog {
   }
 
   #elementId(subject: string): string | undefined {
-    const hash = subject.indexOf('#')
-    if (this.document === undefined || hash < 0 || subject.slice(0, hash) !== this.document) return undefined
-    return subject.slice(hash + 1) || undefined
+    return this.document === undefined ? undefined : elementIdOf(subject, this.document)
   }
 }
 

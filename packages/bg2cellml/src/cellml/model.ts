@@ -40,7 +40,7 @@ import type { BondgraphJunction } from '../model/junctions.js'
 import type { BondgraphModel } from '../model/model.js'
 import { prettyUri } from '../model/names.js'
 
-/** The one component, as in Python. */
+/** The one component's name unless another is given, as in Python. */
 export const MAIN_COMPONENT = 'main'
 
 /** The variable of integration's units, as Python's `VOI_UCUMUNIT`. */
@@ -75,11 +75,11 @@ export function cellmlModelName(iri: string): string {
 /** What a CellML variable was made from. */
 export type CellMLVariableKind = 'voi' | 'constant' | 'variable'
 
-/** A variable of the `main` component, and where it came from. */
+/** A variable of the component, and where it came from. */
 export interface CellMLVariable {
   /** Its name in CellML: the model variable's symbol. */
   readonly name: string
-  /** Its `id`, `main-<name>` as in Python; the metadata refers to it. */
+  /** Its `id`, `<component>-<name>` (`main-<name>` as in Python); the metadata refers to it. */
   readonly id: string
   readonly kind: CellMLVariableKind
   /** The UCUM code of its units. */
@@ -167,10 +167,12 @@ export interface CellMLModelBuild {
   /** The libCellML model. The caller frees it with `delete()`. */
   readonly model: Model
   readonly component: Component
-  /** The `main` component's variables, in order. */
+  /** The component's name and id, `main` unless another is given. */
+  readonly componentName: string
+  /** The component's variables, in order. */
   readonly variables: readonly CellMLVariable[]
   readonly units: UnitsDefinitions
-  /** The equations written into `main`, in order. */
+  /** The equations written into the component, in order. */
   readonly equations: readonly CellMLEquation[]
 }
 
@@ -188,34 +190,40 @@ interface Candidate {
 
 const capitalise = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1)
 
+export interface BuildOptions {
+  /** The component's name and id, a CellML identifier; `main` if not given. */
+  componentName?: string
+}
+
 /**
- * Build the CellML model's units and its `main` component's variables
- * (plan chunk 6.1), and its equations (6.2, `equations.ts`). Problems are
- * reported in `log`; a variable or equation with one is left out.
+ * Build the CellML model's units and its component's variables (plan chunk
+ * 6.1), and its equations (6.2, `equations.ts`). Problems are reported in
+ * `log`; a variable or equation with one is left out.
  */
-export function buildCellMLModel(libcellml: LibCellML, model: BondgraphModel, log: IssueLog): CellMLModelBuild {
+export function buildCellMLModel(libcellml: LibCellML, model: BondgraphModel, log: IssueLog, options: BuildOptions = {}): CellMLModelBuild {
+  const componentName = options.componentName ?? MAIN_COMPONENT
   const cellml = new libcellml.Model()
   cellml.setName(cellmlModelName(model.iri))
   const component = new libcellml.Component()
-  component.setName(MAIN_COMPONENT)
-  component.setId(MAIN_COMPONENT)
+  component.setName(componentName)
+  component.setId(componentName)
   cellml.addComponent(component)
   const units = new UnitsDefinitions(libcellml, cellml)
 
   const variables: CellMLVariable[] = []
   for (const candidate of collectVariables(libcellml, model, log)) {
-    const variable = makeVariable(libcellml, component, units, candidate, log)
+    const variable = makeVariable(libcellml, component, componentName, units, candidate, log)
     if (variable !== undefined) variables.push(variable)
   }
   cellml.linkUnits()
 
   const equations: CellMLEquation[] = []
-  const build: CellMLModelBuild = { model: cellml, component, variables, units, equations }
+  const build: CellMLModelBuild = { model: cellml, component, componentName, variables, units, equations }
   equations.push(...addEquations(build, model, log))
   return build
 }
 
-/** The variables for `main`, in Python's order, each symbol once. */
+/** The component's variables, in Python's order, each symbol once. */
 function collectVariables(libcellml: LibCellML, model: BondgraphModel, log: IssueLog): Candidate[] {
   const fixed = new Map<string, Candidate>()
   fixed.set(VOI_NAME, { name: VOI_NAME, kind: 'voi', ucum: VOI_UNITS, label: `the variable of integration ${VOI_NAME}` })
@@ -301,6 +309,7 @@ const describe = (candidate: Candidate): string =>
 function makeVariable(
   libcellml: LibCellML,
   component: Component,
+  componentName: string,
   units: UnitsDefinitions,
   candidate: Candidate,
   log: IssueLog,
@@ -326,7 +335,7 @@ function makeVariable(
     return undefined
   }
 
-  const id = `${MAIN_COMPONENT}-${candidate.name}`
+  const id = `${componentName}-${candidate.name}`
   const variable = new libcellml.Variable()
   variable.setName(candidate.name)
   variable.setId(id)
