@@ -38,10 +38,10 @@ export interface ConvertOptions {
   rdfSource?: boolean
   /**
    * The CellML of units the host already has, such as its other modules'. A
-   * name they give other units is numbered (`mM_1`) and listed in
+   * name they give other units is numbered (`mmol_per_L_1`) and listed in
    * `units.renamed`; the CellML still defines all its units.
    */
-  knownUnits?: string | string[]
+  knownUnits?: string | readonly string[]
 }
 
 export interface ConversionResult {

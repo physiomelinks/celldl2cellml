@@ -45,7 +45,7 @@ export interface GenerateOptions {
   metadata?: boolean
   /** The component's name and id, a CellML identifier; `main` if not given. */
   componentName?: string
-  /** CellML documents whose units the host already has: a name they give other units is numbered (`mM_1`) and reported. */
+  /** CellML documents whose units the host already has: a name they give other units is numbered (`mmol_per_L_1`) and reported. */
   knownUnits?: string | readonly string[]
 }
 

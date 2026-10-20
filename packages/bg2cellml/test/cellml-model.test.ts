@@ -505,6 +505,18 @@ describe('UnitsDefinitions', () => {
       expect(units.renamed).toEqual(new Map([['mmol_per_L', 'mmol_per_L_1']]))
     })
 
+    it('reads CellML 1.1, and known units defined by other known units', () => {
+      const { units, names } = withKnown(
+        '<?xml version="1.0" encoding="UTF-8"?><model xmlns="http://www.cellml.org/cellml/1.1#" name="host">' +
+          '<units name="mM"><unit prefix="milli" units="mole"/><unit units="litre" exponent="-1"/></units>' +
+          '<units name="mmol_per_L"><unit units="mM"/></units><units name="per_s"><unit units="metre"/></units></model>',
+      )
+      expect(units.unitsFor('mmol/L')).toBe('mmol_per_L')
+      expect(units.unitsFor('s-1')).toBe('per_s_1')
+      expect(names()).toEqual(['mmol_per_L', 'per_s_1'])
+      expect(units.renamed).toEqual(new Map([['per_s', 'per_s_1']]))
+    })
+
     it('keeps the first of the known definitions of a name', () => {
       const { units } = withKnown([knownCellML(PER_S), knownCellML('<units name="per_s"><unit units="metre"/></units>')])
       expect(units.unitsFor('s-1')).toBe('per_s')
