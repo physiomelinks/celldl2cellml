@@ -129,19 +129,26 @@ function writeEquation(
   nameOf: (iri: string) => string,
   log: IssueLog,
 ): string | undefined {
-  let problem: string | undefined
+  let problem: unknown
   const cnUnits = (cn: NumberNode): string => {
     if (cn.units === undefined) return NUMBER_UNITS
     try {
       return build.units.unitsFor(cn.units)
     } catch (error) {
-      problem ??= error instanceof UcumError ? error.message : String(error)
+      problem ??= error
       return NUMBER_UNITS
     }
   }
   const text = toMathML([equation.equation], { cnUnits })
-  if (problem !== undefined) {
-    log.report(`An equation of ${nameOf(equation.source)} has a number in units CellML can't use: ${problem}`, equation.source)
+  const failure = problem
+  if (failure !== undefined) {
+    const units = failure instanceof UcumError
+    log.reportIssue({
+      message: `An equation of ${nameOf(equation.source)} has a number in units CellML can't use: ${units ? failure.message : String(failure)}`,
+      ...(units ? { stage: 'units' } : {}),
+      subject: equation.source,
+      cause: failure,
+    })
     return undefined
   }
   return text

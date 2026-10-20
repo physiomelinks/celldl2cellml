@@ -22,7 +22,7 @@ import { compatible, convertValue, type LibCellML } from '@physiomelinks/cellml-
 import type { ParseOptions } from '@physiomelinks/math-ast'
 
 import type { BondgraphFramework } from '../framework/framework.js'
-import { IssueLog } from '../issues.js'
+import { IssueLog, documentOf } from '../issues.js'
 import { RdfGraph, type OxigraphModule } from '../rdf/graph.js'
 import { BONDGRAPH_MODEL } from '../rdf/queries.js'
 import { buildNetwork, inferBonds, loadBonds, type BondgraphBond, type NetworkNode } from './bonds.js'
@@ -71,7 +71,7 @@ export interface ModelElement {
 }
 
 export class BondgraphModel {
-  readonly log = new IssueLog()
+  readonly log = new IssueLog('model')
   /** `''` if the source has no single `bgf:BondgraphModel`. */
   readonly iri: string = ''
   readonly label?: string
@@ -109,13 +109,15 @@ export class BondgraphModel {
   ): BondgraphModel {
     const until = options.until ?? 'equations'
     const model = new BondgraphModel(new RdfGraph(runtime.oxigraph))
+    model.log.document = documentOf(baseIri)
     try {
       model.graph.load(turtle, baseIri)
     } catch (error) {
-      model.log.report(error instanceof Error ? error.message : String(error), undefined, error)
+      model.log.reportIssue({ message: error instanceof Error ? error.message : String(error), stage: 'input', cause: error })
       return model
     }
     if (!model.#findModel()) return model
+    model.log.document = documentOf(model.iri)
 
     const unitsCompatible = (a: string, b: string): boolean => compatible(runtime.libcellml, a, b)
     const convert = (value: number, from: string, to: string): number => convertValue(runtime.libcellml, value, from, to)

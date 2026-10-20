@@ -177,6 +177,7 @@ describe('assigning values', () => {
     const model = capacitor('; bgf:parameterValue [ bgf:varName "C" ; bgf:hasValue "1 Ohm"^^cdt:ucum ]')
     const C = model.elements.get(id('q_1'))!.variables.get('C')!
     expect(messages(model)).toEqual([`Value for variable C_q_1 has incompatible units (${C.units} != Ohm)`])
+    expect(model.log.issues[0]).toMatchObject({ severity: 'error', stage: 'units', elementId: 'q_1' })
     expect(C.value).toBeUndefined()
   })
 

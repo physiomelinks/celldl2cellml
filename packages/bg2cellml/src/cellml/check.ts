@@ -2,26 +2,28 @@
  * Checking the CellML model with libCellML's Validator and Analyser (plan
  * chunk 6.3), which the Python bg2cellml doesn't do.
  *
- * Every message either gives is an issue, warnings included: the Analyser's
- * units messages are warnings, and bond graphs should be dimensionally
- * consistent, so a number that isn't dimensionless needs its units.
+ * Every message either gives is an issue, warnings included, with libCellML's
+ * level as its severity (`message` as `info`): the Analyser's units messages
+ * are warnings, and bond graphs should be dimensionally consistent, so a
+ * number that isn't dimensionless needs its units. Only the Validator's
+ * errors stop the model being analysed.
  *
  * A model the Analyser can't make runnable (underconstrained, overconstrained,
- * unsuitably constrained, invalid) is reported. ODE and DAE models are both
- * fine: like Python's, most models with junctions are DAEs, as some of their
- * equations form linear systems that libCellML leaves to be solved
- * numerically.
+ * unsuitably constrained, invalid) is reported as an error. ODE and DAE
+ * models are both fine: like Python's, most models with junctions are DAEs,
+ * as some of their equations form linear systems that libCellML leaves to be
+ * solved numerically.
  */
 
 import type { LibCellML, Logger, Model } from '@physiomelinks/cellml-units'
 
-import type { IssueLog } from '../issues.js'
+import type { IssueLog, IssueSeverity } from '../issues.js'
 
 /** The Analyser's types of model that can be simulated. */
 export const RUNNABLE_MODEL_TYPES: ReadonlySet<string> = new Set(['ode', 'dae', 'nla', 'algebraic'])
 
 export interface CellMLCheck {
-  /** The Analyser's type for the model, such as `ode` or `dae`; `invalid` if it didn't validate. */
+  /** The Analyser's type for the model, such as `ode` or `dae`; `invalid` if the Validator found errors. */
   readonly type: string
   readonly stateCount: number
 }
@@ -47,11 +49,13 @@ export function checkCellMLModel(libcellml: LibCellML, model: Model, log: IssueL
   const analyser = new libcellml.Analyser()
   try {
     analyser.analyseModel(model)
-    const reported = report(libcellml, analyser, 'analyser', 'CellML analysis', log)
+    const errors = report(libcellml, analyser, 'analyser', 'CellML analysis', log)
     const analysed = analyser.analyserModel()
     try {
       const type = libcellml.AnalyserModel.typeAsString(analysed.type())
-      if (!RUNNABLE_MODEL_TYPES.has(type) && reported === 0) log.report(`CellML analysis: the model is ${type}`)
+      if (!RUNNABLE_MODEL_TYPES.has(type) && errors === 0) {
+        log.reportIssue({ message: `CellML analysis: the model is ${type}`, stage: 'analyser' })
+      }
       return { type, stateCount: analysed.stateCount() }
     } finally {
       analysed.delete?.()
@@ -61,10 +65,11 @@ export function checkCellMLModel(libcellml: LibCellML, model: Model, log: IssueL
   }
 }
 
-/** Reports a Validator's or Analyser's messages, returning how many. */
+/** Reports a Validator's or Analyser's messages, returning how many are errors. */
 function report(libcellml: LibCellML, logger: Logger, checker: CellMLIssueCause['checker'], prefix: string, log: IssueLog): number {
   const { Level } = libcellml.Issue
   const count = logger.issueCount()
+  let errors = 0
   for (let index = 0; index < count; index += 1) {
     const issue = logger.issue(index)
     try {
@@ -73,10 +78,13 @@ function report(libcellml: LibCellML, logger: Logger, checker: CellMLIssueCause[
         checker,
         level: level === Level.ERROR.value ? 'error' : level === Level.WARNING.value ? 'warning' : 'message',
       }
-      log.report(`${prefix}: ${issue.description()}`, undefined, cause)
+      if (cause.level === 'error') errors += 1
+      log.reportIssue({ message: `${prefix}: ${issue.description()}`, severity: SEVERITIES[cause.level], stage: checker, cause })
     } finally {
       issue.delete?.()
     }
   }
-  return count
+  return errors
 }
+
+const SEVERITIES: Readonly<Record<CellMLIssueLevel, IssueSeverity>> = { error: 'error', warning: 'warning', message: 'info' }

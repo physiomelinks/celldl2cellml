@@ -181,7 +181,11 @@ function assignNodeVariable(junction: BondgraphJunction, context: VariableContex
   if (junction.value !== undefined) {
     const value = junction.value
     if (value.units !== undefined && !unitsCompatible(context, variable.units, value.units)) {
-      log.report(`Value for variable ${variable.name} has incompatible units (${value.units} != ${variable.units})`, junction.iri)
+      log.reportIssue({
+        message: `Value for variable ${variable.name} has incompatible units (${value.units} != ${variable.units})`,
+        stage: 'units',
+        subject: junction.iri,
+      })
     } else {
       // In the variable's units, which Python doesn't convert to
       const converted = valueInUnits(value, variable, context, junction.iri)

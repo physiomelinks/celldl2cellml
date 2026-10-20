@@ -272,6 +272,7 @@ describe('loading elements', () => {
   it('reports Turtle that will not parse', () => {
     const model = BondgraphModel.fromTurtle(framework, runtime, '<#a> a ', BASE)
     expect(messages(model)).toHaveLength(1)
+    expect(model.log.issues[0]).toMatchObject({ severity: 'error', stage: 'input' })
     expect(model.iri).toBe('')
   })
 
@@ -307,6 +308,10 @@ describe('loading elements', () => {
       `Element <${BASE}#R_1> has more than one bgf:hasSymbol`,
     ])
     expect([...model.elements.keys()]).toEqual([`${BASE}#R_2`])
+    expect(model.log.issues.map(({ severity, stage, elementId }) => ({ severity, stage, elementId }))).toEqual([
+      { severity: 'error', stage: 'model', elementId: 'R_0' },
+      { severity: 'error', stage: 'model', elementId: 'R_1' },
+    ])
   })
 
   it('names elements from bgf:hasSymbol, bgf:hasSpecies and bgf:hasLocation', () => {
