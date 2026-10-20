@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/physiomelinks/bg-2-cellml.git"
+    "url": "git+https://github.com/physiomelinks/celldl2cellml.git"
   },
   "type": "module",
   "workspaces": [
