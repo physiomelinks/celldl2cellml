@@ -1,0 +1,148 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`element manifest > matches the snapshot for RCR 1`] = `
+[
+  "C_1 element q_C_1: v_C_1 flow C/s, u_C_1 potential J/C, C_C_1 parameter C2/J, q_C_1 quantity C",
+  "R_0 element v_R_0: v_R_0 flow C/s, u_R_0 potential J/C, R_R_0 parameter J.s.C-2",
+  "R_1 element v_R_1: v_R_1 flow C/s, u_R_1 potential J/C, R_R_1 parameter J.s.C-2",
+  "u_0 element u_0: v_u_0 flow C/s, u_0 potential J/C",
+  "u_1 zero u_1: u_1 potential J/C",
+  "v_0 one v_0: v_0 flow C/s",
+]
+`;
+
+exports[`element manifest > matches the snapshot for RCR_reduced 1`] = `
+[
+  "C_1 element q_C_1: v_C_1 flow C/s, u_C_1 potential J/C, C_C_1 parameter C2/J, q_C_1 quantity C",
+  "R_0 element v_R_0: v_R_0 flow C/s, u_R_0 potential J/C, R_R_0 parameter J.s.C-2",
+  "R_1 element v_R_1: v_R_1 flow C/s, u_R_1 potential J/C, R_R_1 parameter J.s.C-2",
+  "u_0 element u_0: v_u_0 flow C/s, u_0 potential J/C",
+]
+`;
+
+exports[`element manifest > matches the snapshot for example_A1 1`] = `
+[
+  "C element q_C: v_C flow C/s, u_C potential J/C, C_C parameter C2/J, q_C quantity C",
+  "L element v_L: v_L flow C/s, u_L potential J/C, L_L parameter J.s2.C-2",
+  "R element v_R: v_R flow C/s, u_R potential J/C, R_R parameter J.s.C-2",
+  "u_L zero u_L: u_L potential J/C",
+  "v_R one v_R: v_R flow C/s",
+  "u_C zero u_C: u_C potential J/C",
+]
+`;
+
+exports[`element manifest > matches the snapshot for example_A1_reduced 1`] = `
+[
+  "C element q_C: v_C flow C/s, u_C potential J/C, C_C parameter C2/J, q_C quantity C",
+  "L element v_L: v_L flow C/s, u_L potential J/C, L_L parameter J.s2.C-2",
+  "R element v_R: v_R flow C/s, u_R potential J/C, R_R parameter J.s.C-2",
+]
+`;
+
+exports[`element manifest > matches the snapshot for example_A2 1`] = `
+[
+  "C element q_C: v_C flow m/s, u_C potential J/m, C_C parameter m2/J, q_C quantity m",
+  "L element v_L: v_L flow m/s, u_L potential J/m, L_L parameter J.s2.m-2, a_L other m/s2",
+  "R element v_R: v_R flow m/s, u_R potential J/m, R_R parameter J.s.m-2",
+  "v_1 one v_1: v_1 flow m/s",
+]
+`;
+
+exports[`element manifest > matches the snapshot for example_A2_reduced 1`] = `
+[
+  "C element q_C: v_C flow m/s, u_C potential J/m, C_C parameter m2/J, q_C quantity m",
+  "L element v_L: v_L flow m/s, u_L potential J/m, L_L parameter J.s2.m-2, a_L other m/s2",
+  "R element v_R: v_R flow m/s, u_R potential J/m, R_R parameter J.s.m-2",
+]
+`;
+
+exports[`element manifest > matches the snapshot for example_A3 1`] = `
+[
+  "L_e element v_L_e: v_L_e flow C/s, u_L_e potential J/C, L_L_e parameter J.s2.C-2",
+  "L_m element v_L_m: v_L_m flow m/s, u_L_m potential J/m, L_L_m parameter J.s2.m-2, a_L_m other m/s2",
+  "R_e element v_R_e: v_R_e flow C/s, u_R_e potential J/C, R_R_e parameter J.s.C-2",
+  "R_m element v_R_m: v_R_m flow m/s, u_R_m potential J/m, R_R_m parameter J.s.m-2",
+  "q_C_m element q_C_m: v_q_C_m flow m/s, u_q_C_m potential J/m, C_q_C_m parameter m2/J, q_C_m quantity m",
+  "u_in_e element u_in_e: v_u_in_e flow C/s, u_in_e potential J/C",
+  "u_C_m zero u_C_m: u_C_m potential J/m",
+  "v_2_m one v_2_m: v_2_m flow m/s",
+  "GY transform Bl: Bl ratio J.s.C-1.m-1, v_1_e flow C/s, u_Bl_0 potential J/C, v_2_m flow m/s, u_Bl_1 potential J/m",
+  "v_1_e one v_1_e: v_1_e flow C/s",
+]
+`;
+
+exports[`element manifest > matches the snapshot for example_A3_reduced 1`] = `
+[
+  "L_e element v_L_e: v_L_e flow C/s, u_L_e potential J/C, L_L_e parameter J.s2.C-2",
+  "L_m element v_L_m: v_L_m flow m/s, u_L_m potential J/m, L_L_m parameter J.s2.m-2, a_L_m other m/s2",
+  "R_e element v_R_e: v_R_e flow C/s, u_R_e potential J/C, R_R_e parameter J.s.C-2",
+  "R_m element v_R_m: v_R_m flow m/s, u_R_m potential J/m, R_R_m parameter J.s.m-2",
+  "q_C_m element q_C_m: v_q_C_m flow m/s, u_q_C_m potential J/m, C_q_C_m parameter m2/J, q_C_m quantity m",
+  "u_in_e element u_in_e: v_u_in_e flow C/s, u_in_e potential J/C",
+  "GY transform Bl: Bl ratio J.s.C-1.m-1, v_R_e flow C/s, u_Bl_0 potential J/C, v_R_m flow m/s, u_Bl_1 potential J/m",
+]
+`;
+
+exports[`element manifest > matches the snapshot for example_B1 1`] = `
+[
+  "Re_r element v_Re_r: v_Re_r flow mol/s, u_f_Re_r potential J/mol, u_r_Re_r potential J/mol, kappa_r parameter mol/s",
+  "q_1 element q_1: v_q_1 flow mol/s, u_q_1 potential J/mol, K_q_1 parameter mol-1, q_1 quantity mol",
+  "q_2 element q_2: v_q_2 flow mol/s, u_q_2 potential J/mol, K_q_2 parameter mol-1, q_2 quantity mol",
+  "u_2 zero u_2: u_2 potential J/mol",
+  "v_r_2 one v_r_2: v_r_2 flow mol/s",
+  "v_r_1 one v_r_1: v_r_1 flow mol/s",
+  "u_1 zero u_1: u_1 potential J/mol",
+]
+`;
+
+exports[`element manifest > matches the snapshot for example_B1_reduced 1`] = `
+[
+  "Re element v_Re: v_Re flow mol/s, u_f_Re potential J/mol, u_r_Re potential J/mol, kappa_r parameter mol/s",
+  "q_1 element q_1: v_q_1 flow mol/s, u_q_1 potential J/mol, K_q_1 parameter mol-1, q_1 quantity mol",
+  "q_2 element q_2: v_q_2 flow mol/s, u_q_2 potential J/mol, K_q_2 parameter mol-1, q_2 quantity mol",
+]
+`;
+
+exports[`element manifest > matches the snapshot for example_B2 1`] = `
+[
+  "Re_c element v_Re_c: v_Re_c flow mol/s, u_f_Re_c potential J/mol, u_r_Re_c potential J/mol, kappa_r parameter mol/s",
+  "q_1 element q_1: v_q_1 flow mol/s, u_q_1 potential J/mol, K_q_1 parameter mol-1, q_1 quantity mol",
+  "q_2 element q_2: v_q_2 flow mol/s, u_q_2 potential J/mol, K_q_2 parameter mol-1, q_2 quantity mol",
+  "q_3 element q_3: v_q_3 flow mol/s, u_q_3 potential J/mol, K_q_3 parameter mol-1, q_3 quantity mol",
+  "q_4 element q_4: v_q_4 flow mol/s, u_q_4 potential J/mol, K_q_4 parameter mol-1, q_4 quantity mol",
+  "u_4 zero u_4: u_4 potential J/mol",
+  "u_3 zero u_3: u_3 potential J/mol",
+  "v_r_2 one v_r_2: v_r_2 flow mol/s",
+  "v_r_1 one v_r_1: v_r_1 flow mol/s",
+  "u_2 zero u_2: u_2 potential J/mol",
+  "u_1 zero u_1: u_1 potential J/mol",
+]
+`;
+
+exports[`element manifest > matches the snapshot for example_B2_reduced 1`] = `
+[
+  "Re_c element v_Re_c: v_Re_c flow mol/s, u_f_Re_c potential J/mol, u_r_Re_c potential J/mol, kappa_r parameter mol/s",
+  "q_1 element q_1: v_q_1 flow mol/s, u_q_1 potential J/mol, K_q_1 parameter mol-1, q_1 quantity mol",
+  "q_2 element q_2: v_q_2 flow mol/s, u_q_2 potential J/mol, K_q_2 parameter mol-1, q_2 quantity mol",
+  "q_3 element q_3: v_q_3 flow mol/s, u_q_3 potential J/mol, K_q_3 parameter mol-1, q_3 quantity mol",
+  "q_4 element q_4: v_q_4 flow mol/s, u_q_4 potential J/mol, K_q_4 parameter mol-1, q_4 quantity mol",
+]
+`;
+
+exports[`element manifest > matches the snapshot for example_RC 1`] = `
+[
+  "R_0 element v_R_0: v_R_0 flow C/s, u_R_0 potential J/C, R_R_0 parameter J.s.C-2",
+  "V_in element u_V_in: v_V_in flow C/s, u_V_in potential J/C",
+  "q_1 element q_1: v_q_1 flow C/s, u_q_1 potential J/C, C_q_1 parameter C2/J, q_1 quantity C",
+  "V_C zero V_C: V_C potential J/C",
+  "I_R one I_R: I_R flow C/s",
+]
+`;
+
+exports[`element manifest > matches the snapshot for example_RC_reduced 1`] = `
+[
+  "R_0 element v_R_0: v_R_0 flow C/s, u_R_0 potential J/C, R_R_0 parameter J.s.C-2",
+  "V_in element u_V_in: v_V_in flow C/s, u_V_in potential J/C",
+  "q_1 element q_1: v_q_1 flow C/s, u_q_1 potential J/C, C_q_1 parameter C2/J, q_1 quantity C",
+]
+`;

@@ -274,10 +274,11 @@ interface FakeSource {
 
 /** Just what `buildCellMLModel` reads of a model. */
 function fakeModel(elements: FakeSource[], junctions: FakeSource[] = []): BondgraphModel {
-  const domain = { iri: 'https://example.org/test#Domain', constants: [] }
+  const domain = { iri: 'https://example.org/test#Domain', constants: [], flow: { name: 'v' }, potential: { name: 'u' }, quantity: { name: 'q' } }
+  const template = { template: { iri: 'https://example.org/test#Template' }, elementTemplate: { parameters: new Map() }, ports: new Map() }
   return {
     iri: MODEL_IRI,
-    elements: new Map(elements.map((element) => [element.iri, { domain, ...element }])),
+    elements: new Map(elements.map((element) => [element.iri, { domain, ...template, ...element }])),
     junctions: new Map(junctions.map((junction) => [junction.iri, junction])),
     equations: [],
   } as unknown as BondgraphModel

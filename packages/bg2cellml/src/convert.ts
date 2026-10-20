@@ -8,6 +8,7 @@
 import { extractBgRdf } from './celldl.js'
 import { RUNNABLE_MODEL_TYPES } from './cellml/check.js'
 import { generateCellML } from './cellml/generate.js'
+import type { ElementManifest } from './cellml/manifest.js'
 import { cellmlUriFor } from './cellml/metadata.js'
 import { MAIN_COMPONENT } from './cellml/model.js'
 import type { Runtime } from './converter.js'
@@ -51,7 +52,13 @@ export interface ConversionResult {
   readonly baseUri: string
   /** The model's IRI, once the source has been read. Its fragments are issues' `elementId`s. */
   readonly modelIri?: string
-  // `elements` (the element manifest) and `units` (renamed known units) are to come.
+  /**
+   * Each element's and junction's CellML variables and their roles, by its id
+   * in the diagram (its IRI if it isn't in the source); empty if the model
+   * couldn't be built. `toViewerAnnotations()` makes `@celldl/viewer` annotations of it.
+   */
+  readonly elements: ElementManifest
+  // `units` (renamed known units) is to come.
   readonly issues: readonly Issue[]
   readonly errors: readonly Issue[]
   readonly warnings: readonly Issue[]
@@ -128,6 +135,7 @@ export function convert(context: ConvertContext, source: string, options: Conver
         ...fields,
         ...iriField(modelIri),
         ...(generated.cellml === undefined ? {} : { cellml: generated.cellml }),
+        ...(generated.elements === undefined ? {} : { elements: generated.elements }),
         ...(generated.modelType === undefined ? {} : { modelType: generated.modelType }),
         ...(generated.metadata === undefined ? {} : { metadata: generated.metadata }),
       },
@@ -141,15 +149,18 @@ export function convert(context: ConvertContext, source: string, options: Conver
 
 const iriField = (modelIri: string | undefined): { modelIri?: string } => (modelIri === undefined ? {} : { modelIri })
 
-type ResultFields = Omit<ConversionResult, 'ok' | 'runnable' | 'issues' | 'errors' | 'warnings' | 'generator'>
+type ResultFields = Omit<ConversionResult, 'ok' | 'runnable' | 'elements' | 'issues' | 'errors' | 'warnings' | 'generator'> & {
+  readonly elements?: ElementManifest
+}
 
-/** The result, with `ok`, `runnable` and the issues split by severity. */
+/** The result, with `ok`, `runnable`, `elements` and the issues split by severity. */
 function result(fields: ResultFields, issues: readonly Issue[]): ConversionResult {
   const runnable = fields.modelType !== undefined && RUNNABLE_MODEL_TYPES.has(fields.modelType)
   const errors = issues.filter((issue) => issue.severity === 'error')
   return {
     ok: fields.cellml !== undefined && runnable && errors.length === 0 && fields.exception === undefined,
     runnable,
+    elements: {},
     ...fields,
     issues,
     errors,

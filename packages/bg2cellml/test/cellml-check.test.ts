@@ -168,7 +168,10 @@ describe('checkCellMLModel', () => {
       iri: 'https://example.org/test#model_a',
       symbol: 'a',
       prettyName: 'a (#model_a)',
-      domain: { iri: 'https://example.org/test#Domain', constants: [] },
+      domain: { iri: 'https://example.org/test#Domain', constants: [], flow: { name: 'v' }, potential: { name: 'u' }, quantity: { name: 'q' } },
+      template: { iri: 'https://example.org/test#Template' },
+      elementTemplate: { parameters: new Map() },
+      ports: new Map(),
       variables: new Map([
         ['v', new ModelVariable({ name: 'v', units: 'C/s' })],
         ['k', new ModelVariable({ name: 'k', units: 'C/s' })],

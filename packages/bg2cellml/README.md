@@ -49,6 +49,8 @@ const result = await converter.convert(celldlSvg, {
 
 An issue's `elementId` is its subject's IRI fragment, such as a CellDL diagram's `<g id>`, and is the same whether the document's Turtle uses relative or absolute IRIs (`elementIdOf`).
 
+`result.elements` is the element manifest, keyed the same way (by IRI for an element outside the source): each element's and junction's `{ iri, kind, symbol, template?, label?, primary?, variables }`, where `kind` is `element`, `one`, `zero` or `transform`, and each variable written to the CellML is `{ name, role, ucum, units }` with `role` one of `flow`, `potential`, `quantity`, `parameter`, `ratio` or `other`. A variable two elements share, such as a one node's flow that a transform node's port takes, is listed for both. `primary` is a one or zero node's own variable, a transform node's ratio, an element's intrinsic variable (a capacitor's `q`, a source's potential or flow), or else its first port's flow. `toViewerAnnotations(result.elements)` turns it into `@celldl/viewer` annotations, `{ [svgId]: { label, primary, variables, tooltip } }`, with a tooltip line such as `v_1 (flow, C/s)` for each variable unless `{ tooltip }` gives another.
+
 In Node, also pass a `domParser` (`new DOMParser()` from `@xmldom/xmldom`); browsers have their own. With Vite, keep both modules out of dependency pre-bundling (`optimizeDeps: { exclude: ['libcellml.js', 'oxigraph'] }`), as each finds its `.wasm` from its own URL. [`examples/browser`](https://github.com/physiomelinks/celldl2cellml/tree/main/examples/browser) in the repository is a complete page.
 
 ## Layout
@@ -71,6 +73,7 @@ In Node, also pass a `domParser` (`new DOMParser()` from `@xmldom/xmldom`); brow
 | `src/cellml/equations.ts` | The equations as MathML in `main`, grouped and ordered as Python | `__equations_to_mathml` | Done (6.2) |
 | `src/cellml/check.ts` | libCellML's Validator and Analyser, their messages as issues | (none) | Done (6.3) |
 | `src/cellml/metadata.ts`, `src/rdf/turtle.ts` | Metadata linking CellML variables to bond graph elements, as Turtle, and the element-to-variables annotation | `CellMLModel.metadata`, `annotation` | Done (6.4) |
+| `src/cellml/manifest.ts` | The element manifest, and `toViewerAnnotations` | (none) | Done |
 | `src/cellml/generate.ts` | CellML 2.0 through libCellML, plus metadata | `cellml/__init__.py` | Done |
 
 ## Differences from the Python version

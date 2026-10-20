@@ -10,6 +10,19 @@ export { GENERATOR } from './version.js'
 export { CELLDL_METADATA_ID, extractBgRdf, type DOMParserLike } from './celldl.js'
 export { generateCellML, type CellMLResult, type GenerateOptions } from './cellml/generate.js'
 export {
+  defaultTooltip,
+  elementManifest,
+  toViewerAnnotations,
+  type ElementManifest,
+  type ManifestElement,
+  type ManifestKind,
+  type ManifestVariable,
+  type VariableRole,
+  type ViewerAnnotation,
+  type ViewerAnnotationOptions,
+  type ViewerAnnotations,
+} from './cellml/manifest.js'
+export {
   BQMODEL,
   CELLML_MODEL_URI,
   annotation,
