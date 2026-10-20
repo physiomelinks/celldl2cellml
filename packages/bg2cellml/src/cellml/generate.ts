@@ -51,7 +51,7 @@ export interface GenerateOptions {
  * along with the CellML, so it can be looked at.
  */
 export function generateCellML(libcellml: LibCellML, model: BondgraphModel, options: GenerateOptions = {}): CellMLResult {
-  const log = new IssueLog()
+  const log = new IssueLog('build', model.iri || undefined)
   const build = buildCellMLModel(libcellml, model, log)
   try {
     if (log.hasIssues) return { issues: log.issues }

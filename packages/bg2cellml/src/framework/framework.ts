@@ -76,7 +76,7 @@ export function elementTemplateOf(template: BondgraphElementTemplate): ElementTe
 }
 
 export class BondgraphFramework {
-  readonly log = new IssueLog()
+  readonly log = new IssueLog('framework')
   readonly domains = new Map<string, Domain>()
   readonly elementTemplates = new Map<string, ElementTemplate>()
   readonly compositeTemplates = new Map<string, CompositeTemplate>()

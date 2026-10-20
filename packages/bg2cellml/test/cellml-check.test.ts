@@ -17,7 +17,7 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 
-import type { LibCellML } from '@physiomelinks/cellml-units'
+import type { LibCellML, Model } from '@physiomelinks/cellml-units'
 import { ci, eq } from '@physiomelinks/math-ast'
 import * as oxigraph from 'oxigraph'
 import { beforeAll, describe, expect, it } from 'vitest'
@@ -98,6 +98,7 @@ describe('the reference cases', () => {
       for (const issue of result.issues) {
         expect(issue.message).toMatch(SIN_UNITS_MESSAGE)
         expect(issue.cause).toEqual({ checker: 'analyser', level: 'warning' } satisfies CellMLIssueCause)
+        expect(issue).toMatchObject({ severity: 'warning', stage: 'analyser' })
       }
       expect(result.cellml).toContain('<model ')
       expect(result.modelType).toBe('dae')
@@ -156,6 +157,7 @@ describe('checkCellMLModel', () => {
     for (const issue of log.issues) {
       expect(issue.message).toMatch(/^CellML validation: /)
       expect((issue.cause as CellMLIssueCause).checker).toBe('validator')
+      expect(issue).toMatchObject({ severity: 'error', stage: 'validator' })
     }
     expect(log.issues.map((issue) => issue.message).join('\n')).toMatch(/'x'.*units/)
   })
@@ -186,5 +188,84 @@ describe('checkCellMLModel', () => {
       expect((issue.cause as CellMLIssueCause).checker).toBe('analyser')
     }
     expect(result.issues.map((issue) => issue.message).join('\n')).toMatch(/'k'/)
+    expect(result.issues.every((issue) => issue.stage === 'analyser')).toBe(true)
+    expect(result.issues.some((issue) => issue.severity === 'error')).toBe(true)
+  })
+
+  it('reports a model type that cannot run as an error, even with only warnings', () => {
+    const analysed = { type: () => 'nonRunnable', stateCount: () => 0, delete: () => {} }
+    const stub = Object.create(libcellml) as LibCellML
+    Object.assign(stub, {
+      Analyser: warningLogger({ analyserModel: () => analysed }),
+      AnalyserModel: { typeAsString: (type: string) => type },
+    })
+    const log = new IssueLog()
+    const model = simpleModel()
+    try {
+      expect(checkCellMLModel(stub, model, log).type).toBe('nonRunnable')
+    } finally {
+      model.delete?.()
+    }
+    expect(log.issues.map(({ message, severity, stage }) => ({ message, severity, stage }))).toEqual([
+      { message: 'CellML analysis: a stub warning', severity: 'warning', stage: 'analyser' },
+      { message: 'CellML analysis: the model is nonRunnable', severity: 'error', stage: 'analyser' },
+    ])
+  })
+
+  it('analyses a model the Validator only warns about', () => {
+    const stub = Object.create(libcellml) as LibCellML
+    Object.assign(stub, { Validator: warningLogger({ validateModel: () => {} }) })
+    const log = new IssueLog()
+    const model = simpleModel()
+    try {
+      expect(checkCellMLModel(stub, model, log)).toEqual({ type: 'ode', stateCount: 1 })
+    } finally {
+      model.delete?.()
+    }
+    expect(log.issues).toEqual([
+      {
+        message: 'CellML validation: a stub warning',
+        severity: 'warning',
+        stage: 'validator',
+        cause: { checker: 'validator', level: 'warning' } satisfies CellMLIssueCause,
+      },
+    ])
   })
 })
+
+/** A Validator or Analyser class with `methods`, whose one issue is a warning. */
+function warningLogger(methods: Record<string, unknown>): unknown {
+  const warning = libcellml.Issue.Level.WARNING
+  return class {
+    constructor() {
+      Object.assign(this, methods)
+    }
+    analyseModel(): void {}
+    issueCount(): number {
+      return 1
+    }
+    issue(): unknown {
+      return { level: () => warning, description: () => 'a stub warning', delete: () => {} }
+    }
+  }
+}
+
+/** dx/dt = 1, which validates and analyses as an ODE. */
+function simpleModel(): Model {
+  const parser = new libcellml.Parser(false)
+  try {
+    return parser.parseModel(`<?xml version="1.0"?>
+<model xmlns="http://www.cellml.org/cellml/2.0#" xmlns:cellml="http://www.cellml.org/cellml/2.0#" name="m">
+  <component name="main">
+    <variable name="t" units="second"/>
+    <variable name="x" units="dimensionless" initial_value="1"/>
+    <math xmlns="http://www.w3.org/1998/Math/MathML">
+      <apply><eq/><apply><diff/><bvar><ci>t</ci></bvar><ci>x</ci></apply><cn cellml:units="per_second">1</cn></apply>
+    </math>
+  </component>
+  <units name="per_second"><unit units="second" exponent="-1"/></units>
+</model>`)
+  } finally {
+    parser.delete?.()
+  }
+}

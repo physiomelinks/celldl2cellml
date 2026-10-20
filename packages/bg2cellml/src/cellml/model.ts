@@ -313,7 +313,12 @@ function makeVariable(
     if (candidate.value !== undefined) initialValue = valueIn(libcellml, candidate.value, candidate.ucum)
   } catch (error) {
     const message = error instanceof UcumError ? error.message : String(error)
-    log.report(`${capitalise(candidate.label)}: ${message}`, subject, error)
+    log.reportIssue({
+      message: `${capitalise(candidate.label)}: ${message}`,
+      ...(error instanceof UcumError ? { stage: 'units' } : {}),
+      ...(subject === undefined ? {} : { subject }),
+      cause: error,
+    })
     return undefined
   }
   if (initialValue !== undefined && !Number.isFinite(initialValue)) {

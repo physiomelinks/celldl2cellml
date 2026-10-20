@@ -405,7 +405,14 @@ describe('variables of hand-built models', () => {
     const { log, rows } = build(fakeModel([{ iri: `${MODEL_IRI}_a`, symbol: 'a', variables: new Map([['T', variable('T_a', 'Cel', 37)]]) }]))
     expect(messages(log)).toHaveLength(1)
     expect(messages(log)[0]).toMatch(/^Variable T_a of a \(#model_a\): .*affine temperature/)
+    expect(log.issues[0]).toMatchObject({ severity: 'error', stage: 'units', subject: `${MODEL_IRI}_a` })
     expect(rows.map((row) => row[0])).toEqual(['t'])
+  })
+
+  it("gives an issue the diagram id of an element in the model's document", () => {
+    const { issues } = generateCellML(libcellml, fakeModel([{ iri: `${MODEL_IRI}_a`, symbol: 'a', variables: new Map([['T', variable('T_a', 'Cel', 37)]]) }]))
+    expect(issues).toHaveLength(1)
+    expect(issues[0]).toMatchObject({ stage: 'units', elementId: 'model_a' })
   })
 })
 
