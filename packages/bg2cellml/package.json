@@ -9,12 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/physiomelinks/bg-2-cellml.git",
+    "url": "git+https://github.com/physiomelinks/celldl2cellml.git",
     "directory": "packages/bg2cellml"
   },
-  "homepage": "https://github.com/physiomelinks/bg-2-cellml/tree/main/packages/bg2cellml#readme",
+  "homepage": "https://github.com/physiomelinks/celldl2cellml/tree/main/packages/bg2cellml#readme",
   "bugs": {
-    "url": "https://github.com/physiomelinks/bg-2-cellml/issues"
+    "url": "https://github.com/physiomelinks/celldl2cellml/issues"
   },
   "keywords": [
     "bond-graph",

@@ -9,12 +9,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/physiomelinks/bg-2-cellml.git",
+    "url": "git+https://github.com/physiomelinks/celldl2cellml.git",
     "directory": "packages/math-ast"
   },
-  "homepage": "https://github.com/physiomelinks/bg-2-cellml/tree/main/packages/math-ast#readme",
+  "homepage": "https://github.com/physiomelinks/celldl2cellml/tree/main/packages/math-ast#readme",
   "bugs": {
-    "url": "https://github.com/physiomelinks/bg-2-cellml/issues"
+    "url": "https://github.com/physiomelinks/celldl2cellml/issues"
   },
   "keywords": [
     "mathml",

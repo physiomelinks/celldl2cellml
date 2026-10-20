@@ -60,5 +60,5 @@ npm only lets a trusted publisher be added to a package that already exists, so 
 
    Do this, and step 4, **before** merging the 8.2 pull request. Merging runs the Release workflow, which then finds 0.1.0 already on npm, publishes nothing, and checks the install from npm. Merged first, that run would fail, as the workflow can't publish until the trusted publishers exist.
 
-4. On npmjs.com, for each of the three packages: *Settings* → *Trusted publishing* → *GitHub Actions*, with organisation or user `physiomelinks`, repository `bg-2-cellml`, workflow file `release.yml`, and no environment.
+4. On npmjs.com, for each of the three packages: *Settings* → *Trusted publishing* → *GitHub Actions*, with organisation or user `physiomelinks`, repository `celldl2cellml`, workflow file `release.yml`, and no environment.
 5. Then, in each package's *Settings* → *Publishing access*, choose *Require two-factor authentication and disallow tokens*, so only the workflow (and you, with two-factor) can publish.
