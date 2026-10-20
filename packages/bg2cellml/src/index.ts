@@ -42,6 +42,7 @@ export {
 } from './cellml/check.js'
 export {
   MAIN_COMPONENT,
+  KnownUnits,
   UnitsDefinitions,
   VOI_UNITS,
   buildCellMLModel,

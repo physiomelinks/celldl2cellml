@@ -36,6 +36,12 @@ export interface ConvertOptions {
   cellmlUri?: string
   /** The source is BG-RDF Turtle rather than a CellDL document. */
   rdfSource?: boolean
+  /**
+   * The CellML of units the host already has, such as its other modules'. A
+   * name they give other units is numbered (`mM_1`) and listed in
+   * `units.renamed`; the CellML still defines all its units.
+   */
+  knownUnits?: string | string[]
 }
 
 export interface ConversionResult {
@@ -58,7 +64,8 @@ export interface ConversionResult {
    * couldn't be built. `toViewerAnnotations()` makes `@celldl/viewer` annotations of it.
    */
   readonly elements: ElementManifest
-  // `units` (renamed known units) is to come.
+  /** `renamed`: each units name `knownUnits` defines differently, and the name the CellML gives those units instead. */
+  readonly units: { readonly renamed: Readonly<Record<string, string>> }
   readonly issues: readonly Issue[]
   readonly errors: readonly Issue[]
   readonly warnings: readonly Issue[]
@@ -128,6 +135,7 @@ export function convert(context: ConvertContext, source: string, options: Conver
       metadata: options.metadata ?? false,
       cellmlUri: options.cellmlUri ?? cellmlUriFor(baseUri),
       componentName,
+      ...(options.knownUnits === undefined ? {} : { knownUnits: options.knownUnits }),
     })
     issues.push(...generated.issues)
     return result(
@@ -137,6 +145,7 @@ export function convert(context: ConvertContext, source: string, options: Conver
         ...(generated.cellml === undefined ? {} : { cellml: generated.cellml }),
         ...(generated.elements === undefined ? {} : { elements: generated.elements }),
         ...(generated.modelType === undefined ? {} : { modelType: generated.modelType }),
+        ...(generated.renamedUnits === undefined ? {} : { units: { renamed: generated.renamedUnits } }),
         ...(generated.metadata === undefined ? {} : { metadata: generated.metadata }),
       },
       issues,
@@ -149,11 +158,12 @@ export function convert(context: ConvertContext, source: string, options: Conver
 
 const iriField = (modelIri: string | undefined): { modelIri?: string } => (modelIri === undefined ? {} : { modelIri })
 
-type ResultFields = Omit<ConversionResult, 'ok' | 'runnable' | 'elements' | 'issues' | 'errors' | 'warnings' | 'generator'> & {
+type ResultFields = Omit<ConversionResult, 'ok' | 'runnable' | 'elements' | 'units' | 'issues' | 'errors' | 'warnings' | 'generator'> & {
   readonly elements?: ElementManifest
+  readonly units?: ConversionResult['units']
 }
 
-/** The result, with `ok`, `runnable`, `elements` and the issues split by severity. */
+/** The result, with `ok`, `runnable`, `elements`, `units` and the issues split by severity. */
 function result(fields: ResultFields, issues: readonly Issue[]): ConversionResult {
   const runnable = fields.modelType !== undefined && RUNNABLE_MODEL_TYPES.has(fields.modelType)
   const errors = issues.filter((issue) => issue.severity === 'error')
@@ -161,6 +171,7 @@ function result(fields: ResultFields, issues: readonly Issue[]): ConversionResul
     ok: fields.cellml !== undefined && runnable && errors.length === 0 && fields.exception === undefined,
     runnable,
     elements: {},
+    units: { renamed: {} },
     ...fields,
     issues,
     errors,

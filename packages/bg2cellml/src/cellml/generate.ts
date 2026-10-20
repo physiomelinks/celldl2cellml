@@ -33,6 +33,8 @@ export interface CellMLResult {
   readonly elements?: ElementManifest
   /** The Analyser's type for the model, such as `ode` or `dae`, once it validates. */
   readonly modelType?: string
+  /** Each units name the known units define differently, and the name the CellML gives those units instead. */
+  readonly renamedUnits?: Readonly<Record<string, string>>
   readonly issues: readonly Issue[]
 }
 
@@ -43,6 +45,8 @@ export interface GenerateOptions {
   metadata?: boolean
   /** The component's name and id, a CellML identifier; `main` if not given. */
   componentName?: string
+  /** CellML documents whose units the host already has: a name they give other units is numbered (`mM_1`) and reported. */
+  knownUnits?: string | readonly string[]
 }
 
 /**
@@ -57,16 +61,20 @@ export interface GenerateOptions {
  */
 export function generateCellML(libcellml: LibCellML, model: BondgraphModel, options: GenerateOptions = {}): CellMLResult {
   const log = new IssueLog('build', model.iri || undefined)
-  const build = buildCellMLModel(libcellml, model, log, options.componentName === undefined ? {} : { componentName: options.componentName })
+  const build = buildCellMLModel(libcellml, model, log, {
+    ...(options.componentName === undefined ? {} : { componentName: options.componentName }),
+    ...(options.knownUnits === undefined ? {} : { knownUnits: options.knownUnits }),
+  })
   try {
     const elements = elementManifest(build, model)
-    if (log.hasIssues) return { elements, issues: log.issues }
+    const renamed = build.units.renamed.size === 0 ? {} : { renamedUnits: Object.fromEntries(build.units.renamed) }
+    if (log.issues.some((issue) => issue.severity === 'error')) return { elements, ...renamed, issues: log.issues }
     const check = checkCellMLModel(libcellml, build.model, log)
     const printer = new libcellml.Printer()
     try {
       const cellml = printer.printModel(build.model, false)
       const metadata = options.metadata ? { metadata: metadataTurtle(build, model, options.cellmlUri ?? CELLML_MODEL_URI) } : {}
-      return { cellml, ...metadata, annotation: annotation(build), elements, modelType: check.type, issues: log.issues }
+      return { cellml, ...metadata, annotation: annotation(build), elements, ...renamed, modelType: check.type, issues: log.issues }
     } finally {
       printer.delete?.()
     }

@@ -20,6 +20,7 @@ import {
   cellmlUriFor,
   elementIdOf,
   generateCellML,
+  type ConvertOptions,
   type Runtime,
 } from '../src/index.js'
 import { SIN_UNITS_MESSAGE } from './known-issues.js'
@@ -140,6 +141,40 @@ describe('convert()', () => {
   it('reports a framework that has not been loaded', async () => {
     const result = await new Converter(runtime).convert(celldl)
     expect(result).toMatchObject({ ok: false, framework: {}, errors: [{ stage: 'framework' }] })
+  })
+})
+
+describe('knownUnits', () => {
+  const rc = caseNamed('example_RC')
+  /** A CellML document defining `units`, as a host's other module would. */
+  const knownCellML = (units: string): string =>
+    `<?xml version="1.0" encoding="UTF-8"?><model xmlns="http://www.cellml.org/cellml/2.0#" name="host">${units}</model>`
+  const convertRC = (options: ConvertOptions = {}) => converter.convert(readSource(rc), { sourceUri: rc.baseIri, rdfSource: true, ...options })
+
+  it('changes nothing when not given, or when the known units agree', async () => {
+    const plain = await convertRC()
+    expect(plain.units).toEqual({ renamed: {} })
+    for (const knownUnits of [[], knownCellML('<units name="C_per_s"><unit units="ampere"/></units>')]) {
+      const result = await convertRC({ knownUnits })
+      expect(result.cellml).toBe(plain.cellml)
+      expect(result).toMatchObject({ ok: true, units: { renamed: {} }, issues: [] })
+    }
+  })
+
+  it('numbers units a known name gives other units, and the variables use them', async () => {
+    const result = await convertRC({ knownUnits: knownCellML('<units name="J_per_C"><unit prefix="milli" units="volt"/></units>') })
+    expect(result).toMatchObject({ ok: true, units: { renamed: { J_per_C: 'J_per_C_1' } }, errors: [], warnings: [] })
+    expect(result.issues).toEqual([expect.objectContaining({ severity: 'info', stage: 'units', message: expect.stringMatching(/J_per_C are named J_per_C_1/) })])
+    expect(result.cellml).toContain('<units name="J_per_C_1">')
+    expect(result.cellml).not.toMatch(/"J_per_C"/)
+    expect(result.cellml).toContain('<variable name="V_C" units="J_per_C_1"')
+    expect(result.elements['V_C']?.variables).toContainEqual(expect.objectContaining({ units: 'J_per_C_1' }))
+  })
+
+  it('warns of known units that are not CellML', async () => {
+    const result = await convertRC({ knownUnits: ['not CellML'] })
+    expect(result).toMatchObject({ ok: true, units: { renamed: {} } })
+    expect(result.warnings).toEqual([expect.objectContaining({ stage: 'units', message: expect.stringMatching(/^knownUnits\[0\] isn't valid CellML/) })])
   })
 })
 
