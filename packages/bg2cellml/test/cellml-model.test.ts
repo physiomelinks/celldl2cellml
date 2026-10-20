@@ -18,6 +18,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import {
   BondgraphModel,
   IssueLog,
+  KnownUnits,
   ModelVariable,
   UnitsDefinitions,
   buildCellMLModel,
@@ -274,10 +275,11 @@ interface FakeSource {
 
 /** Just what `buildCellMLModel` reads of a model. */
 function fakeModel(elements: FakeSource[], junctions: FakeSource[] = []): BondgraphModel {
-  const domain = { iri: 'https://example.org/test#Domain', constants: [] }
+  const domain = { iri: 'https://example.org/test#Domain', constants: [], flow: { name: 'v' }, potential: { name: 'u' }, quantity: { name: 'q' } }
+  const template = { template: { iri: 'https://example.org/test#Template' }, elementTemplate: { parameters: new Map() }, ports: new Map() }
   return {
     iri: MODEL_IRI,
-    elements: new Map(elements.map((element) => [element.iri, { domain, ...element }])),
+    elements: new Map(elements.map((element) => [element.iri, { domain, ...template, ...element }])),
     junctions: new Map(junctions.map((junction) => [junction.iri, junction])),
     equations: [],
   } as unknown as BondgraphModel
@@ -464,5 +466,60 @@ describe('UnitsDefinitions', () => {
     expect(units.unitsFor('mol/s')).toBe('mol_per_s_1')
     expect(units.unitsFor('s-1.mol')).toBe('mol_per_s_1')
     expect(names()).toEqual(['mol_per_s', 'mol_per_s_1'])
+  })
+  describe('with known units', () => {
+    /** A CellML document defining `units`, as a host's other module would. */
+    const knownCellML = (units: string): string =>
+      `<?xml version="1.0" encoding="UTF-8"?><model xmlns="http://www.cellml.org/cellml/2.0#" name="host">${units}</model>`
+    const PER_S = '<units name="per_s"><unit units="second" exponent="-1"/></units>'
+    /** Millimolar, named as `mmol/L` is, but without the litre. */
+    const MM = '<units name="mmol_per_L"><unit prefix="milli" units="mole"/></units>'
+
+    const known: KnownUnits[] = []
+    afterAll(() => {
+      for (const units of known) units.delete()
+    })
+
+    function withKnown(cellml: string | string[]): { units: UnitsDefinitions; names: () => string[] } {
+      known.push(new KnownUnits(libcellml, cellml))
+      const model = new libcellml.Model()
+      parsed.push(model)
+      return {
+        units: new UnitsDefinitions(libcellml, model, known.at(-1)),
+        names: () => Array.from({ length: model.unitsCount() }, (_, i) => model.unitsByIndex(i)!.name()),
+      }
+    }
+
+    it('keeps a name the known units define as the same units, still defining it', () => {
+      const { units, names } = withKnown(knownCellML(PER_S))
+      expect(units.unitsFor('s-1')).toBe('per_s')
+      expect(names()).toEqual(['per_s'])
+      expect(units.renamed).toEqual(new Map())
+    })
+
+    it('numbers a name the known units define as other units, and records it', () => {
+      const { units, names } = withKnown(knownCellML(MM))
+      expect(units.unitsFor('mmol/L')).toBe('mmol_per_L_1')
+      expect(units.unitsFor('mmol/L')).toBe('mmol_per_L_1')
+      expect(names()).toEqual(['mmol_per_L_1'])
+      expect(units.renamed).toEqual(new Map([['mmol_per_L', 'mmol_per_L_1']]))
+    })
+
+    it('reads CellML 1.1, and known units defined by other known units', () => {
+      const { units, names } = withKnown(
+        '<?xml version="1.0" encoding="UTF-8"?><model xmlns="http://www.cellml.org/cellml/1.1#" name="host">' +
+          '<units name="mM"><unit prefix="milli" units="mole"/><unit units="litre" exponent="-1"/></units>' +
+          '<units name="mmol_per_L"><unit units="mM"/></units><units name="per_s"><unit units="metre"/></units></model>',
+      )
+      expect(units.unitsFor('mmol/L')).toBe('mmol_per_L')
+      expect(units.unitsFor('s-1')).toBe('per_s_1')
+      expect(names()).toEqual(['mmol_per_L', 'per_s_1'])
+      expect(units.renamed).toEqual(new Map([['per_s', 'per_s_1']]))
+    })
+
+    it('keeps the first of the known definitions of a name', () => {
+      const { units } = withKnown([knownCellML(PER_S), knownCellML('<units name="per_s"><unit units="metre"/></units>')])
+      expect(units.unitsFor('s-1')).toBe('per_s')
+    })
   })
 })

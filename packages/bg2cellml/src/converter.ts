@@ -8,6 +8,7 @@
 import type { LibCellML } from '@physiomelinks/cellml-units'
 
 import { extractBgRdf, type DOMParserLike } from './celldl.js'
+import { convert, iriIssue, type ConversionResult, type ConvertOptions } from './convert.js'
 import { generateCellML } from './cellml/generate.js'
 import { cellmlUriFor } from './cellml/metadata.js'
 import { BondgraphFramework } from './framework/framework.js'
@@ -79,20 +80,18 @@ export class Converter {
     return this.#framework.log.issues.map((issue) => issue.message)
   }
 
-  /**
-   * Why `iri` can't be the base or name of a document, or `undefined` if it
-   * can. oxigraph checks it as it does a base IRI: a Windows path or one with
-   * a space isn't an IRI, as the CellDL Editor found on Windows (BG-Tools'
-   * tests/models/rdf_error.celldl).
-   */
+  /** Why `iri` can't be the base or name of a document, or `undefined` if it can, as `convert()` checks it. */
   #iriIssue(option: string, iri: string): string | undefined {
-    try {
-      this.#runtime.oxigraph.namedNode(iri)
-      return undefined
-    } catch (error) {
-      const reason = error instanceof Error ? error.message : String(error)
-      return `${option} isn't an absolute IRI: ${JSON.stringify(iri)} (${reason}). A file path must be given as a file: URL, with characters such as spaces percent-encoded.`
-    }
+    return iriIssue(this.#runtime.oxigraph, option, iri)
+  }
+
+  /**
+   * Convert a CellDL document, or BG-RDF Turtle with `rdfSource: true`, to
+   * CellML 2.0, returning the CellML with any warnings, and each issue's
+   * severity, stage and `elementId`.
+   */
+  async convert(source: string, options: ConvertOptions = {}): Promise<ConversionResult> {
+    return convert({ runtime: this.#runtime, framework: this.#framework }, source, options)
   }
 
   /** Convert a CellDL document, or BG-RDF Turtle with `rdfSource: true`, to CellML 2.0. */

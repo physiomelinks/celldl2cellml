@@ -66,9 +66,7 @@ export class IssueLog {
   }
 
   #elementId(subject: string): string | undefined {
-    const hash = subject.indexOf('#')
-    if (this.document === undefined || hash < 0 || subject.slice(0, hash) !== this.document) return undefined
-    return subject.slice(hash + 1) || undefined
+    return this.document === undefined ? undefined : elementIdOf(subject, this.document)
   }
 }
 
@@ -76,4 +74,15 @@ export class IssueLog {
 export const documentOf = (iri: string): string => {
   const hash = iri.indexOf('#')
   return hash < 0 ? iri : iri.slice(0, hash)
+}
+
+/**
+ * An element's id in its diagram: its IRI's fragment, such as a CellDL `<g id>`,
+ * when the IRI is in the model's document; otherwise `undefined`. The same
+ * whether the source's Turtle uses relative or absolute IRIs.
+ */
+export function elementIdOf(iri: string, modelIri: string): string | undefined {
+  const hash = iri.indexOf('#')
+  if (hash < 0 || iri.slice(0, hash) !== documentOf(modelIri)) return undefined
+  return iri.slice(hash + 1) || undefined
 }

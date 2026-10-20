@@ -5,8 +5,23 @@ export {
   type FrameworkSource,
   type Runtime,
 } from './converter.js'
+export { DEFAULT_SOURCE_URI, iriIssue, type ConversionResult, type ConvertOptions } from './convert.js'
+export { GENERATOR } from './version.js'
 export { CELLDL_METADATA_ID, extractBgRdf, type DOMParserLike } from './celldl.js'
 export { generateCellML, type CellMLResult, type GenerateOptions } from './cellml/generate.js'
+export {
+  defaultTooltip,
+  elementManifest,
+  toViewerAnnotations,
+  type ElementManifest,
+  type ManifestElement,
+  type ManifestKind,
+  type ManifestVariable,
+  type VariableRole,
+  type ViewerAnnotation,
+  type ViewerAnnotationOptions,
+  type ViewerAnnotations,
+} from './cellml/manifest.js'
 export {
   BQMODEL,
   CELLML_MODEL_URI,
@@ -27,12 +42,14 @@ export {
 } from './cellml/check.js'
 export {
   MAIN_COMPONENT,
+  KnownUnits,
   UnitsDefinitions,
   VOI_UNITS,
   buildCellMLModel,
   cellmlModelName,
   freeBuild,
   symbolSortKey,
+  type BuildOptions,
   type CellMLModelBuild,
   type CellMLVariable,
   type CellMLVariableKind,
@@ -93,6 +110,6 @@ export {
 } from './model/model.js'
 export { LOCAL_MODEL_BASE, cleanLatex, elementVariableName, makeSymbolicName, prettyName, prettyUri } from './model/names.js'
 export { BondNetwork } from './model/network.js'
-export { IssueLog, type Issue, type IssueReport, type IssueSeverity, type IssueStage } from './issues.js'
+export { IssueLog, elementIdOf, type Issue, type IssueReport, type IssueSeverity, type IssueStage } from './issues.js'
 export { RdfGraph, type OxigraphModule, type QuadLike, type ResultRow, type Term, type TermLike } from './rdf/graph.js'
 export { BGF, CDT, NAMESPACES, curie, fragment } from './rdf/namespaces.js'

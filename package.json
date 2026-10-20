@@ -22,7 +22,8 @@
     "typecheck": "tsc --build --noEmit",
     "test": "yarn workspaces foreach --all --topological --parallel run test",
     "reference": "uv run --project tools/reference python tools/reference/generate.py",
-    "stats": "node tools/stats/build.mjs"
+    "stats": "node tools/stats/build.mjs",
+    "sync-version": "node tools/release/sync-version.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",

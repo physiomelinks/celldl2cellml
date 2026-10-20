@@ -18,10 +18,11 @@ Choose the packages and the bump (patch, minor or major), and write a line for t
 
    ```sh
    yarn changeset version
+   yarn sync-version     # writes bg2cellml's version into src/version.ts
    yarn install          # updates yarn.lock
    ```
 
-   This bumps the version in each `package.json`, writes each `CHANGELOG.md` and deletes the changeset files. Check the changelogs, then commit and open a pull request.
+   This bumps the version in each `package.json`, writes each `CHANGELOG.md` and deletes the changeset files. `yarn sync-version` copies bg2cellml's new version into `GENERATOR`, which conversion results report. Check the changelogs, then commit and open a pull request.
 
 2. Merge it into `main`. The **Release** workflow (`.github/workflows/release.yml`) builds and tests everything, checks that the packed packages install into an empty project and work, publishes every package whose version isn't on npm yet with `yarn changeset publish`, pushes a tag per package (`@physiomelinks/bg2cellml@0.1.0`), and then installs the released version from npm into an empty project to check it. It can also be run by hand from the Actions tab.
 

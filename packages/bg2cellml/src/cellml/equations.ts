@@ -79,7 +79,7 @@ function groupOf(equation: ModelEquation): EquationGroup | undefined {
 }
 
 /**
- * Write the model's equations into the build's `main` component (plan chunk
+ * Write the model's equations into the build's component (plan chunk
  * 6.2), returning them as written, in order. Problems are reported in `log`;
  * an equation with one is left out.
  */

@@ -29,6 +29,7 @@ import {
   type Component,
   type LibCellML,
   type Model,
+  type Units,
 } from '@physiomelinks/cellml-units'
 
 import { VOI_NAME } from '../framework/templates.js'
@@ -40,7 +41,7 @@ import type { BondgraphJunction } from '../model/junctions.js'
 import type { BondgraphModel } from '../model/model.js'
 import { prettyUri } from '../model/names.js'
 
-/** The one component, as in Python. */
+/** The one component's name unless another is given, as in Python. */
 export const MAIN_COMPONENT = 'main'
 
 /** The variable of integration's units, as Python's `VOI_UCUMUNIT`. */
@@ -75,11 +76,11 @@ export function cellmlModelName(iri: string): string {
 /** What a CellML variable was made from. */
 export type CellMLVariableKind = 'voi' | 'constant' | 'variable'
 
-/** A variable of the `main` component, and where it came from. */
+/** A variable of the component, and where it came from. */
 export interface CellMLVariable {
   /** Its name in CellML: the model variable's symbol. */
   readonly name: string
-  /** Its `id`, `main-<name>` as in Python; the metadata refers to it. */
+  /** Its `id`, `<component>-<name>` (`main-<name>` as in Python); the metadata refers to it. */
   readonly id: string
   readonly kind: CellMLVariableKind
   /** The UCUM code of its units. */
@@ -97,19 +98,76 @@ export interface CellMLVariable {
 }
 
 /**
+ * Units a host application already has, from its CellML, by name: the first
+ * definition of a name is the one kept. Free them with `delete()`.
+ */
+export class KnownUnits {
+  readonly #models: Model[] = []
+  readonly #units = new Map<string, Units>()
+
+  /** Read the units of each CellML document; one that doesn't parse is reported as a warning in `log`. */
+  constructor(libcellml: LibCellML, cellml: string | readonly string[], log?: IssueLog) {
+    const documents = typeof cellml === 'string' ? [cellml] : cellml
+    documents.forEach((document, index) => {
+      const parser = new libcellml.Parser(false)
+      try {
+        const model = parser.parseModel(document)
+        this.#models.push(model)
+        const errors = Array.from({ length: parser.issueCount() }, (_, i) => parser.issue(i)).filter(
+          (issue) => issue.level().value === libcellml.Issue.Level.ERROR.value,
+        )
+        if (errors.length > 0) {
+          const label = typeof cellml === 'string' ? 'knownUnits' : `knownUnits[${index}]`
+          log?.reportIssue({ message: `${label} isn't valid CellML: ${errors[0]!.description()}`, severity: 'warning', stage: 'units' })
+        }
+        for (let i = 0; i < model.unitsCount(); i += 1) {
+          const units = model.unitsByIndex(i)
+          if (units === null) continue
+          if (this.#units.has(units.name())) units.delete?.()
+          else this.#units.set(units.name(), units)
+        }
+      } finally {
+        parser.delete?.()
+      }
+    })
+  }
+
+  /** The units with a name, if there are any. */
+  get(name: string): Units | undefined {
+    return this.#units.get(name)
+  }
+
+  delete(): void {
+    for (const units of this.#units.values()) units.delete?.()
+    for (const model of this.#models) model.delete?.()
+    this.#units.clear()
+    this.#models.length = 0
+  }
+}
+
+/**
  * Units definitions for a CellML model, one per distinct UCUM code, named by
  * `unitsName`. Codes with the same name and the same units (`mol/s`,
- * `s-1.mol`) share a definition; a different one gets a numbered name.
+ * `s-1.mol`) share a definition; a different one gets a numbered name. So
+ * does a name `known` gives different units, which is recorded in `renamed`.
  */
 export class UnitsDefinitions {
   readonly #libcellml: LibCellML
   readonly #model: Model
+  readonly #known: KnownUnits | undefined
   /** UCUM code to CellML name. */
   readonly #names = new Map<string, string>()
+  readonly #renamed = new Map<string, string>()
 
-  constructor(libcellml: LibCellML, model: Model) {
+  constructor(libcellml: LibCellML, model: Model, known?: KnownUnits) {
     this.#libcellml = libcellml
     this.#model = model
+    this.#known = known
+  }
+
+  /** Each units name the known units define differently, and the name the model gives those units instead. */
+  get renamed(): ReadonlyMap<string, string> {
+    return this.#renamed
   }
 
   /** The CellML units for a UCUM code, adding a definition to the model if it needs one. Throws a `UcumError` for codes CellML can't express. */
@@ -126,28 +184,37 @@ export class UnitsDefinitions {
       return name
     }
     try {
-      // The first of name, name_1, name_2, ... that is these units or is free
+      // The first of name, name_1, name_2, ... that is these units or is free, and isn't known as other units
       const taken = new Set(this.#definedNames())
+      let clashed = false
       for (let counter = 0; ; counter += 1) {
         const candidate = counter === 0 ? name : `${name}_${counter}`
         if (CELLML_BUILT_IN_UNITS.has(candidate)) continue
+        const knownUnits = this.#known?.get(candidate)
+        if (knownUnits !== undefined && !libcellml.Units.equivalent(knownUnits, units)) {
+          clashed = true
+          continue
+        }
         if (!taken.has(candidate)) {
           units.setName(candidate)
           this.#model.addUnits(units)
-          this.#names.set(code, candidate)
-          return candidate
+          return this.#name(code, name, candidate, clashed)
         }
         const existing = this.#model.unitsByName(candidate)!
         const same = libcellml.Units.equivalent(existing, units)
         existing.delete?.()
-        if (same) {
-          this.#names.set(code, candidate)
-          return candidate
-        }
+        if (same) return this.#name(code, name, candidate, clashed)
       }
     } finally {
       units.delete?.()
     }
+  }
+
+  /** Record `candidate` as the units for `code`, and as a rename of `name` if a known units' name was skipped. */
+  #name(code: string, name: string, candidate: string, clashed: boolean): string {
+    this.#names.set(code, candidate)
+    if (clashed && !this.#renamed.has(name)) this.#renamed.set(name, candidate)
+    return candidate
   }
 
   #definedNames(): string[] {
@@ -167,10 +234,12 @@ export interface CellMLModelBuild {
   /** The libCellML model. The caller frees it with `delete()`. */
   readonly model: Model
   readonly component: Component
-  /** The `main` component's variables, in order. */
+  /** The component's name and id, `main` unless another is given. */
+  readonly componentName: string
+  /** The component's variables, in order. */
   readonly variables: readonly CellMLVariable[]
   readonly units: UnitsDefinitions
-  /** The equations written into `main`, in order. */
+  /** The equations written into the component, in order. */
   readonly equations: readonly CellMLEquation[]
 }
 
@@ -188,34 +257,54 @@ interface Candidate {
 
 const capitalise = (text: string): string => text.charAt(0).toUpperCase() + text.slice(1)
 
+export interface BuildOptions {
+  /** The component's name and id, a CellML identifier; `main` if not given. */
+  componentName?: string
+  /** CellML documents whose units the host already has; see `UnitsDefinitions`. */
+  knownUnits?: string | readonly string[]
+}
+
 /**
- * Build the CellML model's units and its `main` component's variables
- * (plan chunk 6.1), and its equations (6.2, `equations.ts`). Problems are
- * reported in `log`; a variable or equation with one is left out.
+ * Build the CellML model's units and its component's variables (plan chunk
+ * 6.1), and its equations (6.2, `equations.ts`). Problems are reported in
+ * `log`; a variable or equation with one is left out.
  */
-export function buildCellMLModel(libcellml: LibCellML, model: BondgraphModel, log: IssueLog): CellMLModelBuild {
+export function buildCellMLModel(libcellml: LibCellML, model: BondgraphModel, log: IssueLog, options: BuildOptions = {}): CellMLModelBuild {
+  const componentName = options.componentName ?? MAIN_COMPONENT
   const cellml = new libcellml.Model()
   cellml.setName(cellmlModelName(model.iri))
   const component = new libcellml.Component()
-  component.setName(MAIN_COMPONENT)
-  component.setId(MAIN_COMPONENT)
+  component.setName(componentName)
+  component.setId(componentName)
   cellml.addComponent(component)
-  const units = new UnitsDefinitions(libcellml, cellml)
+  const known = options.knownUnits === undefined ? undefined : new KnownUnits(libcellml, options.knownUnits, log)
+  try {
+    const units = new UnitsDefinitions(libcellml, cellml, known)
 
-  const variables: CellMLVariable[] = []
-  for (const candidate of collectVariables(libcellml, model, log)) {
-    const variable = makeVariable(libcellml, component, units, candidate, log)
-    if (variable !== undefined) variables.push(variable)
+    const variables: CellMLVariable[] = []
+    for (const candidate of collectVariables(libcellml, model, log)) {
+      const variable = makeVariable(libcellml, component, componentName, units, candidate, log)
+      if (variable !== undefined) variables.push(variable)
+    }
+    cellml.linkUnits()
+
+    const equations: CellMLEquation[] = []
+    const build: CellMLModelBuild = { model: cellml, component, componentName, variables, units, equations }
+    equations.push(...addEquations(build, model, log))
+    for (const [original, renamed] of units.renamed) {
+      log.reportIssue({
+        message: `Units ${original} are named ${renamed}, as the known units ${original} are different`,
+        severity: 'info',
+        stage: 'units',
+      })
+    }
+    return build
+  } finally {
+    known?.delete()
   }
-  cellml.linkUnits()
-
-  const equations: CellMLEquation[] = []
-  const build: CellMLModelBuild = { model: cellml, component, variables, units, equations }
-  equations.push(...addEquations(build, model, log))
-  return build
 }
 
-/** The variables for `main`, in Python's order, each symbol once. */
+/** The component's variables, in Python's order, each symbol once. */
 function collectVariables(libcellml: LibCellML, model: BondgraphModel, log: IssueLog): Candidate[] {
   const fixed = new Map<string, Candidate>()
   fixed.set(VOI_NAME, { name: VOI_NAME, kind: 'voi', ucum: VOI_UNITS, label: `the variable of integration ${VOI_NAME}` })
@@ -301,6 +390,7 @@ const describe = (candidate: Candidate): string =>
 function makeVariable(
   libcellml: LibCellML,
   component: Component,
+  componentName: string,
   units: UnitsDefinitions,
   candidate: Candidate,
   log: IssueLog,
@@ -326,7 +416,7 @@ function makeVariable(
     return undefined
   }
 
-  const id = `${MAIN_COMPONENT}-${candidate.name}`
+  const id = `${componentName}-${candidate.name}`
   const variable = new libcellml.Variable()
   variable.setName(candidate.name)
   variable.setId(id)

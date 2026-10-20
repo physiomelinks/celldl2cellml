@@ -15,6 +15,7 @@ import {
   DECLARED_DOMAINS,
   DOMAIN_QUERY,
   ELEMENT_TEMPLATE_DEFINITIONS,
+  FRAMEWORK_VERSION,
   JUNCTION_STRUCTURES,
   domainConstantsQuery,
 } from '../rdf/queries.js'
@@ -81,6 +82,8 @@ export class BondgraphFramework {
   readonly elementTemplates = new Map<string, ElementTemplate>()
   readonly compositeTemplates = new Map<string, CompositeTemplate>()
   readonly junctions = new Map<string, JunctionStructure>()
+  /** The ontology's `owl:versionInfo`, such as `2026-04-12`, if it has one. */
+  version?: string
   /** Element templates by element class and domain, as `${class} ${domain}`, in IRI order. */
   readonly #byClassAndDomain = new Map<string, ElementTemplate[]>()
 
@@ -90,6 +93,8 @@ export class BondgraphFramework {
    */
   static fromGraph(graph: RdfGraph, runtime: FrameworkRuntime): BondgraphFramework {
     const framework = new BondgraphFramework()
+    const version = graph.select(FRAMEWORK_VERSION)[0]?.get('version')?.value
+    if (version !== undefined) framework.version = version
     framework.#loadDomains(graph)
     framework.#loadElementTemplates(graph, {
       compatible: (a, b) => compatible(runtime.libcellml, a, b),
