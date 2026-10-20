@@ -94,8 +94,8 @@ export {
   type ModelStage,
   type ValueAssignment,
 } from './model/model.js'
-export { LOCAL_MODEL_BASE, cleanLatex, elementIdOf, elementVariableName, makeSymbolicName, prettyName, prettyUri } from './model/names.js'
+export { LOCAL_MODEL_BASE, cleanLatex, elementVariableName, makeSymbolicName, prettyName, prettyUri } from './model/names.js'
 export { BondNetwork } from './model/network.js'
-export { IssueLog, type Issue, type IssueReport, type IssueSeverity, type IssueStage } from './issues.js'
+export { IssueLog, elementIdOf, type Issue, type IssueReport, type IssueSeverity, type IssueStage } from './issues.js'
 export { RdfGraph, type OxigraphModule, type QuadLike, type ResultRow, type Term, type TermLike } from './rdf/graph.js'
 export { BGF, CDT, NAMESPACES, curie, fragment } from './rdf/namespaces.js'

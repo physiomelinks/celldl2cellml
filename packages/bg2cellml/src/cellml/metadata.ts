@@ -10,7 +10,8 @@
  * variables are named by their ids, `<cellml file>#<component>-<name>`.
  *
  * The annotation lists, for each element or junction, the CellML variables
- * made from it (`<component>/<name>`, `main/<name>` by default), in the order the variables are written.
+ * made from it (`<component>/<name>`, `main/<name>` by default), in the
+ * order the variables are written.
  *
  * Differences from Python:
  * - Python's metadata() fails for every BG-RDF model: it adds a `diagram`

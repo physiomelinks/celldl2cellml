@@ -1,5 +1,3 @@
-import { elementIdOf } from './model/names.js'
-
 /** How serious an issue is. Only errors stop a model being used; libCellML's messages are `info`. */
 export type IssueSeverity = 'error' | 'warning' | 'info'
 
@@ -76,4 +74,15 @@ export class IssueLog {
 export const documentOf = (iri: string): string => {
   const hash = iri.indexOf('#')
   return hash < 0 ? iri : iri.slice(0, hash)
+}
+
+/**
+ * An element's id in its diagram: its IRI's fragment, such as a CellDL `<g id>`,
+ * when the IRI is in the model's document; otherwise `undefined`. The same
+ * whether the source's Turtle uses relative or absolute IRIs.
+ */
+export function elementIdOf(iri: string, modelIri: string): string | undefined {
+  const hash = iri.indexOf('#')
+  if (hash < 0 || iri.slice(0, hash) !== documentOf(modelIri)) return undefined
+  return iri.slice(hash + 1) || undefined
 }

@@ -120,6 +120,14 @@ describe('convert()', () => {
     expect(result.errors[0]).toMatchObject({ severity: 'error', stage: 'model', elementId: 'ID-00000032' })
   })
 
+  it('reports Turtle that does not parse as an input error, with no CellML or exception', async () => {
+    const result = await converter.convert('this is not Turtle', { rdfSource: true })
+    expect(result).toMatchObject({ ok: false, runnable: false, errors: [{ severity: 'error', stage: 'input' }] })
+    expect(result.cellml).toBeUndefined()
+    expect(result.modelIri).toBeUndefined()
+    expect(result.exception).toBeUndefined()
+  })
+
   it('reports a sourceUri or cellmlUri that is not an absolute IRI as an input error', async () => {
     const bad = await converter.convert(celldl, { sourceUri: 'C:\\Users\\Some One\\rdf_error.celldl' })
     expect(bad.errors).toEqual([expect.objectContaining({ stage: 'input', message: expect.stringMatching(/^sourceUri isn't an absolute IRI: /) })])
