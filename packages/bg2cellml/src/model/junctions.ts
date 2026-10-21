@@ -87,12 +87,20 @@ export class BondgraphJunction {
  * The model's junctions, by IRI in query order (Python's query has no ORDER
  * BY, and its oxigraph gives the same order). Each must have exactly one
  * `bgf:` type, a one, zero or transform node. Problems are reported in the log.
+ *
+ * A composite element, such as a `bgf:ChemicalStorageNode`, is a subclass of
+ * the junction it acts as, so the CellDL editor also lists it under
+ * `bgf:hasJunctionStructure`. One also listed under `bgf:hasBondElement` is
+ * left out here: the element pass reads it, or reports why it can't, which
+ * gives Python's CellML.
  */
 export function loadJunctions(
   model: string,
   context: { readonly framework: BondgraphFramework; readonly graph: RdfGraph; readonly log: IssueLog },
 ): Map<string, BondgraphJunction> {
   const { framework, graph, log } = context
+  const { namedNode } = graph.oxigraph
+  const listedAsElement = (iri: string): boolean => graph.has(namedNode(model), namedNode(BGF.hasBondElement), namedNode(iri))
   const junctions = new Map<string, BondgraphJunction>()
   for (const [iri, rows] of groupRows(graph.select(modelJunctionsQuery(model)), 'uri')) {
     try {
@@ -119,6 +127,8 @@ export function loadJunctions(
         )
       }
       const type = types[0]!
+      // The element pass reads (or reports) a composite element listed both ways
+      if (!JUNCTION_TYPES.includes(type) && framework.compositeTemplates.has(type) && listedAsElement(iri)) continue
       if (framework.junction(type) === undefined) throw new DeclarationError(`Unknown Junction ${type} for node ${iri}`)
       if (!JUNCTION_TYPES.includes(type)) {
         throw new DeclarationError(`Junction ${name} is a ${curie(type)}: a model's junctions must be one, zero or transform nodes`)

@@ -324,4 +324,33 @@ describe('loading junctions', () => {
     ])
     expect([...model.junctions.keys()]).toEqual([id('d')])
   })
+
+  it('reads a composite element also listed as a junction as the element, as the CellDL editor writes it', () => {
+    const model = modelFrom(`
+      :m a bgf:BondgraphModel ; bgf:hasBondElement :C, :R ; bgf:hasJunctionStructure :C, :R, :Z .
+      :C a bgf:ElectricalCapacitiveNode ; bgf:hasValue "1 C"^^cdt:ucum ; bgf:parameterValue [ bgf:varName "C" ; bgf:hasValue "1 F"^^cdt:ucum ] .
+      :R a bgf:ElectricalResistiveNode ; bgf:parameterValue [ bgf:varName "R" ; bgf:hasValue "10 Ohm"^^cdt:ucum ] .
+      :Z a bgf:ZeroStorageNode .
+      :b bgf:hasSource :C ; bgf:hasTarget :R .`)
+    // :Z is no element, so its junction class is still an error
+    expect(messages(model)).toEqual(["Junction Z (#Z) is a bgf:ZeroStorageNode: a model's junctions must be one, zero or transform nodes"])
+    expect([...model.elements.keys()].sort()).toEqual([id('C'), id('R')])
+    expect([...model.junctions.keys()]).toEqual([])
+    expect(model.bonds.map((bond) => `${fragment(bond.source)} -> ${fragment(bond.target)}`)).toEqual(['C -> R'])
+  })
+
+  it("reports a composite element also listed as a junction that doesn't load as an element, not as a junction", () => {
+    const model = modelFrom(`
+      :m a bgf:BondgraphModel ; bgf:hasBondElement :C, :R ; bgf:hasJunctionStructure :C, :R .
+      :C a bgf:ElectricalCapacitiveNode ; bgf:hasDomain bgf:Electrical, bgf:Chemical ; bgf:hasValue "1 C"^^cdt:ucum ; bgf:parameterValue [ bgf:varName "C" ; bgf:hasValue "1 F"^^cdt:ucum ] .
+      :R a bgf:ElectricalResistiveNode ; bgf:parameterValue [ bgf:varName "R" ; bgf:hasValue "10 Ohm"^^cdt:ucum ] .
+      :b bgf:hasSource :C ; bgf:hasTarget :R .`)
+    // As for any element that doesn't load, its bonds are reported too
+    expect(messages(model)).toEqual([
+      'Element <https://example.org/model.ttl#C> has more than one bgf:hasDomain',
+      'No element or junction for source #C of bond #b',
+    ])
+    expect([...model.elements.keys()]).toEqual([id('R')])
+    expect([...model.junctions.keys()]).toEqual([])
+  })
 })
