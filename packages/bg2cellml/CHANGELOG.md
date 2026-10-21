@@ -1,5 +1,13 @@
 # @physiomelinks/bg2cellml
 
+## 0.3.1
+
+### Patch Changes
+
+- 2509088: Convert composite elements, such as `bgf:ChemicalStorageNode`, `bgf:ChemicalReactionNode` and `bgf:ElectricalCapacitiveNode`, that a model also lists under `bgf:hasJunctionStructure`, as the CellDL editor writes them. Such a node is read as the element and not as a junction, which gives Python's CellML; before, it was reported as a junction that isn't a one, zero or transform node, so no diagram with storage, resistance or reaction nodes converted. A node of another junction class that isn't also an element is still reported. Output for other models is unchanged.
+- @physiomelinks/cellml-units@0.3.1
+  - @physiomelinks/math-ast@0.3.1
+
 ## 0.3.0
 
 ### Minor Changes
