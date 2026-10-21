@@ -202,3 +202,73 @@ describe('element ids', () => {
     expect(elementIdOf('https://example.org/other.celldl#R_1', SAVED_AS)).toBeUndefined()
   })
 })
+
+/**
+ * The CellDL editor lists each composite element, such as a
+ * `bgf:ChemicalStorageNode`, under both `bgf:hasBondElement` and
+ * `bgf:hasJunctionStructure`, as its class is a subclass of the junction it
+ * acts as. Such a node converts as the element, as in Python.
+ */
+describe('composite elements the editor also lists as junctions', () => {
+  const PREFIXES = `@prefix : <#> .
+@prefix bgf: <https://bg-rdf.org/ontologies/bondgraph-framework#> .
+@prefix cdt: <https://w3id.org/cdt/> .
+@prefix celldl: <http://celldl.org/ontologies/celldl#> .
+`
+  const editorModel = (nodes: string[], body: string): string => `${PREFIXES}
+<> a celldl:Document, bgf:BondgraphModel ;
+  bgf:hasBondElement ${nodes.join(', ')} ;
+  bgf:hasJunctionStructure ${nodes.join(', ')} .
+${body}`
+  const connection = (id: string, source: string, target: string): string =>
+    `:${id} a celldl:Connection ; celldl:hasSource :${source} ; celldl:hasTarget :${target} ; bgf:hasSource :${source} ; bgf:hasTarget :${target} .\n`
+  const storage = (id: string, location: string, amount: string): string => `:${id} a celldl:Component, bgf:ChemicalStorageNode ;
+  bgf:hasLocation "${location}" ; bgf:hasSpecies "i" ; bgf:hasSymbol "q" ;
+  bgf:hasValue "${amount} mol"^^cdt:ucum ;
+  bgf:parameterValue [ bgf:hasValue "1 mol-1"^^cdt:ucum ; bgf:varName "K" ] .
+`
+  const reaction = editorModel(
+    [':ID-00000001', ':ID-00000002', ':ID-00000003'],
+    storage('ID-00000001', 'j', '1') +
+      storage('ID-00000002', 'k', '0') +
+      `:ID-00000003 a celldl:Component, bgf:ChemicalReactionNode ;
+  bgf:hasSymbol "Re" ;
+  bgf:parameterValue [ bgf:hasValue "0.1 mol/s"^^cdt:ucum ; bgf:varName "kappa" ] .
+` +
+      connection('ID-00000004', 'ID-00000001', 'ID-00000003') +
+      connection('ID-00000005', 'ID-00000003', 'ID-00000002'),
+  )
+  const rcCircuit = editorModel(
+    [':ID-00000001', ':ID-00000002'],
+    `:ID-00000001 a celldl:Component, bgf:ElectricalCapacitiveNode ;
+  bgf:hasSpecies "e" ; bgf:hasSymbol "q" ;
+  bgf:hasValue "1 C"^^cdt:ucum ;
+  bgf:parameterValue [ bgf:hasValue "0.001 F"^^cdt:ucum ; bgf:varName "C" ] .
+:ID-00000002 a celldl:Component, bgf:ElectricalResistiveNode ;
+  bgf:hasSpecies "e" ; bgf:hasSymbol "R" ;
+  bgf:parameterValue [ bgf:hasValue "1000 Ohm"^^cdt:ucum ; bgf:varName "R" ] .
+` + connection('ID-00000003', 'ID-00000001', 'ID-00000002'),
+  )
+
+  it('converts a storage-reaction-storage chain to runnable CellML', async () => {
+    const result = await converter.convert(reaction, { rdfSource: true })
+    expect(result).toMatchObject({ ok: true, runnable: true, checks: 'full', issues: [] })
+    expect(Object.values(result.elements).map((element) => element.kind).sort()).toEqual(['element', 'element', 'element'])
+  })
+
+  it('converts an RC circuit of capacitive and resistive nodes to runnable CellML', async () => {
+    const result = await converter.convert(rcCircuit, { rdfSource: true })
+    expect(result).toMatchObject({ ok: true, runnable: true, checks: 'full', issues: [] })
+    expect(Object.values(result.elements).map((element) => element.kind)).toEqual(['element', 'element'])
+  })
+
+  it('gives the same CellML for BG-RDF example_B1_reduced with its stores also listed as junctions', async () => {
+    const b1 = caseNamed('example_B1_reduced')
+    const source = readSource(b1)
+    const doubled = source.replace('bgf:hasBondElement :q_1, :q_2, :Re .', 'bgf:hasBondElement :q_1, :q_2, :Re ;\n    bgf:hasJunctionStructure :q_1, :q_2, :Re .')
+    expect(doubled).not.toBe(source)
+    const [plain, listed] = await Promise.all([source, doubled].map((text) => converter.convert(text, { sourceUri: b1.baseIri, rdfSource: true })))
+    expect(listed).toMatchObject({ ok: true, runnable: true, issues: [] })
+    expect(listed!.cellml).toBe(plain!.cellml)
+  })
+})
