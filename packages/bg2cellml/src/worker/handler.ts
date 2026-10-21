@@ -86,7 +86,11 @@ export function createConversionHandler(setup: WorkerSetup): ConversionHandler {
     } catch (error) {
       return { type: 'error', seq: request.seq, error: `The worker failed to start: ${message(error)}` }
     }
-    if (request.lane !== undefined && newest.get(request.lane) !== request.seq) return { type: 'superseded', seq: request.seq }
+    if (request.lane !== undefined) {
+      // Conversions block the worker, so let the messages that came in meanwhile register before checking
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      if (newest.get(request.lane) !== request.seq) return { type: 'superseded', seq: request.seq }
+    }
     const options: ConvertOptions = {
       ...defaults,
       ...request.options,
@@ -132,9 +136,16 @@ export interface WorkerScope {
 export function startConversionWorker(setup: WorkerSetup, scope: WorkerScope = globalThis as unknown as WorkerScope): ConversionHandler {
   const handle = createConversionHandler(setup)
   scope.addEventListener('message', (event) => {
-    void handle(event.data as WorkerRequest).then((response) => {
-      if (response !== undefined) scope.postMessage(response)
-    })
+    const request = event.data as WorkerRequest
+    void handle(request)
+      .then((response) => {
+        if (response !== undefined) scope.postMessage(response)
+      })
+      .catch((error: unknown) => {
+        // Such as a result postMessage can't clone: the page still hears back
+        const seq = request.type === 'convert' ? { seq: request.seq } : {}
+        scope.postMessage({ type: 'error', ...seq, error: message(error) } satisfies WorkerResponse)
+      })
   })
   return handle
 }

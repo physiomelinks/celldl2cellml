@@ -66,9 +66,14 @@ export class RdfGraph {
 
   /** Parse N-Quads into the store. Each statement goes into the default graph, as with `addAll()`. */
   loadNQuads(nquads: string): void {
-    const parsed = new this.#oxigraph.Store()
-    parsed.load(nquads, { format: 'application/n-quads' })
-    this.addAll(parsed.match(null, null, null, null))
+    // wasm-bindgen's free(), which oxigraph's types leave out
+    const parsed: Oxigraph.Store & { free?(): void } = new this.#oxigraph.Store()
+    try {
+      parsed.load(nquads, { format: 'application/n-quads' })
+      this.addAll(parsed.match(null, null, null, null))
+    } finally {
+      parsed.free?.()
+    }
   }
 
   add(quad: Oxigraph.Quad): void {

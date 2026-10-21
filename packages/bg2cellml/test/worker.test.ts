@@ -89,6 +89,31 @@ describe('createConversionHandler', () => {
     ])
   })
 
+  it('supersedes a request that arrives while another conversion blocks the worker', async () => {
+    const handle = createConversionHandler(setup)
+    await handle(init())
+    // Each a task of its own, as messages are, so neither sees the other until the first yields
+    const inTask = (request: ReturnType<typeof convertRc>) => new Promise((resolve) => setTimeout(() => resolve(handle(request))))
+    const replies = await Promise.all([inTask(convertRc(1, 'live')), inTask(convertRc(2, 'live'))])
+    expect(replies.map((reply) => (reply as { type: string }).type)).toEqual(['superseded', 'result'])
+  })
+
+  it("posts an error with the request's seq when a reply can't be posted", async () => {
+    const posted: unknown[] = []
+    let listener: ((event: { readonly data: unknown }) => void) | undefined
+    startConversionWorker(setup, {
+      addEventListener: (_type, added) => (listener = added),
+      postMessage: (reply) => {
+        if ((reply as { type: string }).type === 'result') throw new Error('Could not be cloned')
+        posted.push(reply)
+      },
+    })
+    listener!({ data: init() })
+    listener!({ data: convertRc(7) })
+    await expect.poll(() => posted.length).toBe(2)
+    expect(posted[1]).toEqual({ type: 'error', seq: 7, error: 'Could not be cloned' })
+  })
+
   it('reports requests before init, a second init and a failed init', async () => {
     const handle = createConversionHandler(setup)
     expect(await handle(convertRc(1))).toEqual({ type: 'error', seq: 1, error: 'The worker has not been sent init' })
