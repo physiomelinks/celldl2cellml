@@ -47,7 +47,9 @@ try {
   const peers = Object.entries(manifest('bg2cellml').peerDependencies).map(([name, range]) => `${name}@${range}`)
 
   writeFileSync(join(dir, 'package.json'), `${JSON.stringify({ name: 'empty', private: true, type: 'module' }, null, 2)}\n`)
-  run('npm', ['install', '--no-audit', '--no-fund', ...specs, ...peers, '@xmldom/xmldom'], dir)
+  // Just after publishing, npm's cached metadata may not list the new version yet
+  const fresh = values.version === undefined ? [] : ['--prefer-online']
+  run('npm', ['install', '--no-audit', '--no-fund', ...fresh, ...specs, ...peers, '@xmldom/xmldom'], dir)
   run('npm', ['install', '--no-audit', '--no-fund', '--save-dev', 'typescript@^5.9.3'], dir)
 
   // No workspace: ranges may survive into the installed packages
