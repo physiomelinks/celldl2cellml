@@ -64,6 +64,18 @@ export class RdfGraph {
     this.#store.load(turtle, { format: 'text/turtle', base_iri: baseIri })
   }
 
+  /** Parse N-Quads into the store. Each statement goes into the default graph, as with `addAll()`. */
+  loadNQuads(nquads: string): void {
+    // wasm-bindgen's free(), which oxigraph's types leave out
+    const parsed: Oxigraph.Store & { free?(): void } = new this.#oxigraph.Store()
+    try {
+      parsed.load(nquads, { format: 'application/n-quads' })
+      this.addAll(parsed.match(null, null, null, null))
+    } finally {
+      parsed.free?.()
+    }
+  }
+
   add(quad: Oxigraph.Quad): void {
     this.#store.add(quad)
   }
@@ -129,7 +141,7 @@ export class RdfGraph {
     return result as Map<string, Term>[]
   }
 
-  serialise(format: 'text/turtle' | 'application/n-triples' = 'text/turtle'): string {
+  serialise(format: 'text/turtle' | 'application/n-triples' | 'application/n-quads' = 'text/turtle'): string {
     return this.#store.dump({ format, from_graph_name: this.#oxigraph.defaultGraph() })
   }
 }

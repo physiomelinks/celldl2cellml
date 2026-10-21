@@ -29,6 +29,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./worker": {
+      "types": "./dist/worker/index.d.ts",
+      "import": "./dist/worker/index.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -47,7 +51,8 @@
   },
   "dependencies": {
     "@physiomelinks/cellml-units": "workspace:^",
-    "@physiomelinks/math-ast": "workspace:^"
+    "@physiomelinks/math-ast": "workspace:^",
+    "@xmldom/xmldom": "^0.9.8"
   },
   "peerDependencies": {
     "libcellml.js": ">=0.7.1",
@@ -55,7 +60,6 @@
   },
   "devDependencies": {
     "@opencor/libopencor": "^1.20261016.1",
-    "@xmldom/xmldom": "^0.9.8",
     "libcellml.js": "^0.7.1",
     "oxigraph": "^0.5.9",
     "typescript": "^5.9.3",

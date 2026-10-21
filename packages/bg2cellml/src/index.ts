@@ -36,7 +36,9 @@ export { toTurtle, type Triple, type TurtleObject } from './rdf/turtle.js'
 export {
   RUNNABLE_MODEL_TYPES,
   checkCellMLModel,
+  validateCellMLModel,
   type CellMLCheck,
+  type CellMLChecks,
   type CellMLIssueCause,
   type CellMLIssueLevel,
 } from './cellml/check.js'
