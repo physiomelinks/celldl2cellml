@@ -47,8 +47,9 @@ jobs:
       - name: Install the released version from npm
         run: |
           version="$(node -p "require('./packages/bg2cellml/package.json').version")"
-          for attempt in 1 2 3 4 5; do
+          # A new version can take a few minutes to reach every registry mirror
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
             node tools/release/check-install.mjs --version "$version" && exit 0
-            sleep 30
+            sleep 60
           done
           exit 1
