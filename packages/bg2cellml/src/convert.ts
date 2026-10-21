@@ -6,7 +6,7 @@
  */
 
 import { extractBgRdf } from './celldl.js'
-import { RUNNABLE_MODEL_TYPES } from './cellml/check.js'
+import { RUNNABLE_MODEL_TYPES, type CellMLChecks } from './cellml/check.js'
 import { generateCellML } from './cellml/generate.js'
 import type { ElementManifest } from './cellml/manifest.js'
 import { cellmlUriFor } from './cellml/metadata.js'
@@ -42,17 +42,34 @@ export interface ConvertOptions {
    * `units.renamed`; the CellML still defines all its units.
    */
   knownUnits?: string | readonly string[]
+  /**
+   * libCellML's checks: the Validator and the Analyser (`full`, the default),
+   * the Validator alone (`validate`), or neither (`none`). They are nearly all
+   * of a conversion's time, so a host converting as the user edits can run
+   * `none` for the CellML and element manifest, and `full` once editing stops.
+   * Without the Analyser, `runnable` is `undefined`.
+   */
+  checks?: CellMLChecks
 }
 
 export interface ConversionResult {
-  /** There is CellML that can run, and no errors. */
+  /** There is CellML that can run (as far as the checks that ran tell), and no errors. */
   readonly ok: boolean
   /** The CellML, whenever it could be printed: with warnings, and with Validator or Analyser errors, so it can be looked at. */
   readonly cellml?: string
   /** The Analyser's type for the model, such as `ode` or `dae`. */
   readonly modelType?: string
-  /** `modelType` is one that can be simulated. */
-  readonly runnable: boolean
+  /**
+   * `modelType` is one that can be simulated; `undefined` if the Analyser
+   * wasn't asked for (`checks` of `none` or `validate`) and the Validator, if
+   * it ran, found no errors, as it is then unknown.
+   */
+  readonly runnable: boolean | undefined
+  /**
+   * The checks that ran: those asked for, or fewer when the model had errors
+   * before them. `ok` and the issues reflect only these.
+   */
+  readonly checks: CellMLChecks
   readonly componentName: string
   /** The source IRI the model was read with. */
   readonly baseUri: string
@@ -108,7 +125,8 @@ export function convert(context: ConvertContext, source: string, options: Conver
   const baseUri = options.sourceUri ?? DEFAULT_SOURCE_URI
   const componentName = options.componentName ?? MAIN_COMPONENT
   const framework = context.framework
-  const fields = { componentName, baseUri, framework: framework?.version === undefined ? {} : { version: framework.version } }
+  const analyse = (options.checks ?? 'full') === 'full'
+  const fields = { componentName, baseUri, analyse, framework: framework?.version === undefined ? {} : { version: framework.version } }
   if (framework === undefined) {
     return result(fields, [{ message: 'The BG-RDF framework has not been loaded', severity: 'error', stage: 'framework' }])
   }
@@ -136,6 +154,7 @@ export function convert(context: ConvertContext, source: string, options: Conver
       cellmlUri: options.cellmlUri ?? cellmlUriFor(baseUri),
       componentName,
       ...(options.knownUnits === undefined ? {} : { knownUnits: options.knownUnits }),
+      ...(options.checks === undefined ? {} : { checks: options.checks }),
     })
     issues.push(...generated.issues)
     return result(
@@ -147,6 +166,7 @@ export function convert(context: ConvertContext, source: string, options: Conver
         ...(generated.modelType === undefined ? {} : { modelType: generated.modelType }),
         ...(generated.renamedUnits === undefined ? {} : { units: { renamed: generated.renamedUnits } }),
         ...(generated.metadata === undefined ? {} : { metadata: generated.metadata }),
+        checks: generated.checks,
       },
       issues,
     )
@@ -158,18 +178,23 @@ export function convert(context: ConvertContext, source: string, options: Conver
 
 const iriField = (modelIri: string | undefined): { modelIri?: string } => (modelIri === undefined ? {} : { modelIri })
 
-type ResultFields = Omit<ConversionResult, 'ok' | 'runnable' | 'elements' | 'units' | 'issues' | 'errors' | 'warnings' | 'generator'> & {
+type ResultFields = Omit<ConversionResult, 'ok' | 'runnable' | 'checks' | 'elements' | 'units' | 'issues' | 'errors' | 'warnings' | 'generator'> & {
+  /** The Analyser was asked for, so `runnable` is known. */
+  readonly analyse: boolean
+  readonly checks?: CellMLChecks
   readonly elements?: ElementManifest
   readonly units?: ConversionResult['units']
 }
 
-/** The result, with `ok`, `runnable`, `elements`, `units` and the issues split by severity. */
-function result(fields: ResultFields, issues: readonly Issue[]): ConversionResult {
-  const runnable = fields.modelType !== undefined && RUNNABLE_MODEL_TYPES.has(fields.modelType)
+/** The result, with `ok`, `runnable`, `checks`, `elements`, `units` and the issues split by severity. */
+function result({ analyse, ...fields }: ResultFields, issues: readonly Issue[]): ConversionResult {
+  // A model the Validator rejected is `invalid`, so not runnable even unanalysed.
+  const runnable = fields.modelType !== undefined ? RUNNABLE_MODEL_TYPES.has(fields.modelType) : analyse ? false : undefined
   const errors = issues.filter((issue) => issue.severity === 'error')
   return {
-    ok: fields.cellml !== undefined && runnable && errors.length === 0 && fields.exception === undefined,
+    ok: fields.cellml !== undefined && runnable !== false && errors.length === 0 && fields.exception === undefined,
     runnable,
+    checks: 'none',
     elements: {},
     units: { renamed: {} },
     ...fields,

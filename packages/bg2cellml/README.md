@@ -28,6 +28,8 @@ converter.loadFramework({
 })
 // or, from statements already in an RDF store, such as the CellDL Editor's:
 converter.loadFramework({ quads: store.match(null, null, null, null) })
+// or, from N-Quads text, such as another converter's converter.frameworkNQuads():
+converter.loadFramework({ nquads })
 
 const { cellml, metadata, issues, exception } = await converter.celldl2cellml(celldlSvg, {
   sourceUri: 'https://example.org/rc.celldl',         // an absolute IRI: a file as file:///C:/My%20models/rc.celldl
@@ -47,11 +49,48 @@ const result = await converter.convert(celldlSvg, {
 // result.modelIri, .baseUri, .modelType, .runnable, .generator ({ name, version }) and .framework.version (BG-RDF's owl:versionInfo)
 ```
 
+`checks` chooses libCellML's checks, which are nearly all of a conversion's time (about 15 ms an element): `full` (the default) runs the Validator and the Analyser, `validate` the Validator alone, and `none` neither, giving the CellML, the element manifest and the issues found building the model in a tenth of the time. Without the Analyser, `result.runnable` is `undefined` (unless the Validator found errors, when it is `false`), and `result.checks` says which checks ran: fewer than asked for when the model had errors before them. A host converting as the user edits can run `none` after each edit and `full` once editing stops. `celldl2cellml` always runs both.
+
 An issue's `elementId` is its subject's IRI fragment, such as a CellDL diagram's `<g id>`, and is the same whether the document's Turtle uses relative or absolute IRIs (`elementIdOf`).
 
 `result.elements` is the element manifest, keyed the same way (by IRI for an element outside the source): each element's and junction's `{ iri, kind, symbol, template?, label?, primary?, variables }`, where `kind` is `element`, `one`, `zero` or `transform`, and each variable written to the CellML is `{ name, role, ucum, units }` with `role` one of `flow`, `potential`, `quantity`, `parameter`, `ratio` or `other`. A variable two elements share, such as a one node's flow that a transform node's port takes, is listed for both. `primary` is a one or zero node's own variable, a transform node's ratio, an element's intrinsic variable (a capacitor's `q`, a source's potential or flow), or else its first port's flow. `toViewerAnnotations(result.elements)` turns it into `@celldl/viewer` annotations, `{ [svgId]: { label, primary, variables, tooltip } }`, with a tooltip line such as `v_1 (flow, C/s)` for each variable unless `{ tooltip }` gives another.
 
 In Node, also pass a `domParser` (`new DOMParser()` from `@xmldom/xmldom`); browsers have their own. With Vite, keep both modules out of dependency pre-bundling (`optimizeDeps: { exclude: ['libcellml.js', 'oxigraph'] }`), as each finds its `.wasm` from its own URL. [`examples/browser`](https://github.com/physiomelinks/celldl2cellml/tree/main/examples/browser) in the repository is a complete page.
+
+### In a Web Worker
+
+`@physiomelinks/bg2cellml/worker` converts in a module worker, so the checks never hold up the page. The worker has its own libCellML and oxigraph; its script imports them, so it works with any bundler:
+
+```js
+// convert-worker.js
+import createLibCellML from 'libcellml.js'
+import initOxigraph, * as oxigraph from 'oxigraph/web.js'
+import { startConversionWorker } from '@physiomelinks/bg2cellml/worker'
+
+startConversionWorker({ libcellml: createLibCellML, oxigraph, initOxigraph })
+```
+
+```js
+// the page
+import { createConversionWorker } from '@physiomelinks/bg2cellml/worker'
+
+const worker = createConversionWorker(new Worker(new URL('./convert-worker.js', import.meta.url), { type: 'module' }), {
+  framework: { nquads: converter.frameworkNQuads() },  // or { ontology, templates }: text, as it is posted
+  wasm: { libcellml: libcellmlWasmUrl, oxigraph: oxigraphWasmUrl },  // optional: the .wasm files' URLs, such as Vite's `?url` imports
+  defaults: { rdfSource: true, knownUnits },          // optional: options every conversion gets unless it gives its own
+})
+await worker.ready                                    // { framework: { version }, timings }; rejects if the worker couldn't start
+
+const { result, timings } = await worker.convert(turtle, { sourceUri, checks: 'none' })
+
+const quick = worker.latest()                         // latest wins: one request in the worker at a time,
+const full = worker.latest()                          // each latest() its own lane
+const conversion = await quick(turtle, { checks: 'none' })  // undefined if a later quick() call overtook it
+worker.setDefaults({ rdfSource: true, knownUnits: newUnits })
+worker.terminate()
+```
+
+The worker gets a DOMParser for the framework's MathML and CellDL sources from `@xmldom/xmldom`, a dependency, when it has none. `createConversionHandler(setup)` is the worker's message handler on its own, for another transport or a test: it takes the `WorkerRequest`s `init`, `defaults` and `convert` (`{ seq, source, rdfSource?, options?, lane? }`) and resolves to the `WorkerResponse`s `ready`, `result` (`{ seq, result, timings }`), `superseded` or `error`. A request that hasn't started when a newer one in its lane arrives is `superseded`.
 
 ## Layout
 
@@ -75,6 +114,7 @@ In Node, also pass a `domParser` (`new DOMParser()` from `@xmldom/xmldom`); brow
 | `src/cellml/metadata.ts`, `src/rdf/turtle.ts` | Metadata linking CellML variables to bond graph elements, as Turtle, and the element-to-variables annotation | `CellMLModel.metadata`, `annotation` | Done (6.4) |
 | `src/cellml/manifest.ts` | The element manifest, and `toViewerAnnotations` | (none) | Done |
 | `src/cellml/generate.ts` | CellML 2.0 through libCellML, plus metadata | `cellml/__init__.py` | Done |
+| `src/worker/` | `@physiomelinks/bg2cellml/worker`: the worker's message handler and the page's client | (none) | Done |
 
 ## Differences from the Python version
 

@@ -33,6 +33,8 @@ export type FrameworkSource =
    * quads, or those of any RDF/JS library. Named graphs are merged.
    */
   | { quads: Iterable<QuadLike> }
+  /** Statements as N-Quads text, such as `frameworkNQuads()` gives, to send to a worker. Named graphs are merged. */
+  | { nquads: string }
 
 export interface CellMLGenerationOptions {
   /** The source's IRI, the base for its relative IRIs: an absolute IRI, such as `file:///C:/Models/My%20model.celldl`. */
@@ -55,6 +57,7 @@ export interface CellMLOutput {
 export class Converter {
   readonly #runtime: Runtime
   #framework: BondgraphFramework | undefined
+  #frameworkGraph: RdfGraph | undefined
 
   constructor(runtime: Runtime) {
     this.#runtime = runtime
@@ -70,6 +73,8 @@ export class Converter {
     const graph = new RdfGraph(this.#runtime.oxigraph)
     if ('quads' in source) {
       graph.addAll(source.quads)
+    } else if ('nquads' in source) {
+      graph.loadNQuads(source.nquads)
     } else {
       graph.load(source.ontology, BGF_ONTOLOGY_IRI)
       for (const [name, turtle] of Object.entries(source.templates)) {
@@ -77,7 +82,16 @@ export class Converter {
       }
     }
     this.#framework = BondgraphFramework.fromGraph(graph, this.#runtime)
+    this.#frameworkGraph = graph
     return this.#framework.log.issues.map((issue) => issue.message)
+  }
+
+  /**
+   * The loaded framework's statements as N-Quads, for `loadFramework({ nquads })`
+   * elsewhere, such as in a worker; `undefined` before `loadFramework()`.
+   */
+  frameworkNQuads(): string | undefined {
+    return this.#frameworkGraph?.serialise('application/n-quads')
   }
 
   /** Why `iri` can't be the base or name of a document, or `undefined` if it can, as `convert()` checks it. */

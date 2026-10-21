@@ -26,9 +26,19 @@ export interface CellMLCheck {
   /** The Analyser's type for the model, such as `ode` or `dae`; `invalid` if the Validator found errors. */
   readonly type: string
   readonly stateCount: number
+  /** The Analyser ran: the Validator found no errors. */
+  readonly analysed: boolean
 }
 
 export type CellMLIssueLevel = 'error' | 'warning' | 'message'
+
+/**
+ * Which of libCellML's checks to run: both (`full`), the Validator alone
+ * (`validate`), or neither (`none`). The Analyser costs about as much as the
+ * Validator, and the two are nearly all of a conversion's time, so a host
+ * converting as the user edits can run `none` and check later.
+ */
+export type CellMLChecks = 'none' | 'validate' | 'full'
 
 /** Where a CellML issue comes from, and its level, as an issue's `cause`. */
 export interface CellMLIssueCause {
@@ -36,15 +46,20 @@ export interface CellMLIssueCause {
   readonly level: CellMLIssueLevel
 }
 
-/** Validate and analyse a CellML model, reporting every message in `log`. */
-export function checkCellMLModel(libcellml: LibCellML, model: Model, log: IssueLog): CellMLCheck {
+/** Validate a CellML model with libCellML's Validator, reporting every message in `log`. Returns how many are errors. */
+export function validateCellMLModel(libcellml: LibCellML, model: Model, log: IssueLog): number {
   const validator = new libcellml.Validator()
   try {
     validator.validateModel(model)
-    if (report(libcellml, validator, 'validator', 'CellML validation', log) > 0) return { type: 'invalid', stateCount: 0 }
+    return report(libcellml, validator, 'validator', 'CellML validation', log)
   } finally {
     validator.delete?.()
   }
+}
+
+/** Validate and analyse a CellML model, reporting every message in `log`. */
+export function checkCellMLModel(libcellml: LibCellML, model: Model, log: IssueLog): CellMLCheck {
+  if (validateCellMLModel(libcellml, model, log) > 0) return { type: 'invalid', stateCount: 0, analysed: false }
 
   const analyser = new libcellml.Analyser()
   try {
@@ -56,7 +71,7 @@ export function checkCellMLModel(libcellml: LibCellML, model: Model, log: IssueL
       if (!RUNNABLE_MODEL_TYPES.has(type) && errors === 0) {
         log.reportIssue({ message: `CellML analysis: the model is ${type}`, stage: 'analyser' })
       }
-      return { type, stateCount: analysed.stateCount() }
+      return { type, stateCount: analysed.stateCount(), analysed: true }
     } finally {
       analysed.delete?.()
     }

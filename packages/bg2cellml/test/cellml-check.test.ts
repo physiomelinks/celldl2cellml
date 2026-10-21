@@ -147,7 +147,7 @@ describe('checkCellMLModel', () => {
     component.addVariable(variable)
     const log = new IssueLog()
     try {
-      expect(checkCellMLModel(libcellml, model, log)).toEqual({ type: 'invalid', stateCount: 0 })
+      expect(checkCellMLModel(libcellml, model, log)).toEqual({ type: 'invalid', stateCount: 0, analysed: false })
     } finally {
       variable.delete?.()
       component.delete?.()
@@ -221,7 +221,7 @@ describe('checkCellMLModel', () => {
     const log = new IssueLog()
     const model = simpleModel()
     try {
-      expect(checkCellMLModel(stub, model, log)).toEqual({ type: 'ode', stateCount: 1 })
+      expect(checkCellMLModel(stub, model, log)).toEqual({ type: 'ode', stateCount: 1, analysed: true })
     } finally {
       model.delete?.()
     }

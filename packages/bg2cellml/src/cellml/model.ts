@@ -113,13 +113,13 @@ export class KnownUnits {
       try {
         const model = parser.parseModel(document)
         this.#models.push(model)
-        const errors = Array.from({ length: parser.issueCount() }, (_, i) => parser.issue(i)).filter(
-          (issue) => issue.level().value === libcellml.Issue.Level.ERROR.value,
-        )
-        if (errors.length > 0) {
+        const issues = Array.from({ length: parser.issueCount() }, (_, i) => parser.issue(i))
+        const error = issues.find((issue) => issue.level().value === libcellml.Issue.Level.ERROR.value)
+        if (error !== undefined) {
           const label = typeof cellml === 'string' ? 'knownUnits' : `knownUnits[${index}]`
-          log?.reportIssue({ message: `${label} isn't valid CellML: ${errors[0]!.description()}`, severity: 'warning', stage: 'units' })
+          log?.reportIssue({ message: `${label} isn't valid CellML: ${error.description()}`, severity: 'warning', stage: 'units' })
         }
+        for (const issue of issues) issue.delete?.()
         for (let i = 0; i < model.unitsCount(); i += 1) {
           const units = model.unitsByIndex(i)
           if (units === null) continue
