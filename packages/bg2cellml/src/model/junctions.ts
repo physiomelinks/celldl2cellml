@@ -6,7 +6,7 @@
 
 import { ci, divide, eq, times, type Equation } from '@physiomelinks/math-ast'
 
-import { isCompositeTemplate, type BondgraphFramework } from '../framework/framework.js'
+import type { BondgraphFramework } from '../framework/framework.js'
 import { DeclarationError, cleanName, readValue, type CompatibleUnits, type Value } from '../framework/variables.js'
 import type { IssueLog } from '../issues.js'
 import type { RdfGraph } from '../rdf/graph.js'
@@ -14,7 +14,7 @@ import { BGF, NAMESPACES, curie } from '../rdf/namespaces.js'
 import { modelJunctionsQuery } from '../rdf/queries.js'
 import type { NetworkNode } from './bonds.js'
 import { valueInUnits, type ConvertUnits } from './element-variables.js'
-import { ModelVariable, type BondgraphElement, type PowerPort } from './elements.js'
+import { ModelVariable, type PowerPort } from './elements.js'
 import { makeSymbolicName, prettyName, prettyUri } from './names.js'
 import type { BondNetwork } from './network.js'
 import { groupRows, singleTerm } from './rows.js'
@@ -90,19 +90,17 @@ export class BondgraphJunction {
  *
  * A composite element, such as a `bgf:ChemicalStorageNode`, is a subclass of
  * the junction it acts as, so the CellDL editor also lists it under
- * `bgf:hasJunctionStructure`. One that loaded as an element is read as that
- * element and left out here, as Python's outcome is.
+ * `bgf:hasJunctionStructure`. One also listed under `bgf:hasBondElement` is
+ * left out here: the element pass reads it, or reports why it can't, which
+ * gives Python's CellML.
  */
 export function loadJunctions(
   model: string,
-  context: {
-    readonly framework: BondgraphFramework
-    readonly graph: RdfGraph
-    readonly log: IssueLog
-    readonly elements: ReadonlyMap<string, BondgraphElement>
-  },
+  context: { readonly framework: BondgraphFramework; readonly graph: RdfGraph; readonly log: IssueLog },
 ): Map<string, BondgraphJunction> {
-  const { framework, graph, log, elements } = context
+  const { framework, graph, log } = context
+  const { namedNode } = graph.oxigraph
+  const listedAsElement = (iri: string): boolean => graph.has(namedNode(model), namedNode(BGF.hasBondElement), namedNode(iri))
   const junctions = new Map<string, BondgraphJunction>()
   for (const [iri, rows] of groupRows(graph.select(modelJunctionsQuery(model)), 'uri')) {
     try {
@@ -129,10 +127,8 @@ export function loadJunctions(
         )
       }
       const type = types[0]!
-      if (!JUNCTION_TYPES.includes(type)) {
-        const element = elements.get(iri)
-        if (element !== undefined && isCompositeTemplate(element.template)) continue
-      }
+      // The element pass reads (or reports) a composite element listed both ways
+      if (!JUNCTION_TYPES.includes(type) && framework.compositeTemplates.has(type) && listedAsElement(iri)) continue
       if (framework.junction(type) === undefined) throw new DeclarationError(`Unknown Junction ${type} for node ${iri}`)
       if (!JUNCTION_TYPES.includes(type)) {
         throw new DeclarationError(`Junction ${name} is a ${curie(type)}: a model's junctions must be one, zero or transform nodes`)

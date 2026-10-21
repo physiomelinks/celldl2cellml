@@ -135,7 +135,7 @@ export class BondgraphModel {
     }
     if (until === 'elements') return model
 
-    for (const [iri, junction] of loadJunctions(model.iri, { framework, graph: model.graph, log: model.log, elements: model.elements })) {
+    for (const [iri, junction] of loadJunctions(model.iri, { framework, graph: model.graph, log: model.log })) {
       model.junctions.set(iri, junction)
     }
     const context = { graph: model.graph, oxigraph: runtime.oxigraph, log: model.log, elements: model.elements, junctions: model.junctions }
