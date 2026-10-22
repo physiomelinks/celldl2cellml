@@ -138,6 +138,7 @@ Each difference is deliberate. The parity tests (`test/parity.test.ts`) check th
 - **Known bugs fixed.** Bond labels and bond counts work, ports with only outputs get the right expression, and plain numbers such as `10.0` are accepted as values (Python rejects them under oxigraph). They're listed at the top of `src/model/model.ts`.
 - **Units are converted.** Prefixed units work, and values are scaled to their variable's units. See `@physiomelinks/cellml-units`.
 - **Equations are tidied, and solved for a variable.** Every equation built from the network is canonicalised, as sympy tidies Python's. With bond counts, Python can make `2*v_r_1` an equation's left side, which isn't valid CellML; here that equation is `v_r_1 = -v_q_2/2`. A port with only outputs gets the negated sum of its outputs, where Python's gives 0 (bug 4); with bonds joined to reactions as they are, no model reaches that case.
+- **An element bonded straight to one acting as a junction shares its value.** A port of an element that isn't acting as a junction, bonded straight to a source or composite element, takes its potential when it acts as a zero node and its flow when it acts as a one node, as it would through that junction: a `bgf:ChemicalReaction` bonded straight to a `bgf:ChemicalStorageNode` takes the store's potential at that port. Python gives the port no equation, so such a model is underconstrained; the BG-RDF examples don't have one, so their CellML is unchanged.
 
 ### Reported where Python carries on
 
