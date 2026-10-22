@@ -19,8 +19,9 @@
  * - Two elements or junctions with one symbol, species and location, such
  *   as drawn copies of a chemostat, share their variables, which over- or
  *   underconstrains the model. (Fixed in `names.ts` as Finbar Argus's
- *   BG-Tools fixes it: the later copy is named from its IRI. Each copy is a
- *   separate element, so copies of a store are separate pools.)
+ *   BG-Tools fixes it, but numbered: later copies are named `_2`, `_3`, ...
+ *   Each copy is a separate element, so copies of a store are separate
+ *   pools.)
  * - Values are checked for compatible units but not converted, so `1000 uF`
  *   is written as 1000 farads. (Fixed in `element-variables.ts`, and for
  *   one and zero nodes in `junctions.ts`.)
