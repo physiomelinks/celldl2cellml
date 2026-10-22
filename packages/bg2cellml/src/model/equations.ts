@@ -230,8 +230,11 @@ function elementEquations(element: BondgraphElement, terms: NodeTerms, context: 
  * A port of an element that isn't acting as a junction, bonded straight to a
  * port of one that is, shares its potential (zero node) or flow (one node),
  * as it would through a zero or one node between them: a reaction bonded
- * straight to a composite store takes the store's potential. Python gives no
- * such equation, so the port's variable is left without one.
+ * straight to a composite store takes the store's potential, and a store
+ * bonded straight to a composite reaction the reaction's flow. A bond count
+ * `n` scales it, `n` times the shared value, as the junction's balance
+ * counts the port `n` times. Python gives no such equation, so the port's
+ * variable is left without one.
  */
 function sharedValues(element: BondgraphElement, id: string, context: EquationContext): Equation[] {
   const { network } = context
@@ -243,9 +246,30 @@ function sharedValues(element: BondgraphElement, id: string, context: EquationCo
     const node = network.node(neighbour)!
     if (node.element === undefined || node.element.impliedJunction !== undefined || node.port === undefined) continue
     const shared = zeroNode ? node.port.potential : node.port.flow
-    if (shared.symbol !== own.symbol) equations.push(equation(ci(shared.symbol), ci(own.symbol)))
+    const intoNeighbour = network.bondCount(id, neighbour) !== undefined
+    const bondCount = (intoNeighbour ? network.bondCount(id, neighbour) : network.bondCount(neighbour, id)) ?? 1
+    const sign = zeroNode ? 1 : flowSign(node, neighbour, intoNeighbour)
+    if (shared.symbol !== own.symbol || sign !== 1) {
+      equations.push(equation(ci(shared.symbol), signed(sign, scaled(bondCount, ci(own.symbol)))))
+    }
   }
   return equations
+}
+
+/**
+ * -1 if a bond runs against the way an element's port counts its flow: out
+ * of an inward or undirected port, such as a store's, or into an outward
+ * one. A store drawn as a reaction's substrate, bonded from the store to the
+ * reaction, loses what the reaction's flow carries away.
+ */
+function flowSign(node: NetworkNode, id: string, intoElement: boolean): 1 | -1 {
+  const inward = node.element?.ports.get(id)?.template.direction !== BGF.OutwardPort
+  return intoElement === inward ? 1 : -1
+}
+
+/** `-x`, or `x` when `sign` is 1. */
+function signed(sign: 1 | -1, term: AstNode): AstNode {
+  return sign === 1 ? term : minus(term)
 }
 
 /**
@@ -254,7 +278,11 @@ function sharedValues(element: BondgraphElement, id: string, context: EquationCo
  * nodes balances their potentials, and a zero node their flows, solved for a
  * resistance's or reaction's potential if one is beside a one node, or else
  * the last output, or input. An element beside it that isn't acting as a
- * junction shares its flow (one node) or potential (zero node).
+ * junction shares its flow (one node) or potential (zero node), times its
+ * bond's count, and a flow is negated where the bond runs against the port
+ * (`flowSign`). (Python ignores both, so a port bonded `n` times carries the
+ * junction's flow, not `n` times it, and a store bonded out to a one node
+ * gains what it should lose.)
  */
 function junctionEquations(junction: BondgraphJunction, terms: NodeTerms, context: EquationContext): Equation[] {
   const { network } = context
@@ -270,7 +298,7 @@ function junctionEquations(junction: BondgraphJunction, terms: NodeTerms, contex
   const oneNode = junction.type === BGF.OneNode
   const inputs: AstNode[] = []
   const outputs: AstNode[] = []
-  const equalValues: string[] = []
+  const equalValues: [string, number, 1 | -1][] = []
   let left: AstNode | undefined
 
   const update = (id: string, input: boolean): void => {
@@ -279,7 +307,7 @@ function junctionEquations(junction: BondgraphJunction, terms: NodeTerms, contex
     const symbol = oneNode ? terms.potential(id) : terms.flow(id)
     if (symbol !== undefined) (input ? inputs : outputs).push(scaled(bondCount, symbol))
     if (node.element !== undefined && node.element.impliedJunction === undefined && node.port !== undefined) {
-      equalValues.push(oneNode ? node.port.flow.symbol : node.port.potential.symbol)
+      equalValues.push([oneNode ? node.port.flow.symbol : node.port.potential.symbol, bondCount, oneNode ? flowSign(node, id, !input) : 1])
     }
     if (left === undefined && node.port !== undefined && oneNode && (node.portType === BGF.Resistance || node.portType === BGF.Reaction)) {
       left = ci(node.port.potential.symbol)
@@ -303,7 +331,11 @@ function junctionEquations(junction: BondgraphJunction, terms: NodeTerms, contex
 
   const own = junction.variables.get('')
   if (own !== undefined) {
-    for (const value of equalValues) if (value !== own.symbol) equations.push(equation(ci(own.symbol), ci(value)))
+    for (const [value, bondCount, sign] of equalValues) {
+      // A port bonded `n` times carries `n` times the junction's flow (one node) or potential (zero node)
+      if (bondCount !== 1 || sign !== 1) equations.push(equation(ci(value), signed(sign, scaled(bondCount, ci(own.symbol)))))
+      else if (value !== own.symbol) equations.push(equation(ci(own.symbol), ci(value)))
+    }
   }
   return equations
 }

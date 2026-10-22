@@ -15,7 +15,7 @@ import { modelJunctionsQuery } from '../rdf/queries.js'
 import type { NetworkNode } from './bonds.js'
 import { valueInUnits, type ConvertUnits } from './element-variables.js'
 import { ModelVariable, type PowerPort } from './elements.js'
-import { makeSymbolicName, prettyName, prettyUri } from './names.js'
+import { UniqueNames, makeSymbolicName, prettyName, prettyUri } from './names.js'
 import type { BondNetwork } from './network.js'
 import { groupRows, singleTerm } from './rows.js'
 
@@ -96,9 +96,10 @@ export class BondgraphJunction {
  */
 export function loadJunctions(
   model: string,
-  context: { readonly framework: BondgraphFramework; readonly graph: RdfGraph; readonly log: IssueLog },
+  context: { readonly framework: BondgraphFramework; readonly graph: RdfGraph; readonly log: IssueLog; readonly names?: UniqueNames },
 ): Map<string, BondgraphJunction> {
   const { framework, graph, log } = context
+  const names = context.names ?? new UniqueNames()
   const { namedNode } = graph.oxigraph
   const listedAsElement = (iri: string): boolean => graph.has(namedNode(model), namedNode(BGF.hasBondElement), namedNode(iri))
   const junctions = new Map<string, BondgraphJunction>()
@@ -111,13 +112,13 @@ export function loadJunctions(
       const location = value('location', 'bgf:hasLocation')
       const label = value('label', 'rdfs:label')
       const valueTerm = singleTerm(rows, 'value', () => `Junction <${iri}> has more than one bgf:hasValue`)
-      const symbol = makeSymbolicName({
+      const drawn = makeSymbolicName({
         iri,
         ...(given === undefined ? {} : { symbol: given }),
         ...(species === undefined ? {} : { species }),
         ...(location === undefined ? {} : { location }),
       })
-      const name = prettyName(symbol, iri)
+      let name = prettyName(drawn, iri)
 
       // As for elements, types outside bgf: are ignored
       const types = [...new Set(rows.map((row) => row.get('type')!.value))].filter((type) => type.startsWith(NAMESPACES.bgf)).sort()
@@ -129,6 +130,9 @@ export function loadJunctions(
       const type = types[0]!
       // The element pass reads (or reports) a composite element listed both ways
       if (!JUNCTION_TYPES.includes(type) && framework.compositeTemplates.has(type) && listedAsElement(iri)) continue
+      // A junction named like an element or an earlier junction gets a name of its own
+      const symbol = names.claim(drawn, iri)
+      name = prettyName(symbol, iri)
       if (framework.junction(type) === undefined) throw new DeclarationError(`Unknown Junction ${type} for node ${iri}`)
       if (!JUNCTION_TYPES.includes(type)) {
         throw new DeclarationError(`Junction ${name} is a ${curie(type)}: a model's junctions must be one, zero or transform nodes`)

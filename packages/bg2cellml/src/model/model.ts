@@ -16,6 +16,11 @@
  *   (Fixed in `elements.ts`.)
  * - Plain numeric literals such as `10.0` are rejected as values. (Fixed:
  *   `readValue` reads them.)
+ * - Two elements or junctions with one symbol, species and location, such
+ *   as drawn copies of a chemostat, share their variables, which over- or
+ *   underconstrains the model. (Fixed in `names.ts` as Finbar Argus's
+ *   BG-Tools fixes it: the later copy is named from its IRI. Each copy is a
+ *   separate element, so copies of a store are separate pools.)
  * - Values are checked for compatible units but not converted, so `1000 uF`
  *   is written as 1000 farads. (Fixed in `element-variables.ts`, and for
  *   one and zero nodes in `junctions.ts`.)
@@ -34,7 +39,7 @@ import { assignElementVariables } from './element-variables.js'
 import { loadElements, type BondgraphElement } from './elements.js'
 import { buildEquations, type ModelEquation } from './equations.js'
 import { assignJunctionVariables, loadJunctions, type BondgraphJunction } from './junctions.js'
-import { prettyUri } from './names.js'
+import { UniqueNames, prettyUri } from './names.js'
 import { BondNetwork } from './network.js'
 
 export { type BondgraphBond, type NetworkNode } from './bonds.js'
@@ -124,8 +129,11 @@ export class BondgraphModel {
 
     const unitsCompatible = (a: string, b: string): boolean => compatible(runtime.libcellml, a, b)
     const convert = (value: number, from: string, to: string): number => convertValue(runtime.libcellml, value, from, to)
+    // Elements, then junctions, share one set of names, so copies get names of their own
+    const names = new UniqueNames()
     const elements = loadElements(model.iri, {
       framework,
+      names,
       graph: model.graph,
       log: model.log,
       compatible: unitsCompatible,
@@ -138,7 +146,7 @@ export class BondgraphModel {
     }
     if (until === 'elements') return model
 
-    for (const [iri, junction] of loadJunctions(model.iri, { framework, graph: model.graph, log: model.log })) {
+    for (const [iri, junction] of loadJunctions(model.iri, { framework, graph: model.graph, log: model.log, names })) {
       model.junctions.set(iri, junction)
     }
     const context = { graph: model.graph, oxigraph: runtime.oxigraph, log: model.log, elements: model.elements, junctions: model.junctions }
