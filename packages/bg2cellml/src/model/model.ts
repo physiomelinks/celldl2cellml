@@ -9,6 +9,9 @@
  *   from Python's until it is fixed there.)
  * - When a port only has outputs, its expression is built from the empty
  *   inputs list and comes out as 0.
+ * - A port of an element bonded straight to a source or composite element
+ *   gets no equation for the potential (zero node) or flow (one node) it
+ *   shares with it. (Fixed in `equations.ts`.)
  * - The unknown-variable check (`name not in name not in ...`) never fires.
  *   (Fixed in `elements.ts`.)
  * - Plain numeric literals such as `10.0` are rejected as values. (Fixed:

@@ -204,6 +204,7 @@ function elementEquations(element: BondgraphElement, terms: NodeTerms, context: 
     }
     for (const node of network.predecessors(id)) update(node, true)
     for (const node of network.successors(id)) update(node, false)
+    equations.push(...sharedValues(element, id, context))
 
     const bondExpression = difference(bondInputs, bondOutputs)
     let portExpression: AstNode | undefined
@@ -221,6 +222,28 @@ function elementEquations(element: BondgraphElement, terms: NodeTerms, context: 
       if (element.flow !== undefined) equations.push(equation(ci(element.flow.symbol), bondExpression))
       if (portExpression !== undefined) equations.push(equation(ci(port.flow.symbol), portExpression))
     }
+  }
+  return equations
+}
+
+/**
+ * A port of an element that isn't acting as a junction, bonded straight to a
+ * port of one that is, shares its potential (zero node) or flow (one node),
+ * as it would through a zero or one node between them: a reaction bonded
+ * straight to a composite store takes the store's potential. Python gives no
+ * such equation, so the port's variable is left without one.
+ */
+function sharedValues(element: BondgraphElement, id: string, context: EquationContext): Equation[] {
+  const { network } = context
+  const zeroNode = element.impliedJunction === BGF.ZeroNode
+  const own = zeroNode ? element.potential : element.flow
+  if (own === undefined) return []
+  const equations: Equation[] = []
+  for (const neighbour of network.neighbours(id)) {
+    const node = network.node(neighbour)!
+    if (node.element === undefined || node.element.impliedJunction !== undefined || node.port === undefined) continue
+    const shared = zeroNode ? node.port.potential : node.port.flow
+    if (shared.symbol !== own.symbol) equations.push(equation(ci(shared.symbol), ci(own.symbol)))
   }
   return equations
 }
