@@ -1,7 +1,7 @@
 {
   "name": "@physiomelinks/cellml-units",
   "description": "Turn UCUM unit codes into CellML 2.0 units, and compare and convert them with libCellML.",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "license": "Apache-2.0",
   "author": {
     "name": "Hugh Sorby",
