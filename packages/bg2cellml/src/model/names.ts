@@ -47,6 +47,32 @@ export function makeSymbolicName(parts: SymbolParts): string {
 }
 
 /**
+ * The model-wide set of element and junction symbols, as `__unique_name` in
+ * Finbar Argus's BG-Tools (feat/constitutive-laws, model.py). A symbol
+ * already taken, as by a drawn copy of a chemostat with the same symbol,
+ * species and location, is replaced by the cleaned fragment of the copy's
+ * IRI, then that with `_2`, `_3`, ... until it is free. Elements are named
+ * first, in IRI order, then junctions, so the first copy keeps its symbol.
+ * Upstream Python gives no such name, so copies share their variables.
+ */
+export class UniqueNames {
+  readonly #taken = new Set<string>()
+
+  /** `symbol` if it is free, otherwise a free name from `iri`; either way it is then taken. */
+  claim(symbol: string, iri: string): string {
+    let name = symbol
+    if (this.#taken.has(name)) {
+      const hash = iri.lastIndexOf('#')
+      const base = cleanName(hash >= 0 ? iri.slice(hash + 1) : iri)
+      name = base
+      for (let n = 2; this.#taken.has(name); n += 1) name = `${base}_${n}`
+    }
+    this.#taken.add(name)
+    return name
+  }
+}
+
+/**
  * The name of an element's copy of a template variable, as Python's
  * `Variable.copy(suffix, domain)`: the name, `_` and the cleaned element
  * symbol (`R` of `R_0` is `R_R_0`). Where the name is one of the domain's

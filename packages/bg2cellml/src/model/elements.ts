@@ -28,7 +28,7 @@ import {
   elementVariableValuesQuery,
   modelElementsQuery,
 } from '../rdf/queries.js'
-import { elementVariableName, makeSymbolicName, prettyName } from './names.js'
+import { UniqueNames, elementVariableName, makeSymbolicName, prettyName } from './names.js'
 import { groupRows } from './rows.js'
 
 /**
@@ -92,6 +92,8 @@ export interface ElementContext {
   readonly log: IssueLog
   readonly compatible: CompatibleUnits
   readonly domParser?: ParseOptions['domParser']
+  /** The model's element and junction symbols, shared with `loadJunctions`. */
+  readonly names?: UniqueNames
 }
 
 const SOURCES = new Set<string>([BGF.FlowSource, BGF.PotentialSource])
@@ -223,8 +225,9 @@ function impliedJunction(elementClass: string, composite: boolean): string | und
  */
 export function loadElements(model: string, context: ElementContext): Map<string, BondgraphElement> {
   const elements = new Map<string, BondgraphElement>()
+  const names = context.names ?? new UniqueNames()
   for (const [iri, rows] of groupRows(context.graph.select(modelElementsQuery(model)), 'uri')) {
-    const element = elementFromRows(iri, rows, context)
+    const element = elementFromRows(iri, rows, context, names)
     if (element !== undefined) elements.set(iri, element)
   }
   return elements
@@ -237,16 +240,16 @@ function single(iri: string, rows: readonly ResultRow[], name: string, what: str
   return values[0]
 }
 
-function elementFromRows(iri: string, rows: readonly ResultRow[], context: ElementContext): BondgraphElement | undefined {
+function elementFromRows(iri: string, rows: readonly ResultRow[], context: ElementContext, names: UniqueNames): BondgraphElement | undefined {
   const { framework, log } = context
-  let symbol: string
+  let drawn: string
   let label: string | undefined
   let domain: string | undefined
   try {
     const given = single(iri, rows, 'symbol', 'bgf:hasSymbol')
     const species = single(iri, rows, 'species', 'bgf:hasSpecies')
     const location = single(iri, rows, 'location', 'bgf:hasLocation')
-    symbol = makeSymbolicName({
+    drawn = makeSymbolicName({
       iri,
       ...(given === undefined ? {} : { symbol: given }),
       ...(species === undefined ? {} : { species }),
@@ -259,6 +262,8 @@ function elementFromRows(iri: string, rows: readonly ResultRow[], context: Eleme
     log.report(error.message, iri)
     return undefined
   }
+  // A copy of an element already named, such as a second drawing of a chemostat, gets a name of its own
+  const symbol = names.claim(drawn, iri)
   const name = prettyName(symbol, iri)
 
   // Python ignores types outside bgf:, such as owl:NamedIndividual
@@ -285,7 +290,15 @@ function elementFromRows(iri: string, rows: readonly ResultRow[], context: Eleme
     return undefined
   }
   const template = [...templates.values()][0]!
-  return makeElement(iri, template, { symbol, ...(label === undefined ? {} : { label }) }, context)
+  const element = makeElement(iri, template, { symbol, ...(label === undefined ? {} : { label }) }, context)
+  if (symbol !== drawn && element.elementClass === BGF.QuantityStore) {
+    log.reportIssue({
+      message: `Store ${name} is named ${drawn} by its symbol, species and location, as an earlier element is: it is a separate pool, not a copy`,
+      severity: 'warning',
+      subject: iri,
+    })
+  }
+  return element
 }
 
 /** An element and its values, as Python's `BondgraphElement.for_model`. */

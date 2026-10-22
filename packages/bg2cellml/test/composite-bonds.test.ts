@@ -44,7 +44,7 @@ interface Node {
 }
 
 /** BG-RDF Turtle as the CellDL editor writes it: composite elements are listed as both elements and junctions. */
-function editorModel(nodes: Readonly<Record<string, Node>>, bonds: readonly (readonly [string, string])[]): string {
+function editorModel(nodes: Readonly<Record<string, Node>>, bonds: readonly (readonly [string, string, number?])[]): string {
   const JUNCTIONS = new Set(['ZeroNode', 'OneNode'])
   const COMPOSITES = new Set(['ChemicalStorageNode', 'ChemicalReactionNode', 'ElectricalCapacitiveNode', 'ElectricalResistiveNode'])
   const elements = Object.keys(nodes).filter((key) => !JUNCTIONS.has(nodes[key]!.type))
@@ -71,8 +71,12 @@ function editorModel(nodes: Readonly<Record<string, Node>>, bonds: readonly (rea
     }
     lines.push(`:${key} ${properties.join(' ;\n  ')} .`, '')
   }
-  bonds.forEach(([source, target], index) => {
-    lines.push(`:bond_${index} a celldl:Connection ; celldl:hasSource :${source} ; celldl:hasTarget :${target} ; bgf:hasSource :${source} ; bgf:hasTarget :${target} .`)
+  bonds.forEach(([source, target, count], index) => {
+    // The editor writes a count other than 1 as an xsd:integer
+    const bondCount = count === undefined ? '' : ` ; bgf:bondCount ${count}`
+    lines.push(
+      `:bond_${index} a celldl:Connection ; celldl:hasSource :${source} ; celldl:hasTarget :${target} ; bgf:hasSource :${source} ; bgf:hasTarget :${target}${bondCount} .`,
+    )
   })
   return lines.join('\n')
 }
@@ -247,5 +251,223 @@ describe('an element bonded straight to a composite resistance', () => {
     // q = exp(-t/RC), with R = 2 and C = 1
     const q = actual['q_C']!.map(decodeValue)
     expect(q.at(-1)).toBeCloseTo(Math.exp(-SETTINGS.end / 2), 6)
+  })
+})
+
+//==============================================================================
+
+/*
+ * The CellDL editor's Reactions panel draws a reaction as a composite
+ * `bgf:ChemicalReactionNode` bonded straight to each species, with the
+ * species' coefficient as the bond's `bgf:bondCount`, and a chemostat as a
+ * copy of its `bgf:ChemicalPotential` beside each reaction using it. Its
+ * nodes have CellDL ids, such as `ID-00000004`.
+ */
+
+/** A store of amount `q` mol, with K = 1 mol-1. */
+const amount = (type: string, species: string, q: string): Node => ({
+  type,
+  symbol: 'q',
+  species,
+  location: 'c',
+  value: `${q} mol`,
+  parameters: { K: '1 mol-1' },
+})
+const reactionNode = (species: string, kappa: string): Node => ({
+  type: 'ChemicalReactionNode',
+  symbol: 'Rx',
+  species,
+  location: 'c',
+  parameters: { kappa: `${kappa} mol/s` },
+})
+const chemostat = (species: string, mu: string): Node => ({ type: 'ChemicalPotential', symbol: 'Se', species, location: 'c', value: `${mu} J/mol` })
+
+/** A + 2 B <=> C, as the Reactions panel draws it, with stores of type `storeType`. */
+const panelReaction = (storeType: string): string =>
+  editorModel(
+    {
+      'ID-00000001': amount(storeType, 'A', '1'),
+      'ID-00000002': amount(storeType, 'B', '1'),
+      'ID-00000003': amount(storeType, 'C', '0.01'),
+      'ID-00000004': reactionNode('r1', '1'),
+    },
+    [
+      ['ID-00000001', 'ID-00000004'],
+      ['ID-00000002', 'ID-00000004', 2],
+      ['ID-00000004', 'ID-00000003'],
+    ],
+  )
+
+/** A + 2 B <=> C with zero nodes, one nodes and a plain reaction: BG-RDF's usual form. */
+const canonicalPanelReaction = editorModel(
+  {
+    A: amount('ChemicalConcentration', 'A', '1'),
+    B: amount('ChemicalConcentration', 'B', '1'),
+    C: amount('ChemicalConcentration', 'C', '0.01'),
+    u_A: zero('A'),
+    u_B: zero('B'),
+    u_C: zero('C'),
+    j1f: one('r1', 'f'),
+    r1: { ...reactionNode('r1', '1'), type: 'ChemicalReaction' },
+  },
+  [
+    ['u_A', 'A'],
+    ['u_B', 'B'],
+    ['u_C', 'C'],
+    ['u_A', 'j1f'],
+    ['u_B', 'j1f', 2],
+    ['j1f', 'r1'],
+    ['r1', 'u_C'],
+  ],
+)
+
+/** q_B + 2 q_C and q_A + q_C stay as they start. */
+function expectConserved(actual: Trajectories, digits = 7): void {
+  const at = (name: string, i: number): number => decodeValue(actual[name]![i])
+  for (let i = 0; i < actual['q_A_c']!.length; i += 1) {
+    expect(at('q_A_c', i) + at('q_C_c', i)).toBeCloseTo(1.01, digits)
+    expect(at('q_B_c', i) + 2 * at('q_C_c', i)).toBeCloseTo(1.02, digits)
+  }
+  // It has moved towards C
+  expect(at('q_C_c', actual['q_C_c']!.length - 1)).toBeGreaterThan(0.1)
+}
+
+describe('a composite reaction bonded straight to stores, as the Reactions panel draws it', () => {
+  it('converts A + 2 B <=> C with composite stores, and simulates as the usual form does', async () => {
+    const [composite, canonical] = await Promise.all([convert(panelReaction('ChemicalStorageNode')), convert(canonicalPanelReaction)])
+    expect(composite.modelType).toBe('ode')
+    // The reaction's forward potential counts B twice
+    expect(composite.cellml).toMatch(/<ci>u_f_Rx_r1_c<\/ci>\s*<apply>\s*<plus\/>/)
+    const [actual, expected] = await Promise.all([trajectories(composite.cellml!), trajectories(canonical.cellml!)])
+    expect(differences(actual, expected, 8)).toEqual([])
+    expectConserved(actual)
+  })
+
+  it('converts it with plain stores, each store’s flow the reaction’s times its count, signed by the bond', async () => {
+    const [plain, canonical] = await Promise.all([convert(panelReaction('ChemicalConcentration')), convert(canonicalPanelReaction)])
+    expect(plain.modelType).toBe('ode')
+    // B, bonded twice from the store to the reaction, loses twice the reaction's flow
+    expect(plain.cellml).toMatch(/<ci>v_q_B_c<\/ci>\s*<apply>\s*<minus\/>\s*<apply>\s*<times\/>\s*<cn[^>]*>2<\/cn>\s*<ci>v_Rx_r1_c<\/ci>/)
+    const [actual, expected] = await Promise.all([trajectories(plain.cellml!), trajectories(canonical.cellml!)])
+    expect(differences(actual, expected, 8)).toEqual([])
+    expectConserved(actual)
+  })
+
+  it('gives a plain store bonded to a one node twice the one node’s flow, as the composite form does', async () => {
+    // As the usual form, but B is bonded straight to the one node, twice, from the store
+    const viaOneNode = editorModel(
+      {
+        A: amount('ChemicalConcentration', 'A', '1'),
+        B: amount('ChemicalConcentration', 'B', '1'),
+        C: amount('ChemicalConcentration', 'C', '0.01'),
+        u_A: zero('A'),
+        u_C: zero('C'),
+        j1f: one('r1', 'f'),
+        r1: { ...reactionNode('r1', '1'), type: 'ChemicalReaction' },
+      },
+      [
+        ['u_A', 'A'],
+        ['u_C', 'C'],
+        ['u_A', 'j1f'],
+        ['B', 'j1f', 2],
+        ['j1f', 'r1'],
+        ['r1', 'u_C'],
+      ],
+    )
+    const [direct, canonical] = await Promise.all([convert(viaOneNode), convert(canonicalPanelReaction)])
+    expect(direct.cellml).toMatch(/<ci>v_q_B_c<\/ci>\s*<apply>\s*<minus\/>\s*<apply>\s*<times\/>\s*<cn[^>]*>2<\/cn>/)
+    const [actual, expected] = await Promise.all([trajectories(direct.cellml!), trajectories(canonical.cellml!)])
+    expect(differences(actual, expected, 8)).toEqual([])
+    // Both are DAEs (a plain reaction's ports), so the solver keeps the sums less closely
+    expectConserved(actual, 5)
+  })
+})
+
+describe('drawn copies of an element', () => {
+  /** ATP + X <=> Y and ATP + Y <=> Z, each reaction with its own copy of the ATP chemostat. */
+  const chemostatCopies = editorModel(
+    {
+      'ID-00000001': chemostat('ATP', '1000'),
+      'ID-00000002': amount('ChemicalStorageNode', 'X', '1'),
+      'ID-00000003': amount('ChemicalStorageNode', 'Y', '0.1'),
+      'ID-00000004': amount('ChemicalStorageNode', 'Z', '0.1'),
+      'ID-00000005': reactionNode('r1', '1'),
+      'ID-00000006': reactionNode('r2', '0.5'),
+      'ID-00000007': chemostat('ATP', '1000'),
+    },
+    [
+      ['ID-00000001', 'ID-00000005'],
+      ['ID-00000002', 'ID-00000005'],
+      ['ID-00000005', 'ID-00000003'],
+      ['ID-00000007', 'ID-00000006'],
+      ['ID-00000003', 'ID-00000006'],
+      ['ID-00000006', 'ID-00000004'],
+    ],
+  )
+
+  it('gives each chemostat copy its own variables, the later copy named from its id', async () => {
+    const result = await convert(chemostatCopies)
+    expect(result.modelType).toBe('ode')
+    for (const name of ['u_Se_ATP_c', 'v_Se_ATP_c', 'u_ID_00000007', 'v_ID_00000007']) {
+      expect(result.cellml).toContain(`<variable name="${name}"`)
+    }
+    // Each copy takes up its own reaction's flow
+    expect(result.cellml).toMatch(/<ci>u_f_Rx_r2_c<\/ci>\s*<apply>\s*<plus\/>\s*<ci>u_ID_00000007<\/ci>/)
+    const actual = await trajectories(result.cellml!)
+    const at = (name: string, i: number): number => decodeValue(actual[name]![i])
+    // ATP is held, so X + Y + Z is conserved
+    for (let i = 0; i < actual['q_X_c']!.length; i += 1) expect(at('q_X_c', i) + at('q_Y_c', i) + at('q_Z_c', i)).toBeCloseTo(1.2, 9)
+  })
+
+  it('names a third copy, whose id names an element already, with a number', async () => {
+    const result = await converter.convert(
+      editorModel(
+        {
+          Se: chemostat('A', '1'),
+          'ID-1': chemostat('A', '1'),
+          Se_A_c: chemostat('A', '1'),
+          q: amount('ChemicalStorageNode', 'B', '1'),
+        },
+        [
+          ['Se', 'q'],
+          ['ID-1', 'q'],
+          ['Se_A_c', 'q'],
+        ],
+      ),
+      { rdfSource: true },
+    )
+    // In IRI order: #ID-1 is Se_A_c, #Se is named Se, and #Se_A_c, whose fragment is taken, Se_A_c_2
+    for (const name of ['u_Se_A_c', 'u_Se', 'u_Se_A_c_2']) expect(result.cellml).toContain(`<variable name="${name}"`)
+  })
+
+  it('makes drawn copies of a store separate pools, with a warning', async () => {
+    const result = await converter.convert(
+      editorModel(
+        {
+          'ID-00000001': amount('ChemicalStorageNode', 'A', '1'),
+          'ID-00000002': amount('ChemicalStorageNode', 'A', '1'),
+          'ID-00000003': amount('ChemicalStorageNode', 'B', '0.1'),
+          'ID-00000004': reactionNode('r1', '1'),
+          'ID-00000005': reactionNode('r2', '1'),
+        },
+        [
+          ['ID-00000001', 'ID-00000004'],
+          ['ID-00000004', 'ID-00000003'],
+          ['ID-00000002', 'ID-00000005'],
+          ['ID-00000005', 'ID-00000003'],
+        ],
+      ),
+      { rdfSource: true, checks: 'full' },
+    )
+    expect(result).toMatchObject({ ok: true, runnable: true, modelType: 'ode', errors: [] })
+    expect(result.issues).toEqual([
+      expect.objectContaining({
+        severity: 'warning',
+        elementId: 'ID-00000002',
+        message: expect.stringContaining('is a separate pool'),
+      }),
+    ])
+    expect(result.cellml).toContain('<variable name="q_A_c"')
+    expect(result.cellml).toContain('<variable name="q_ID_00000002"')
   })
 })
