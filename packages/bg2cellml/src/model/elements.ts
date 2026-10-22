@@ -263,7 +263,7 @@ function elementFromRows(iri: string, rows: readonly ResultRow[], context: Eleme
     return undefined
   }
   // A copy of an element already named, such as a second drawing of a chemostat, gets a name of its own
-  const symbol = names.claim(drawn, iri)
+  const symbol = names.claim(drawn)
   const name = prettyName(symbol, iri)
 
   // Python ignores types outside bgf:, such as owl:NamedIndividual

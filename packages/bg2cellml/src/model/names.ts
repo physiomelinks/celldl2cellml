@@ -47,26 +47,23 @@ export function makeSymbolicName(parts: SymbolParts): string {
 }
 
 /**
- * The model-wide set of element and junction symbols, as `__unique_name` in
- * Finbar Argus's BG-Tools (feat/constitutive-laws, model.py). A symbol
- * already taken, as by a drawn copy of a chemostat with the same symbol,
- * species and location, is replaced by the cleaned fragment of the copy's
- * IRI, then that with `_2`, `_3`, ... until it is free. Elements are named
- * first, in IRI order, then junctions, so the first copy keeps its symbol.
- * Upstream Python gives no such name, so copies share their variables.
+ * The model-wide set of element and junction symbols, so that drawn copies
+ * (one symbol, species and location, as two drawings of a chemostat) get
+ * names of their own, as `__unique_name` in Finbar Argus's BG-Tools
+ * (feat/constitutive-laws, model.py) does. Elements are named first, in IRI
+ * order, then junctions: the first copy keeps its symbol and later ones are
+ * numbered `_2`, `_3`, ... (the next number free). BG-Tools names a later
+ * copy from its IRI instead, which for a CellDL id gives names such as
+ * `u_ID_00000007`. Upstream Python gives no such name, so copies share their
+ * variables.
  */
 export class UniqueNames {
   readonly #taken = new Set<string>()
 
-  /** `symbol` if it is free, otherwise a free name from `iri`; either way it is then taken. */
-  claim(symbol: string, iri: string): string {
+  /** `symbol` if it is free, otherwise the first free `symbol_n` from `n = 2`; either way it is then taken. */
+  claim(symbol: string): string {
     let name = symbol
-    if (this.#taken.has(name)) {
-      const hash = iri.lastIndexOf('#')
-      const base = cleanName(hash >= 0 ? iri.slice(hash + 1) : iri)
-      name = base
-      for (let n = 2; this.#taken.has(name); n += 1) name = `${base}_${n}`
-    }
+    for (let n = 2; this.#taken.has(name); n += 1) name = `${symbol}_${n}`
     this.#taken.add(name)
     return name
   }

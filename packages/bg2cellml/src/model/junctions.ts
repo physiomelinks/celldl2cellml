@@ -131,7 +131,7 @@ export function loadJunctions(
       // The element pass reads (or reports) a composite element listed both ways
       if (!JUNCTION_TYPES.includes(type) && framework.compositeTemplates.has(type) && listedAsElement(iri)) continue
       // A junction named like an element or an earlier junction gets a name of its own
-      const symbol = names.claim(drawn, iri)
+      const symbol = names.claim(drawn)
       name = prettyName(symbol, iri)
       if (framework.junction(type) === undefined) throw new DeclarationError(`Unknown Junction ${type} for node ${iri}`)
       if (!JUNCTION_TYPES.includes(type)) {

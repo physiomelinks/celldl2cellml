@@ -405,21 +405,21 @@ describe('drawn copies of an element', () => {
     ],
   )
 
-  it('gives each chemostat copy its own variables, the later copy named from its id', async () => {
+  it('gives each chemostat copy its own variables, the later copy numbered', async () => {
     const result = await convert(chemostatCopies)
     expect(result.modelType).toBe('ode')
-    for (const name of ['u_Se_ATP_c', 'v_Se_ATP_c', 'u_ID_00000007', 'v_ID_00000007']) {
+    for (const name of ['u_Se_ATP_c', 'v_Se_ATP_c', 'u_Se_ATP_c_2', 'v_Se_ATP_c_2']) {
       expect(result.cellml).toContain(`<variable name="${name}"`)
     }
     // Each copy takes up its own reaction's flow
-    expect(result.cellml).toMatch(/<ci>u_f_Rx_r2_c<\/ci>\s*<apply>\s*<plus\/>\s*<ci>u_ID_00000007<\/ci>/)
+    expect(result.cellml).toMatch(/<ci>u_f_Rx_r2_c<\/ci>\s*<apply>\s*<plus\/>\s*<ci>u_Se_ATP_c_2<\/ci>/)
     const actual = await trajectories(result.cellml!)
     const at = (name: string, i: number): number => decodeValue(actual[name]![i])
     // ATP is held, so X + Y + Z is conserved
     for (let i = 0; i < actual['q_X_c']!.length; i += 1) expect(at('q_X_c', i) + at('q_Y_c', i) + at('q_Z_c', i)).toBeCloseTo(1.2, 9)
   })
 
-  it('names a third copy, whose id names an element already, with a number', async () => {
+  it('numbers later copies in IRI order, whatever their ids', async () => {
     const result = await converter.convert(
       editorModel(
         {
@@ -436,8 +436,9 @@ describe('drawn copies of an element', () => {
       ),
       { rdfSource: true },
     )
-    // In IRI order: #ID-1 is Se_A_c, #Se is named Se, and #Se_A_c, whose fragment is taken, Se_A_c_2
-    for (const name of ['u_Se_A_c', 'u_Se', 'u_Se_A_c_2']) expect(result.cellml).toContain(`<variable name="${name}"`)
+    // In IRI order: #ID-1 keeps Se_A_c, #Se is Se_A_c_2 and #Se_A_c is Se_A_c_3
+    for (const name of ['u_Se_A_c', 'u_Se_A_c_2', 'u_Se_A_c_3']) expect(result.cellml).toContain(`<variable name="${name}"`)
+    expect(result.cellml).not.toContain('<variable name="u_Se"')
   })
 
   it('makes drawn copies of a store separate pools, with a warning', async () => {
@@ -468,6 +469,6 @@ describe('drawn copies of an element', () => {
       }),
     ])
     expect(result.cellml).toContain('<variable name="q_A_c"')
-    expect(result.cellml).toContain('<variable name="q_ID_00000002"')
+    expect(result.cellml).toContain('<variable name="q_A_c_2"')
   })
 })
