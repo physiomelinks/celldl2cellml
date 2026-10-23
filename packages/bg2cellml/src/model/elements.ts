@@ -18,6 +18,7 @@ import {
   type PortTemplate,
 } from '../framework/framework.js'
 import { readEquations } from '../framework/templates.js'
+import type { Rescaler } from '../framework/unit-system.js'
 import { DeclarationError, readValue, type CompatibleUnits, type Value, type VariableDefinition } from '../framework/variables.js'
 import type { IssueLog } from '../issues.js'
 import type { RdfGraph, ResultRow, Term } from '../rdf/graph.js'
@@ -94,6 +95,11 @@ export interface ElementContext {
   readonly domParser?: ParseOptions['domParser']
   /** The model's element and junction symbols, shared with `loadJunctions`. */
   readonly names?: UniqueNames
+  /**
+   * The model's unit system, when it isn't SI: a source's MathML has its
+   * numbers with units rescaled into it, keeping their physical values.
+   */
+  readonly rescaler?: Rescaler
 }
 
 const SOURCES = new Set<string>([BGF.FlowSource, BGF.PotentialSource])
@@ -411,11 +417,20 @@ function readState(
       log.report(`Element ${element} has MathML as its value, but only a source can`, iri)
       return {}
     }
+    let relation: Equation[]
     try {
-      return { relation: readEquations(term.value, `The value of element ${element}`, context.domParser === undefined ? {} : { domParser: context.domParser }) }
+      relation = readEquations(term.value, `The value of element ${element}`, context.domParser === undefined ? {} : { domParser: context.domParser })
     } catch (error) {
       if (!(error instanceof DeclarationError)) throw error
       log.report(error.message, iri)
+      return {}
+    }
+    if (context.rescaler === undefined) return { relation }
+    try {
+      return { relation: context.rescaler.equations(relation, `the value of element ${element}`) }
+    } catch (error) {
+      if (!(error instanceof DeclarationError)) throw error
+      log.reportIssue({ message: error.message, stage: 'units', subject: iri })
       return {}
     }
   }

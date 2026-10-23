@@ -51,6 +51,21 @@ const result = await converter.convert(celldlSvg, {
 
 `checks` chooses libCellML's checks, which are nearly all of a conversion's time (about 15 ms an element): `full` (the default) runs the Validator and the Analyser, `validate` the Validator alone, and `none` neither, giving the CellML, the element manifest and the issues found building the model in a tenth of the time. Without the Analyser, `result.runnable` is `undefined` (unless the Validator found errors, when it is `false`), and `result.checks` says which checks ran: fewer than asked for when the model had errors before them. A host converting as the user edits can run `none` after each edit and `full` once editing stops. `celldl2cellml` always runs both.
 
+### Unit systems
+
+A model can be built in a unit system other than BG-RDF's mol, L, J and C. `unitSystem: 'cellular'` builds it in fmol, pL, fJ and fC; `'si'` is BG-RDF's units. Without the option, the model's own `pml:unitSystem` decides, and a model with neither is SI, so its CellML is unchanged:
+
+```turtle
+@prefix pml: <https://physiomelinks.github.io/ns/celldl#> .
+:model a bgf:BondgraphModel ; pml:unitSystem pml:Cellular .    # or pml:SI
+```
+
+- **The CellML is in the system's units.** Every units code of the framework is rescaled before the model is built: each mol, L, J and C becomes the system's, uniformly, so `K` is in `per_fmol`, `kappa` in `fmol_per_s` and `K_K` in `pL_per_fmol`. Rescaling only some codes would leave equations such as `dq/dt = v` mixing fmol with mol/s, which libCellML only warns about.
+- **Codes whose scale doesn't change keep their names.** Energy and charge follow the amount, so potentials are as they were: fJ/fmol is `J_per_mol` and fJ/fC is `J_per_C`, and `RT` and `F` keep their values.
+- **Values keep their physical value.** `1 mol` is written as `1e15` fmol, and a plain number is in the system's units. A source's MathML has its numbers with units rescaled the same way (`<cn bgf:units="mol/s">2</cn>` is `2e15` fmol/s; `mmol/L` stays as it is). A number in units that can't be rescaled by substitution, such as `A` or `N` in Cellular, is reported: write it in mol, L, J and C.
+- `result.unitSystem` says which system the CellML is in. `rescaleCode`, `rescaleFactor` and `UNIT_SYSTEMS` (from `@physiomelinks/cellml-units`, also exported here) give a template's units and a value's factor in a system, and `UNIT_SYSTEM_PREDICATE` and `UNIT_SYSTEM_IRIS` the triple's IRIs.
+- `pml:` is PhLynx's namespace, not BG-RDF's: other BG-RDF tools ignore the triple, and as stored values carry their units, still give a correct SI model.
+
 An issue's `elementId` is its subject's IRI fragment, such as a CellDL diagram's `<g id>`, and is the same whether the document's Turtle uses relative or absolute IRIs (`elementIdOf`).
 
 `result.elements` is the element manifest, keyed the same way (by IRI for an element outside the source): each element's and junction's `{ iri, kind, symbol, template?, label?, primary?, variables }`, where `kind` is `element`, `one`, `zero` or `transform`, and each variable written to the CellML is `{ name, role, ucum, units }` with `role` one of `flow`, `potential`, `quantity`, `parameter`, `ratio` or `other`. A variable two elements share, such as a one node's flow that a transform node's port takes, is listed for both. `primary` is a one or zero node's own variable, a transform node's ratio, an element's intrinsic variable (a capacitor's `q`, a source's potential or flow), or else its first port's flow. `toViewerAnnotations(result.elements)` turns it into `@celldl/viewer` annotations, `{ [svgId]: { label, primary, variables, tooltip } }`, with a tooltip line such as `v_1 (flow, C/s)` for each variable unless `{ tooltip }` gives another.

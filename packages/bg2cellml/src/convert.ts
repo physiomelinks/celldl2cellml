@@ -5,6 +5,8 @@
  * any warnings, and gives every issue its severity, stage and `elementId`.
  */
 
+import type { UnitSystemId } from '@physiomelinks/cellml-units'
+
 import { extractBgRdf } from './celldl.js'
 import { RUNNABLE_MODEL_TYPES, type CellMLChecks } from './cellml/check.js'
 import { generateCellML } from './cellml/generate.js'
@@ -50,6 +52,13 @@ export interface ConvertOptions {
    * Without the Analyser, `runnable` is `undefined`.
    */
   checks?: CellMLChecks
+  /**
+   * The unit system to build the CellML in, overriding the model's own
+   * `pml:unitSystem`: `si` (mol, L, J, C) or `cellular` (fmol, pL, fJ, fC).
+   * Without either, SI. The CellML's variables are in the system's units,
+   * and values given in other units are converted into them.
+   */
+  unitSystem?: UnitSystemId
 }
 
 export interface ConversionResult {
@@ -75,6 +84,8 @@ export interface ConversionResult {
   readonly baseUri: string
   /** The model's IRI, once the source has been read. Its fragments are issues' `elementId`s. */
   readonly modelIri?: string
+  /** The unit system the CellML is in, once the source has been read. */
+  readonly unitSystem?: UnitSystemId
   /**
    * Each element's and junction's CellML variables and their roles, by its id
    * in the diagram (its IRI if it isn't in the source); empty if the model
@@ -141,13 +152,16 @@ export function convert(context: ConvertContext, source: string, options: Conver
   if (input.length > 0) return result(fields, input.map((message): Issue => ({ message, severity: 'error', stage: 'input' })))
 
   let modelIri: string | undefined
+  let unitSystem: UnitSystemId | undefined
   const issues: Issue[] = []
   try {
     const bgRdf = options.rdfSource ? source : extractBgRdf(source, context.runtime.domParser)
-    const model = BondgraphModel.fromTurtle(framework, context.runtime, bgRdf, baseUri)
+    const loadOptions = options.unitSystem === undefined ? {} : { unitSystem: options.unitSystem }
+    const model = BondgraphModel.fromTurtle(framework, context.runtime, bgRdf, baseUri, loadOptions)
     if (model.iri !== '') modelIri = model.iri
+    unitSystem = model.unitSystem
     issues.push(...model.log.issues)
-    if (issues.some((issue) => issue.severity === 'error')) return result({ ...fields, ...iriField(modelIri) }, issues)
+    if (issues.some((issue) => issue.severity === 'error')) return result({ ...fields, ...iriField(modelIri, unitSystem) }, issues)
 
     const generated = generateCellML(context.runtime.libcellml, model, {
       metadata: options.metadata ?? false,
@@ -160,7 +174,7 @@ export function convert(context: ConvertContext, source: string, options: Conver
     return result(
       {
         ...fields,
-        ...iriField(modelIri),
+        ...iriField(modelIri, unitSystem),
         ...(generated.cellml === undefined ? {} : { cellml: generated.cellml }),
         ...(generated.elements === undefined ? {} : { elements: generated.elements }),
         ...(generated.modelType === undefined ? {} : { modelType: generated.modelType }),
@@ -172,11 +186,15 @@ export function convert(context: ConvertContext, source: string, options: Conver
     )
   } catch (error) {
     const exception = error instanceof Error ? (error.stack ?? String(error)) : String(error)
-    return result({ ...fields, ...iriField(modelIri), exception }, issues)
+    return result({ ...fields, ...iriField(modelIri, unitSystem), exception }, issues)
   }
 }
 
-const iriField = (modelIri: string | undefined): { modelIri?: string } => (modelIri === undefined ? {} : { modelIri })
+type ModelFields = { modelIri?: string; unitSystem?: UnitSystemId }
+const iriField = (modelIri: string | undefined, unitSystem: UnitSystemId | undefined): ModelFields => ({
+  ...(modelIri === undefined ? {} : { modelIri }),
+  ...(unitSystem === undefined ? {} : { unitSystem }),
+})
 
 type ResultFields = Omit<ConversionResult, 'ok' | 'runnable' | 'checks' | 'elements' | 'units' | 'issues' | 'errors' | 'warnings' | 'generator'> & {
   /** The Analyser was asked for, so `runnable` is known. */

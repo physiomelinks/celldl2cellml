@@ -42,3 +42,15 @@ export {
   type WrittenSymbol,
 } from './ucum.js'
 export { builtInUnits, compatible, convertValue, toCellMLUnits, unitsName } from './units.js'
+export {
+  UNIT_SYSTEMS,
+  isStockUnitSystem,
+  rescaleCode,
+  rescaleFactor,
+  rescaleUnits,
+  unitSystem,
+  type RescaledUnits,
+  type UnitKind,
+  type UnitSystem,
+  type UnitSystemId,
+} from './systems.js'

@@ -1,8 +1,10 @@
-/** Namespaces used by BG-RDF. Ported from `bg2cellml/bondgraph/namespaces.py`. */
+/** Namespaces used by BG-RDF, and PhLynx's own (`pml`). Ported from `bg2cellml/bondgraph/namespaces.py`. */
 export const NAMESPACES = {
   bgf: 'https://bg-rdf.org/ontologies/bondgraph-framework#',
   cdt: 'https://w3id.org/cdt/',
   owl: 'http://www.w3.org/2002/07/owl#',
+  /** PhLynx's terms for what BG-RDF has none for, such as a model's unit system. Not part of BG-RDF. */
+  pml: 'https://physiomelinks.github.io/ns/celldl#',
   rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
   rdfs: 'http://www.w3.org/2000/01/rdf-schema#',
   xsd: 'http://www.w3.org/2001/XMLSchema#',

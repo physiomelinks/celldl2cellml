@@ -115,3 +115,21 @@ export { BondNetwork } from './model/network.js'
 export { IssueLog, elementIdOf, type Issue, type IssueReport, type IssueSeverity, type IssueStage } from './issues.js'
 export { RdfGraph, type OxigraphModule, type QuadLike, type ResultRow, type Term, type TermLike } from './rdf/graph.js'
 export { BGF, CDT, NAMESPACES, curie, fragment } from './rdf/namespaces.js'
+export {
+  DEFAULT_UNIT_SYSTEM,
+  UNIT_SYSTEM_IRIS,
+  UNIT_SYSTEM_PREDICATE,
+  unitSystemForIri,
+} from './framework/unit-system.js'
+export {
+  UNIT_SYSTEMS,
+  isStockUnitSystem,
+  rescaleCode,
+  rescaleFactor,
+  rescaleUnits,
+  unitSystem,
+  type RescaledUnits,
+  type UnitKind,
+  type UnitSystem,
+  type UnitSystemId,
+} from '@physiomelinks/cellml-units'
