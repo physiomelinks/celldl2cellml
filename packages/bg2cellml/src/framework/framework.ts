@@ -4,7 +4,7 @@
  * templates. Ported from `bondgraph/framework.py` and `framework_support.py`.
  */
 
-import { compatible, type LibCellML } from '@physiomelinks/cellml-units'
+import { compatible, isStockUnitSystem, type LibCellML, type UnitSystemId } from '@physiomelinks/cellml-units'
 import type { ParseOptions } from '@physiomelinks/math-ast'
 
 import { IssueLog } from '../issues.js'
@@ -20,6 +20,7 @@ import {
   domainConstantsQuery,
 } from '../rdf/queries.js'
 import { elementTemplateFromRow, type ElementTemplate, type TemplateOptions } from './templates.js'
+import { Rescaler } from './unit-system.js'
 import { DeclarationError, makeVariable, type VariableDefinition } from './variables.js'
 
 export type { ElementTemplate, PortTemplate } from './templates.js'
@@ -84,8 +85,12 @@ export class BondgraphFramework {
   readonly junctions = new Map<string, JunctionStructure>()
   /** The ontology's `owl:versionInfo`, such as `2026-04-12`, if it has one. */
   version?: string
+  /** The unit system the framework's units are in: `si`, as BG-RDF has them, unless `withUnitSystem()` made it. */
+  readonly unitSystem: UnitSystemId = 'si'
   /** Element templates by element class and domain, as `${class} ${domain}`, in IRI order. */
   readonly #byClassAndDomain = new Map<string, ElementTemplate[]>()
+  /** `withUnitSystem()`'s frameworks, by system. */
+  readonly #rescaled = new Map<UnitSystemId, BondgraphFramework>()
 
   /**
    * Build the framework from a graph holding the ontology and templates.
@@ -158,10 +163,61 @@ export class BondgraphFramework {
         this.log.report(error.message, iri)
       }
     }
+    this.#indexTemplates()
+  }
+
+  #indexTemplates(): void {
+    this.#byClassAndDomain.clear()
     for (const template of this.elementTemplates.values()) {
       const key = `${template.elementClass} ${template.domain.iri}`
       this.#byClassAndDomain.set(key, [...(this.#byClassAndDomain.get(key) ?? []), template])
     }
+  }
+
+  /**
+   * This framework with every units code rescaled into a unit system: the
+   * domains' variables and constants, the templates' ports, parameters and
+   * variables, and the numbers with units in their relations. Values keep
+   * their physical value, so RT stays 2578.73058 J/mol in Cellular, whose
+   * fJ/fmol is J/mol. A template that can't be rescaled is left out and
+   * reported in the new framework's `log`. Frameworks are made once per
+   * system; SI gives this framework.
+   */
+  withUnitSystem(system: UnitSystemId): BondgraphFramework {
+    if (isStockUnitSystem(system)) return this
+    const known = this.#rescaled.get(system)
+    if (known !== undefined) return known
+
+    const rescaler = new Rescaler(system)
+    const rescaled = new BondgraphFramework()
+    ;(rescaled as { unitSystem: UnitSystemId }).unitSystem = system
+    if (this.version !== undefined) rescaled.version = this.version
+    for (const [iri, domain] of this.domains) {
+      try {
+        rescaled.domains.set(iri, rescaler.domain(domain))
+      } catch (error) {
+        if (!(error instanceof DeclarationError)) throw error
+        rescaled.log.report(error.message, iri)
+      }
+    }
+    for (const [iri, template] of this.elementTemplates) {
+      const domain = rescaled.domains.get(template.domain.iri)
+      if (domain === undefined) continue
+      try {
+        rescaled.elementTemplates.set(iri, rescaler.template(template, domain))
+      } catch (error) {
+        if (!(error instanceof DeclarationError)) throw error
+        rescaled.log.report(error.message, iri)
+      }
+    }
+    rescaled.#indexTemplates()
+    for (const [iri, junction] of this.junctions) rescaled.junctions.set(iri, junction)
+    for (const [iri, composite] of this.compositeTemplates) {
+      const template = rescaled.elementTemplates.get(composite.template.iri)
+      if (template !== undefined) rescaled.compositeTemplates.set(iri, { ...composite, template })
+    }
+    this.#rescaled.set(system, rescaled)
+    return rescaled
   }
 
   /**

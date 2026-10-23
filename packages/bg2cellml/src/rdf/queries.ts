@@ -137,6 +137,13 @@ export const BONDGRAPH_MODEL = `
         OPTIONAL { ?uri rdfs:label ?label }
     }`
 
+/** A model's unit system, `pml:unitSystem`, which isn't part of BG-RDF. */
+export const modelUnitSystemQuery = (model: string): string => `
+    SELECT DISTINCT ?system
+    WHERE {
+        <${model}> pml:unitSystem ?system .
+    }`
+
 export const BONDGRAPH_BONDS = `
     SELECT DISTINCT ?uri ?source ?target
     WHERE {
