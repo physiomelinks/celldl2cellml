@@ -1,0 +1,49 @@
+@prefix : <#> .
+@prefix bgf: <https://bg-rdf.org/ontologies/bondgraph-framework#> .
+@prefix cdt: <https://w3id.org/cdt/> .
+@prefix celldl: <http://celldl.org/ontologies/celldl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<> a celldl:Document, bgf:BondgraphModel ;
+  dcterms:created "2026-10-22T00:00:00.000Z" ;
+  dcterms:modified "2026-10-22T00:00:00.000Z" ;
+  owl:versionInfo "1.0" ;
+  bgf:hasBondElement :ID-00000029, :ID-00000030, :ID-00000031 .
+
+:ID-00000029 a celldl:Component, bgf:VoltageSource ;
+  bgf:hasLocation "c" ;
+  bgf:hasSpecies "S1" ;
+  bgf:hasSymbol "S" ;
+  bgf:hasValue "0 J/C"^^cdt:ucum .
+
+:ID-00000030 a celldl:Component, bgf:ElectricalInductiveNode ;
+  bgf:hasLocation "c" ;
+  bgf:hasSpecies "S2" ;
+  bgf:hasSymbol "L" ;
+  bgf:hasValue "0 C/s"^^cdt:ucum ;
+  bgf:parameterValue [
+    bgf:hasValue "1 J.s2.C-2"^^cdt:ucum ;
+    bgf:varName "L"
+  ] .
+
+:ID-00000031 a celldl:Component, bgf:ElectricalResistor ;
+  bgf:hasLocation "c" ;
+  bgf:hasSpecies "R1" ;
+  bgf:hasSymbol "R" ;
+  bgf:parameterValue [
+    bgf:hasValue "1 J.s.C-2"^^cdt:ucum ;
+    bgf:varName "R"
+  ] .
+
+:ID-00000032 a celldl:Connection ;
+  celldl:hasSource :ID-00000029 ;
+  celldl:hasTarget :ID-00000030 ;
+  bgf:hasSource :ID-00000029 ;
+  bgf:hasTarget :ID-00000030 .
+
+:ID-00000033 a celldl:Connection ;
+  celldl:hasSource :ID-00000030 ;
+  celldl:hasTarget :ID-00000031 ;
+  bgf:hasSource :ID-00000030 ;
+  bgf:hasTarget :ID-00000031 .

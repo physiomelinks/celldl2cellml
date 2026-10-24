@@ -1,0 +1,66 @@
+@prefix : <#> .
+@prefix bgf: <https://bg-rdf.org/ontologies/bondgraph-framework#> .
+@prefix cdt: <https://w3id.org/cdt/> .
+@prefix celldl: <http://celldl.org/ontologies/celldl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+<> a celldl:Document, bgf:BondgraphModel ;
+  dcterms:created "2026-10-23T19:48:42.476Z" ;
+  dcterms:modified "2026-10-23T19:48:52.849Z" ;
+  owl:versionInfo "1.0" ;
+  bgf:hasBondElement :ID-00000001, :ID-00000002, :ID-00000003 .
+
+:ID-00000001 a celldl:Component, bgf:HydraulicStorageNode ;
+  bgf:hasLocation "c" ;
+  bgf:hasSpecies "S1" ;
+  bgf:hasSymbol "q" ;
+  bgf:hasValue "1 L"^^cdt:ucum ;
+  bgf:parameterValue [
+    bgf:hasValue "1 J"^^cdt:ucum ;
+    bgf:varName "E"
+  ] .
+
+:ID-00000002 a celldl:Component, bgf:OsmoticTransporter ;
+  bgf:hasLocation "c" ;
+  bgf:hasSpecies "R1" ;
+  bgf:hasSymbol "R" ;
+  bgf:parameterValue [
+    bgf:hasValue "1 L2.s-1.J-1"^^cdt:ucum ;
+    bgf:varName "k_membrane"
+  ] ;
+  bgf:variableValue [
+    bgf:hasValue "1 L"^^cdt:ucum ;
+    bgf:varName "q_water_out"
+  ], [
+    bgf:hasValue "1 mol"^^cdt:ucum ;
+    bgf:varName "q_solute_in"
+  ], [
+    bgf:hasValue "1 mol"^^cdt:ucum ;
+    bgf:varName "q_solute_out"
+  ], [
+    bgf:hasValue "1 L"^^cdt:ucum ;
+    bgf:varName "q_water_in"
+  ] .
+
+:ID-00000003 a celldl:Component, bgf:HydraulicStorageNode ;
+  bgf:hasLocation "c" ;
+  bgf:hasSpecies "S2" ;
+  bgf:hasSymbol "q" ;
+  bgf:hasValue "1 L"^^cdt:ucum ;
+  bgf:parameterValue [
+    bgf:hasValue "1 J"^^cdt:ucum ;
+    bgf:varName "E"
+  ] .
+
+:ID-00000004 a celldl:Connection ;
+  celldl:hasSource :ID-00000001 ;
+  celldl:hasTarget :ID-00000002 ;
+  bgf:hasSource :ID-00000001 ;
+  bgf:hasTarget :ID-00000002 .
+
+:ID-00000005 a celldl:Connection ;
+  celldl:hasSource :ID-00000002 ;
+  celldl:hasTarget :ID-00000003 ;
+  bgf:hasSource :ID-00000002 ;
+  bgf:hasTarget :ID-00000003 .
