@@ -26,8 +26,9 @@ import {
  * - `affine`: an affine temperature (`Cel`), whose zero is offset, which CellML 2.0 can't express.
  * - `library`: a units from the caller's library, which can't be compared without its definition.
  * - `incompatible`: the two codes in a conversion aren't compatible.
+ * - `unit-system`: the code can't be rescaled into a unit system, or the system is unknown.
  */
-export type UcumErrorReason = 'syntax' | 'unknown' | 'arbitrary' | 'logarithmic' | 'affine' | 'library' | 'incompatible'
+export type UcumErrorReason = 'syntax' | 'unknown' | 'arbitrary' | 'logarithmic' | 'affine' | 'library' | 'incompatible' | 'unit-system'
 
 /** A units code that can't be read, turned into CellML units, compared or converted. The message names the code. */
 export class UcumError extends Error {

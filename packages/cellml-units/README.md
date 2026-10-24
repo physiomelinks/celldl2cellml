@@ -36,6 +36,7 @@ convertValue(libcellml, 1000, 'uF', 'F')    // 0.001
 | Naming | `unitsName`, `builtInUnits`, `nameUnits`, `sanitiseName`, `uniqueName` | Done |
 | Building units | `toCellMLUnits` | Done |
 | Comparing and converting | `compatible`, `convertValue` | Done |
+| Unit systems | `UNIT_SYSTEMS`, `unitSystem`, `rescaleUnits`, `rescaleCode`, `rescaleFactor` | Done |
 
 ## Reading
 
@@ -92,6 +93,22 @@ A test builds a model with the units for every BG-RDF code, and for `mmol/s`, `m
 - libCellML 0.7.1 gives a scaling factor of 1 between bare `kilogram` and bare `gram`, so both sides are always built as definitions that refer to the built-in units.
 - Codes are read as UCUM only. Units from a library can't be resolved here, so a `UcumUnits` holding one throws.
 
+## Unit systems
+
+`rescaleUnits(code, system)` gives a code in a unit system's units, and the factor for its values. The presets in `UNIT_SYSTEMS` are `si` (mol, L, J, C) and `cellular` (fmol, pL, fJ, fC).
+
+```js
+rescaleUnits('mol', 'cellular')          // { code: 'fmol', factor: 1e15 }
+rescaleCode('L2.s-1.J-1', 'cellular')    // 'pL2.s-1.fJ-1'
+rescaleCode('J/mol', 'cellular')         // 'J/mol': fJ/fmol has the same scale
+rescaleFactor('mol-1', 'cellular')       // 1e-15
+```
+
+- Each mol, L, J and C symbol, with any prefix, becomes the system's; `eq` and `osm` are amounts. Other symbols and the code's layout are kept.
+- A code whose scale doesn't change is returned as given, with a factor of 1, so potentials keep their names.
+- Other symbols the system would scale, such as `A`, `F` or `N` in Cellular, throw a `UcumError` with `reason` `unit-system`.
+- SI unprefixes: `rescaleUnits('mmol/s', 'si')` is `{ code: 'mol/s', factor: 1e-3 }`.
+
 ## Units CellML can't express
 
 Every failure throws a `UcumError` whose message names the symbol and the code, with `reason`, `code` and `symbol` properties for the caller:
@@ -105,6 +122,7 @@ Every failure throws a `UcumError` whose message names the symbol and the code, 
 | `affine` | `Cel`, `[degF]` | `toCellMLUnits`, `compatible`, `convertValue` |
 | `library` | a library units passed to `compatible` | `compatible`, `convertValue` |
 | `incompatible` | `F` to `H` | `convertValue` |
+| `unit-system` | `A` in Cellular, or an unknown system | `rescaleUnits` |
 
 - **Arbitrary units** (`[iU]`, `[arb'U]`, `[PFU]` and the rest of UCUM's list) have no fixed relation to any other units.
 - **Logarithmic units** (`[pH]`, neper and bel, with any prefix) can't be written with a multiplier.

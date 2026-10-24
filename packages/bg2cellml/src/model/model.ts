@@ -27,13 +27,14 @@
  *   one and zero nodes in `junctions.ts`.)
  */
 
-import { compatible, convertValue, type LibCellML } from '@physiomelinks/cellml-units'
+import { compatible, convertValue, unitSystem, type LibCellML, type UnitSystemId } from '@physiomelinks/cellml-units'
 import type { ParseOptions } from '@physiomelinks/math-ast'
 
 import type { BondgraphFramework } from '../framework/framework.js'
+import { DEFAULT_UNIT_SYSTEM, Rescaler, UNIT_SYSTEM_IRIS, UNIT_SYSTEM_PREDICATE, unitSystemForIri } from '../framework/unit-system.js'
 import { IssueLog, documentOf } from '../issues.js'
 import { RdfGraph, type OxigraphModule } from '../rdf/graph.js'
-import { BONDGRAPH_MODEL } from '../rdf/queries.js'
+import { BONDGRAPH_MODEL, modelUnitSystemQuery } from '../rdf/queries.js'
 import { buildNetwork, inferBonds, loadBonds, type BondgraphBond, type NetworkNode } from './bonds.js'
 import { assignDomains } from './domains.js'
 import { assignElementVariables } from './element-variables.js'
@@ -71,6 +72,11 @@ export type ModelStage = 'elements' | 'network' | 'domains' | 'variables' | 'equ
 
 export interface ModelLoadOptions {
   readonly until?: ModelStage
+  /**
+   * The unit system to build the model in, overriding the model's own
+   * `pml:unitSystem`: a preset id, `si` or `cellular`. A model with neither is SI.
+   */
+  readonly unitSystem?: string
 }
 
 export interface ModelElement {
@@ -84,6 +90,8 @@ export class BondgraphModel {
   /** `''` if the source has no single `bgf:BondgraphModel`. */
   readonly iri: string = ''
   readonly label?: string
+  /** The unit system the model is built in: the option's, the model's `pml:unitSystem`, or SI; `undefined` until found. */
+  readonly unitSystem?: UnitSystemId
   /** By IRI, in IRI order. */
   readonly elements = new Map<string, BondgraphElement>()
   /** By IRI. */
@@ -110,7 +118,7 @@ export class BondgraphModel {
    * the equations (5.5).
    */
   static fromTurtle(
-    framework: BondgraphFramework,
+    stockFramework: BondgraphFramework,
     runtime: ModelRuntime,
     turtle: string,
     baseIri: string,
@@ -127,6 +135,15 @@ export class BondgraphModel {
     }
     if (!model.#findModel()) return model
     model.log.document = documentOf(model.iri)
+    const system = model.#findUnitSystem(options.unitSystem)
+    if (system === undefined) return model
+    const framework = stockFramework.withUnitSystem(system)
+    if (framework !== stockFramework) {
+      for (const issue of framework.log.issues) {
+        const subject = issue.subject === undefined ? {} : { subject: issue.subject }
+        model.log.reportIssue({ message: issue.message, severity: 'warning', stage: 'units', ...subject })
+      }
+    }
 
     const unitsCompatible = (a: string, b: string): boolean => compatible(runtime.libcellml, a, b)
     const convert = (value: number, from: string, to: string): number => convertValue(runtime.libcellml, value, from, to)
@@ -139,6 +156,7 @@ export class BondgraphModel {
       log: model.log,
       compatible: unitsCompatible,
       ...(runtime.domParser === undefined ? {} : { domParser: runtime.domParser }),
+      ...(framework === stockFramework ? {} : { rescaler: new Rescaler(system) }),
     })
     for (const [iri, element] of elements) model.elements.set(iri, element)
     if (model.elements.size === 0) {
@@ -167,6 +185,39 @@ export class BondgraphModel {
 
     model.equations.push(...buildEquations(all))
     return model
+  }
+
+  /**
+   * The unit system to build in: `option` if given, else the model's
+   * `pml:unitSystem`, else SI. An unknown one is reported, giving `undefined`.
+   */
+  #findUnitSystem(option: string | undefined): UnitSystemId | undefined {
+    let system: UnitSystemId | undefined
+    if (option !== undefined) {
+      system = unitSystem(option)?.id
+      if (system === undefined) {
+        const ids = Object.keys(UNIT_SYSTEM_IRIS).map((id) => `"${id}"`).join(' or ')
+        this.log.reportIssue({ message: `Unknown unit system "${option}": use ${ids}`, stage: 'input' })
+      }
+    } else {
+      const terms = this.graph.select(modelUnitSystemQuery(this.iri)).map((row) => row.get('system')!)
+      const given = [...new Map(terms.map((term) => [`${term.termType} ${term.value}`, term])).values()]
+      if (given.length === 0) {
+        system = DEFAULT_UNIT_SYSTEM
+      } else if (given.length > 1) {
+        this.log.report(`Model <${this.iri}> has more than one <${UNIT_SYSTEM_PREDICATE}>`, this.iri)
+      } else {
+        const term = given[0]!
+        system = term.termType === 'NamedNode' ? unitSystemForIri(term.value) : undefined
+        if (system === undefined) {
+          const given = term.termType === 'NamedNode' ? `<${term.value}>` : JSON.stringify(term.value)
+          const choices = Object.values(UNIT_SYSTEM_IRIS).map((iri) => `<${iri}>`).join(' or ')
+          this.log.reportIssue({ message: `Model <${this.iri}> has an unknown unit system ${given}: use ${choices}`, stage: 'units', subject: this.iri })
+        }
+      }
+    }
+    if (system !== undefined) (this as { unitSystem: UnitSystemId }).unitSystem = system
+    return system
   }
 
   /** The source's one `bgf:BondgraphModel`, as Python's `__load_rdf`. */
