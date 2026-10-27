@@ -2,7 +2,9 @@
  * `Converter.convert()`: a CellDL document, or BG-RDF Turtle, to CellML 2.0,
  * with everything an application needs to use or show the result. Unlike
  * `celldl2cellml()`, it returns the CellML whenever it can be printed, with
- * any warnings, and gives every issue its severity, stage and `elementId`.
+ * any warnings, gives every issue its severity, stage and `elementId`, and
+ * declares every variable `interface="public"`, so the component can be
+ * connected to other components as it is.
  */
 
 import type { UnitSystemId } from '@physiomelinks/cellml-units'
@@ -167,6 +169,7 @@ export function convert(context: ConvertContext, source: string, options: Conver
       metadata: options.metadata ?? false,
       cellmlUri: options.cellmlUri ?? cellmlUriFor(baseUri),
       componentName,
+      publicInterfaces: true,
       ...(options.knownUnits === undefined ? {} : { knownUnits: options.knownUnits }),
       ...(options.checks === undefined ? {} : { checks: options.checks }),
     })

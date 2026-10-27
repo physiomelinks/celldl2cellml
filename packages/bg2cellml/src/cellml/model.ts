@@ -262,6 +262,8 @@ export interface BuildOptions {
   componentName?: string
   /** CellML documents whose units the host already has; see `UnitsDefinitions`. */
   knownUnits?: string | readonly string[]
+  /** Declare every variable `interface="public"`, so the component can be connected to others. */
+  publicInterfaces?: boolean
 }
 
 /**
@@ -283,7 +285,7 @@ export function buildCellMLModel(libcellml: LibCellML, model: BondgraphModel, lo
 
     const variables: CellMLVariable[] = []
     for (const candidate of collectVariables(libcellml, model, log)) {
-      const variable = makeVariable(libcellml, component, componentName, units, candidate, log)
+      const variable = makeVariable(libcellml, component, componentName, units, candidate, log, options.publicInterfaces ?? false)
       if (variable !== undefined) variables.push(variable)
     }
     cellml.linkUnits()
@@ -394,6 +396,7 @@ function makeVariable(
   units: UnitsDefinitions,
   candidate: Candidate,
   log: IssueLog,
+  publicInterface: boolean,
 ): CellMLVariable | undefined {
   const subject = candidate.source?.iri
   let unitsNameInModel: string
@@ -422,6 +425,7 @@ function makeVariable(
   variable.setId(id)
   variable.setUnitsByName(unitsNameInModel)
   if (initialValue !== undefined) variable.setInitialValueByDouble(initialValue)
+  if (publicInterface) variable.setInterfaceTypeByString('public')
   component.addVariable(variable)
   variable.delete?.()
 
