@@ -1,5 +1,11 @@
 # @physiomelinks/cellml-units
 
+## 0.5.1
+
+### Patch Changes
+
+- d0ef561: convert() declares every variable public
+
 ## 0.5.0
 
 ### Minor Changes
