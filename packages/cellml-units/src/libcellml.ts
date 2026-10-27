@@ -42,6 +42,9 @@ export interface Variable {
   setUnitsByUnits(units: Units): void
   initialValue(): string
   setInitialValueByDouble(value: number): void
+  /** The interface type, such as `public`; empty if none. */
+  interfaceType(): string
+  setInterfaceTypeByString(interfaceType: string): void
   delete?(): void
 }
 

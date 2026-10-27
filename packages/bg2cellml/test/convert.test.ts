@@ -67,15 +67,42 @@ describe('convert()', () => {
     expect(result.exception).toBeUndefined()
   })
 
-  it('gives the CellML byte for byte as generateCellML and celldl2cellml do, by default', async () => {
+  it('gives generateCellML\'s CellML with public interfaces, and celldl2cellml\'s otherwise', async () => {
     const source = readSource(rc)
     const model = BondgraphModel.fromTurtle(converter.framework!, runtime, source, rc.baseIri)
-    const generated = generateCellML(runtime.libcellml, model, { metadata: true, cellmlUri: cellmlUriFor(rc.baseIri) })
+    const generated = generateCellML(runtime.libcellml, model, { metadata: true, cellmlUri: cellmlUriFor(rc.baseIri), publicInterfaces: true })
     const result = await converter.convert(source, { sourceUri: rc.baseIri, rdfSource: true, metadata: true })
     const output = await converter.celldl2cellml(source, { sourceUri: rc.baseIri, rdfSource: true, metadata: true })
     expect(result.cellml).toBe(generated.cellml)
-    expect(result.cellml).toBe(output.cellml)
+    expect(result.cellml!.replaceAll(' interface="public"', '')).toBe(output.cellml)
     expect(result.metadata).toBe(output.metadata)
+  })
+
+  it('declares every variable public', async () => {
+    const result = await converter.convert(readSource(rc), { sourceUri: rc.baseIri, rdfSource: true })
+    const variables = [...result.cellml!.matchAll(/<variable [^>]*>/g)].map(([tag]) => tag)
+    expect(variables.length).toBeGreaterThan(0)
+    for (const tag of variables) expect(tag).toContain('interface="public"')
+  })
+
+  it('leaves celldl2cellml() without interfaces, as BG-Tools', async () => {
+    const output = await converter.celldl2cellml(readSource(rc), { sourceUri: rc.baseIri, rdfSource: true })
+    expect(output.cellml).toContain('<variable ')
+    expect(output.cellml).not.toContain('interface=')
+  })
+
+  it('gives components that can be joined by equivalences as they are', async () => {
+    const source = readSource(rc)
+    const converted = async (componentName: string): Promise<string> =>
+      (await converter.convert(source, { sourceUri: rc.baseIri, rdfSource: true, componentName })).cellml!
+    const bgTools = async (componentName: string): Promise<string> =>
+      (await converter.celldl2cellml(source, { sourceUri: rc.baseIri, rdfSource: true })).cellml!.replaceAll('"main', `"${componentName}`)
+    const joined = await join(await converted('a'), await converted('b'))
+    expect(joined.issues).toEqual([])
+    expect(joined.type).toBe('ode')
+    // Without interfaces, as celldl2cellml() gives, the same join is invalid.
+    const unjoinable = await join(await bgTools('a'), await bgTools('b'))
+    expect(unjoinable.issues.some((issue) => /interface/.test(issue))).toBe(true)
   })
 
   it('names the component and its variable ids', async () => {
@@ -272,3 +299,36 @@ ${body}`
     expect(listed!.cellml).toBe(plain!.cellml)
   })
 })
+
+/**
+ * Put two one-component models' components in one model, and join them as a
+ * host would: one time, and `b`'s source voltage given by `a`'s capacitor.
+ * The Validator's and Analyser's issues, and the model's type.
+ */
+async function join(first: string, second: string): Promise<{ issues: string[]; type: string }> {
+  const lib = runtime.libcellml as any
+  const model = new lib.Model()
+  model.setName('joined')
+  for (const cellml of [first, second]) {
+    const parsed = new lib.Parser(false).parseModel(cellml)
+    for (let i = 0; i < parsed.unitsCount(); i++) {
+      const units = parsed.unitsByIndex(i)
+      if (!model.hasUnitsByName(units.name())) model.addUnits(units.clone())
+    }
+    model.addComponent(parsed.componentByIndex(0).clone())
+  }
+  const variable = (component: string, name: string): unknown => model.componentByName(component, false).variableByName(name)
+  ;(variable('b', 'u_V_in') as { removeInitialValue(): void }).removeInitialValue()
+  lib.Variable.addEquivalence(variable('a', 't'), variable('b', 't'))
+  lib.Variable.addEquivalence(variable('a', 'u_q_1'), variable('b', 'u_V_in'))
+  model.linkUnits()
+  const issues: string[] = []
+  const validator = new lib.Validator()
+  validator.validateModel(model)
+  for (let i = 0; i < validator.issueCount(); i++) issues.push(validator.issue(i).description())
+  if (issues.length > 0) return { issues, type: 'invalid' }
+  const analyser = new lib.Analyser()
+  analyser.analyseModel(model)
+  for (let i = 0; i < analyser.issueCount(); i++) issues.push(analyser.issue(i).description())
+  return { issues, type: lib.AnalyserModel.typeAsString(analyser.analyserModel().type()) }
+}

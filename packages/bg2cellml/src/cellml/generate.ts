@@ -51,6 +51,8 @@ export interface GenerateOptions {
   knownUnits?: string | readonly string[]
   /** libCellML's checks to run; `full`, the Validator and the Analyser, if not given. */
   checks?: CellMLChecks
+  /** Declare every variable `interface="public"`; `celldl2cellml()` doesn't, as BG-Tools doesn't. */
+  publicInterfaces?: boolean
 }
 
 /**
@@ -68,6 +70,7 @@ export function generateCellML(libcellml: LibCellML, model: BondgraphModel, opti
   const build = buildCellMLModel(libcellml, model, log, {
     ...(options.componentName === undefined ? {} : { componentName: options.componentName }),
     ...(options.knownUnits === undefined ? {} : { knownUnits: options.knownUnits }),
+    ...(options.publicInterfaces === undefined ? {} : { publicInterfaces: options.publicInterfaces }),
   })
   try {
     const elements = elementManifest(build, model)
