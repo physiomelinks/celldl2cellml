@@ -1,5 +1,14 @@
 # @physiomelinks/bg2cellml
 
+## 0.5.1
+
+### Patch Changes
+
+- d0ef561: convert() declares every variable public
+- Updated dependencies [d0ef561]
+  - @physiomelinks/cellml-units@0.5.1
+  - @physiomelinks/math-ast@0.5.1
+
 ## 0.5.0
 
 ### Minor Changes
