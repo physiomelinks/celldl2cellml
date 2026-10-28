@@ -30,6 +30,8 @@ export interface ManifestVariable {
   readonly ucum: string
   /** The name of its units in the CellML. */
   readonly units: string
+  /** The bond graph's name for it, such as `q_G6P_c`, when the model's naming rules or names gave it another (`convert()` only). */
+  readonly bondgraph?: string
 }
 
 export interface ManifestElement {
@@ -63,12 +65,15 @@ export function elementManifest(build: CellMLModelBuild, model: BondgraphModel):
   const written = new Map<string, CellMLVariable>()
   for (const variable of build.variables) if (variable.kind === 'variable') written.set(variable.name, variable)
 
+  const bondgraphNames = new Map([...(model.renamed ?? [])].map(([from, to]) => [to, from]))
   const manifest: Record<string, ManifestElement> = {}
   const add = (iri: string, entry: Omit<ManifestElement, 'iri' | 'primary' | 'variables'>, roles: Iterable<[ModelVariable, VariableRole]>, primary?: ModelVariable): void => {
     const variables = new Map<string, ManifestVariable>()
     for (const [variable, role] of roles) {
       const cellml = written.get(variable.symbol)
-      if (cellml !== undefined && !variables.has(cellml.name)) variables.set(cellml.name, { name: cellml.name, role, ucum: cellml.ucum, units: cellml.units })
+      if (cellml === undefined || variables.has(cellml.name)) continue
+      const bondgraph = bondgraphNames.get(cellml.name)
+      variables.set(cellml.name, { name: cellml.name, role, ucum: cellml.ucum, units: cellml.units, ...(bondgraph === undefined ? {} : { bondgraph }) })
     }
     manifest[(model.iri === '' ? undefined : elementIdOf(iri, model.iri)) ?? iri] = {
       iri,

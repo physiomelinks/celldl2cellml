@@ -61,6 +61,13 @@ export interface ConvertOptions {
    * and values given in other units are converted into them.
    */
   unitSystem?: UnitSystemId
+  /**
+   * Name variables by the model's own rules and names, BG-RDF's
+   * `bgf:NamingRule` and `bgf:VariableName` (physiomelinks/BG-RDF). The
+   * element manifest gives the new names, and each renamed variable's bond
+   * graph name as `bondgraph`. On unless `false`.
+   */
+  naming?: boolean
 }
 
 export interface ConversionResult {
@@ -163,6 +170,7 @@ export function convert(context: ConvertContext, source: string, options: Conver
     const loadOptions = {
       flowVariables: true,
       solveTransforms: true,
+      naming: options.naming ?? true,
       ...(options.unitSystem === undefined ? {} : { unitSystem: options.unitSystem }),
     }
     const model = BondgraphModel.fromTurtle(framework, context.runtime, bgRdf, baseUri, loadOptions)

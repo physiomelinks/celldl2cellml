@@ -68,7 +68,22 @@ A model can be built in a unit system other than BG-RDF's mol, L, J and C. `unit
 
 An issue's `elementId` is its subject's IRI fragment, such as a CellDL diagram's `<g id>`, and is the same whether the document's Turtle uses relative or absolute IRIs (`elementIdOf`).
 
-`result.elements` is the element manifest, keyed the same way (by IRI for an element outside the source): each element's and junction's `{ iri, kind, symbol, template?, label?, primary?, variables }`, where `kind` is `element`, `one`, `zero` or `transform`, and each variable written to the CellML is `{ name, role, ucum, units }` with `role` one of `flow`, `potential`, `quantity`, `parameter`, `ratio` or `other`. A variable two elements share, such as a one node's flow that a transform node's port takes, is listed for both. `primary` is a one or zero node's own variable, a transform node's ratio, an element's intrinsic variable (a capacitor's `q`, a source's potential or flow), or else its first port's flow. `toViewerAnnotations(result.elements)` turns it into `@celldl/viewer` annotations, `{ [svgId]: { label, primary, variables, tooltip } }`, with a tooltip line such as `v_1 (flow, C/s)` for each variable unless `{ tooltip }` gives another.
+`result.elements` is the element manifest, keyed the same way (by IRI for an element outside the source): each element's and junction's `{ iri, kind, symbol, template?, label?, primary?, variables }`, where `kind` is `element`, `one`, `zero` or `transform`, and each variable written to the CellML is `{ name, role, ucum, units, bondgraph? }` with `role` one of `flow`, `potential`, `quantity`, `parameter`, `ratio` or `other`. A variable two elements share, such as a one node's flow that a transform node's port takes, is listed for both. `primary` is a one or zero node's own variable, a transform node's ratio, an element's intrinsic variable (a capacitor's `q`, a source's potential or flow), or else its first port's flow. `toViewerAnnotations(result.elements)` turns it into `@celldl/viewer` annotations, `{ [svgId]: { label, primary, variables, tooltip } }`, with a tooltip line such as `v_1 (flow, C/s)` for each variable unless `{ tooltip }` gives another.
+
+### Naming rules
+
+A model can name its variables its own way with physiomelinks/BG-RDF's `bgf:NamingRule` and `bgf:VariableName`, which `convert()` applies (`naming: false` turns them off) and `celldl2cellml()`, like Python 0.11.2, ignores. The rules are Finbar Argus's (BG-Tools `variable_names.py`), as the CellDL Editor's Variables panel previews them:
+
+```turtle
+<> bgf:hasNamingRule [ bgf:forElementClass bgf:QuantityStore ; bgf:forDomain bgf:Chemical ;
+                       bgf:forVariable "q" ; bgf:namePattern "n_{species}_{location}" ] .
+:Re_HK bgf:hasVariableName [ bgf:forVariable "v" ; bgf:cellmlName "v_hexokinase" ] .
+```
+
+- A rule names one of an element's variables, by the template's name for it (`q`, `u`, `v`, `u_f`, `K`, `kappa`, ...), for the elements of a class (its template's, such as `bgf:QuantityStore`) and domain, either of which may be left out. An element's explicit name wins; otherwise the rule for its class and domain, then its class, then its domain, then neither.
+- A pattern's placeholders are `{species}`, `{location}`, `{name}` (the species, else the element's identifier), `{element}` (its bond graph name, `q_G6P_c`), `{label}` (its `bgf:hasSymbol`) and `{var}`. A name keeps letters, digits and `_`, drops repeated and surrounding `_`, and starts with `{var}_` if it would start with a digit.
+- A name already taken, by time, a domain constant, a junction's variable, a variable no rule renames or an earlier renamed one (by element identifier), is numbered `_2`, `_3`, ...; that, an explicit name CellML can't hold as given, and a name for a variable the element doesn't have are warnings with the element's `elementId`.
+- The CellML, its equations and the element manifest use the final names; a renamed variable's manifest entry has its bond graph name as `bondgraph`.
 
 ### Flows
 
@@ -142,7 +157,7 @@ Each difference is deliberate. The parity tests (`test/parity.test.ts`) check th
 ### In the CellML
 
 - **CellML 2.0, written by libCellML.** The model is in the CellML 2.0 namespace, and the component and variables have CellML 2.0 `id`s (`main`, `main-q_1`) where Python's have the same values as `cmeta:id`. The CellML is validated and analysed: every message from libCellML's Validator and Analyser is an issue, warnings included, so units that aren't consistent are reported; `generateCellML` still returns the CellML with them, and `celldl2cellml` returns just the issues. `modelType` gives the Analyser's type: like Python's CellML, most models with junctions are DAEs rather than ODEs, as some junction equations form linear systems libCellML solves numerically. BG-RDF's `example_A3` and `example_A3_reduced` give the units warning; `test/models` has them with units.
-- **`convert()` writes flows with variables.** See "Flows" above; `celldl2cellml()` doesn't, as Python doesn't.
+- **`convert()` writes flows with variables, and names variables by the model's rules.** See "Flows" and "Naming rules" above; `celldl2cellml()` does neither, as Python doesn't.
 - **`convert()` declares every variable public.** Its CellML gives each variable `interface="public"`, so the component can be joined to others by equivalences as it is, in PhLynx, an OMEX archive, circulatory_autogen or OpenCOR. `celldl2cellml()` declares no interfaces, as Python doesn't.
 - **No header comment.** Python's CellML starts with a comment saying it was generated by BG-Tools, its version, and the model's IRI. Ours has none (decided with Hugh): the CellML is as libCellML prints it.
 - **Numbers are printed as libCellML prints them.** Initial values and numbers in equations have the same values, but whole numbers are written without a decimal point: `10` and `96485` where Python writes `10.0` and `96485.0`.

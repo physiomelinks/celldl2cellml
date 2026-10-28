@@ -41,6 +41,7 @@ import { assignElementVariables } from './element-variables.js'
 import { loadElements, type BondgraphElement } from './elements.js'
 import { buildEquations, type ModelEquation } from './equations.js'
 import { assignJunctionVariables, loadJunctions, type BondgraphJunction } from './junctions.js'
+import { applyNaming } from './naming.js'
 import { UniqueNames, prettyUri } from './names.js'
 import { BondNetwork } from './network.js'
 
@@ -85,6 +86,11 @@ export interface ModelLoadOptions {
   readonly flowVariables?: boolean
   /** Solve transform nodes' equations for their own variables where they must be (`EquationOptions.solveTransforms`). */
   readonly solveTransforms?: boolean
+  /**
+   * Name variables by the model's `bgf:NamingRule`s and `bgf:VariableName`s
+   * (`naming.ts`). Python 0.11.2 doesn't read them, so `celldl2cellml()` doesn't.
+   */
+  readonly naming?: boolean
 }
 
 export interface ModelElement {
@@ -109,6 +115,8 @@ export class BondgraphModel {
   network = new BondNetwork<NetworkNode>()
   /** For each element its constitutive relation and own equations, then each junction's, as Python orders them. */
   readonly equations: ModelEquation[] = []
+  /** Each variable the model's naming renamed (with the `naming` option): its bond graph name, and its name. */
+  readonly renamed = new Map<string, string>()
   readonly graph: RdfGraph
 
   private constructor(graph: RdfGraph) {
@@ -192,6 +200,10 @@ export class BondgraphModel {
     if (until === 'variables') return model
 
     model.equations.push(...buildEquations(all, { flowVariables: options.flowVariables ?? false, solveTransforms: options.solveTransforms ?? false }))
+    if (options.naming) {
+      const renamed = applyNaming(model.iri, { graph: model.graph, log: model.log, elements: model.elements, junctions: model.junctions, equations: model.equations })
+      for (const [from, to] of renamed) model.renamed.set(from, to)
+    }
     return model
   }
 
