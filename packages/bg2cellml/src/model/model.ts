@@ -77,6 +77,14 @@ export interface ModelLoadOptions {
    * `pml:unitSystem`: a preset id, `si` or `cellular`. A model with neither is SI.
    */
   readonly unitSystem?: string
+  /**
+   * Write sources and composite elements in terms of their neighbours' flow
+   * and potential variables, not their relations' right sides
+   * (`EquationOptions.flowVariables`). Python doesn't, so `celldl2cellml()` doesn't.
+   */
+  readonly flowVariables?: boolean
+  /** Solve transform nodes' equations for their own variables where they must be (`EquationOptions.solveTransforms`). */
+  readonly solveTransforms?: boolean
 }
 
 export interface ModelElement {
@@ -183,7 +191,7 @@ export class BondgraphModel {
     assignElementVariables(all)
     if (until === 'variables') return model
 
-    model.equations.push(...buildEquations(all))
+    model.equations.push(...buildEquations(all, { flowVariables: options.flowVariables ?? false, solveTransforms: options.solveTransforms ?? false }))
     return model
   }
 

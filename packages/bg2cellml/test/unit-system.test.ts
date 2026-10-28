@@ -29,7 +29,7 @@ import {
   type ElementTemplate,
   type Runtime,
 } from '../src/index.js'
-import { expectKnownIssues } from './known-issues.js'
+import { CONVERT_UNITS_INCONSISTENT, expectKnownIssues } from './known-issues.js'
 import { frameworkSource, loadManifest, readSource, type ReferenceCase } from './reference.js'
 import { loadLibOpenCOR, simulate, type LibOpenCOR } from './simulate.js'
 
@@ -170,7 +170,7 @@ describe('Cellular', () => {
     const result = await convert(c, { unitSystem: 'cellular', knownUnits: PHLYNX_UNITS })
     expect(result.unitSystem).toBe('cellular')
     expect(result.cellml).toBeDefined()
-    expectKnownIssues(name, messages(result).filter((message) => !message.startsWith('Units ')))
+    expectKnownIssues(name, messages(result).filter((message) => !message.startsWith('Units ')), CONVERT_UNITS_INCONSISTENT)
   })
 })
 

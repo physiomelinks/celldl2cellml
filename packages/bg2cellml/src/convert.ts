@@ -158,7 +158,13 @@ export function convert(context: ConvertContext, source: string, options: Conver
   const issues: Issue[] = []
   try {
     const bgRdf = options.rdfSource ? source : extractBgRdf(source, context.runtime.domParser)
-    const loadOptions = options.unitSystem === undefined ? {} : { unitSystem: options.unitSystem }
+    // Sources and composites in terms of their neighbours' flow variables, not their rate expressions again,
+    // and transform nodes defining their own variables rather than their neighbours' again
+    const loadOptions = {
+      flowVariables: true,
+      solveTransforms: true,
+      ...(options.unitSystem === undefined ? {} : { unitSystem: options.unitSystem }),
+    }
     const model = BondgraphModel.fromTurtle(framework, context.runtime, bgRdf, baseUri, loadOptions)
     if (model.iri !== '') modelIri = model.iri
     unitSystem = model.unitSystem

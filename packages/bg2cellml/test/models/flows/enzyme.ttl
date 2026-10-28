@@ -1,0 +1,42 @@
+@prefix bgf: <https://bg-rdf.org/ontologies/bondgraph-framework#> .
+@prefix cdt: <https://w3id.org/cdt/> .
+@prefix tpl: <https://bg-rdf.org/templates/> .
+
+@prefix : <#> .
+
+# An enzyme: E + S <-> C <-> E + P, with composite reaction nodes R1 and R2,
+# so E and C are each on two reactions. A saturating reaction R3, S -> P,
+# runs beside them, and P is a saturating store.
+# Simulate for 20 seconds at 0.01 second steps.
+
+:model
+    a bgf:BondgraphModel ;
+    bgf:usesTemplate tpl:chemical.ttl ;
+    bgf:hasBondElement :E, :S, :C, :P, :R1, :R2, :R3 .
+
+:E a bgf:ChemicalStorageNode ; bgf:hasSpecies "E" ; bgf:hasValue "1 mol"^^cdt:ucum ;
+    bgf:parameterValue [ bgf:varName "K" ; bgf:hasValue "1 mol-1"^^cdt:ucum ] .
+:S a bgf:ChemicalStorageNode ; bgf:hasSpecies "S" ; bgf:hasValue "5 mol"^^cdt:ucum ;
+    bgf:parameterValue [ bgf:varName "K" ; bgf:hasValue "1 mol-1"^^cdt:ucum ] .
+:C a bgf:ChemicalStorageNode ; bgf:hasSpecies "C" ; bgf:hasValue "0.01 mol"^^cdt:ucum ;
+    bgf:parameterValue [ bgf:varName "K" ; bgf:hasValue "10 mol-1"^^cdt:ucum ] .
+:P a bgf:SaturatingChemicalStorageNode ; bgf:hasSpecies "P" ; bgf:hasValue "0.01 mol"^^cdt:ucum ;
+    bgf:parameterValue [ bgf:varName "K" ; bgf:hasValue "0.5 mol-1"^^cdt:ucum ],
+                       [ bgf:varName "k_sat" ; bgf:hasValue "3 mol"^^cdt:ucum ] .
+
+:R1 a bgf:ChemicalReactionNode ;
+    bgf:parameterValue [ bgf:varName "kappa" ; bgf:hasValue "1 mol/s"^^cdt:ucum ] .
+:R2 a bgf:ChemicalReactionNode ;
+    bgf:parameterValue [ bgf:varName "kappa" ; bgf:hasValue "0.5 mol/s"^^cdt:ucum ] .
+:R3 a bgf:SaturatingChemicalReactionNode ;
+    bgf:parameterValue [ bgf:varName "kappa" ; bgf:hasValue "0.05 mol/s"^^cdt:ucum ],
+                       [ bgf:varName "sigma" ; bgf:hasValue 2.0 ] .
+
+:E.R1 bgf:hasSource :E ; bgf:hasTarget :R1 .
+:S.R1 bgf:hasSource :S ; bgf:hasTarget :R1 .
+:R1.C bgf:hasSource :R1 ; bgf:hasTarget :C .
+:C.R2 bgf:hasSource :C ; bgf:hasTarget :R2 .
+:R2.E bgf:hasSource :R2 ; bgf:hasTarget :E .
+:R2.P bgf:hasSource :R2 ; bgf:hasTarget :P .
+:S.R3 bgf:hasSource :S ; bgf:hasTarget :R3 .
+:R3.P bgf:hasSource :R3 ; bgf:hasTarget :P .

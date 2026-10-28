@@ -20,7 +20,17 @@ import type { BondNetwork } from './network.js'
 import { groupRows, singleTerm } from './rows.js'
 
 /** The junction types a model can use. */
-export const JUNCTION_TYPES: readonly string[] = [BGF.OneNode, BGF.ZeroNode, BGF.TransformNode]
+export const JUNCTION_TYPES: readonly string[] = [BGF.OneNode, BGF.ZeroNode, BGF.TransformNode, BGF.TransformerNode, BGF.GyratorNode]
+
+/**
+ * The transform nodes that say what they are: a `bgf:TransformerNode` is a
+ * transformer and a `bgf:GyratorNode` a gyrator, whatever their ports'
+ * domains. Each is a transform node, with `type` `bgf:TransformNode`.
+ */
+const DECLARED_TRANSFORMS: ReadonlyMap<string, 'transformer' | 'gyrator'> = new Map([
+  [BGF.TransformerNode, 'transformer'],
+  [BGF.GyratorNode, 'gyrator'],
+])
 
 /** A transform node's two ports, `0` (inward) and `1` (outward), as Python's `TRANSFORM_PORT_IDS`. */
 export const TRANSFORM_PORT_IDS = ['0', '1'] as const
@@ -57,8 +67,16 @@ export class BondgraphJunction {
    * flows and potentials of its ports, `v_0`, `u_0`, `v_1` and `u_1`.
    */
   readonly variables = new Map<string, ModelVariable>()
-  /** For a transform node, whether it is a transformer (its ports share a domain) or a gyrator. */
+  /**
+   * For a transform node, whether it is a transformer or a gyrator: as its
+   * class says (`bgf:TransformerNode`, `bgf:GyratorNode`), or else a
+   * transformer if its ports share a domain.
+   */
   transform?: 'transformer' | 'gyrator'
+  /** A transform node's port variables of its own, not its neighbours': the potential beside a one node, the flow beside a zero node. */
+  readonly ownVariables = new Set<ModelVariable>()
+  /** What a `bgf:TransformerNode` or `bgf:GyratorNode` says it is. */
+  readonly declaredTransform?: 'transformer' | 'gyrator'
   /** For a transform node, `TRANSFORMER_EQUATIONS` or `GYRATOR_EQUATIONS`, in terms of the names in `variables`. */
   relation?: readonly Equation[]
   /** The junction's equations, once the model's are built. */
@@ -66,7 +84,9 @@ export class BondgraphJunction {
 
   constructor(iri: string, type: string, options: { symbol: string; label?: string; value?: Value }) {
     this.iri = iri
-    this.type = type
+    const declared = DECLARED_TRANSFORMS.get(type)
+    if (declared !== undefined) this.declaredTransform = declared
+    this.type = declared === undefined ? type : BGF.TransformNode
     this.symbol = options.symbol
     if (options.label !== undefined) this.label = options.label
     if (options.value !== undefined) this.value = options.value
@@ -274,12 +294,13 @@ function assignTransformVariables(junction: BondgraphJunction, context: Variable
     } else {
       port = { flow: new ModelVariable({ name: flowName, units: domain.flow.units }), potential: shared }
     }
+    junction.ownVariables.add(type === BGF.OneNode ? port.potential : port.flow)
     junction.variables.set(`v_${portId}`, port.flow)
     junction.variables.set(`u_${portId}`, port.potential)
     node.port = port
     node.portType = BGF.TransformNode
   }
-  junction.transform = domains[0] === domains[1] ? 'transformer' : 'gyrator'
+  junction.transform = junction.declaredTransform ?? (domains[0] === domains[1] ? 'transformer' : 'gyrator')
   junction.relation = junction.transform === 'transformer' ? TRANSFORMER_EQUATIONS : GYRATOR_EQUATIONS
 }
 

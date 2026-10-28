@@ -12,11 +12,14 @@ import { expect } from 'vitest'
  */
 export const UNITS_INCONSISTENT: Readonly<Record<string, number>> = { example_A3: 1, example_A3_reduced: 2 }
 
+/** `convert()` writes A3_reduced's junction with the source's flow variable, not its expression again, so it warns once. */
+export const CONVERT_UNITS_INCONSISTENT: Readonly<Record<string, number>> = { example_A3: 1, example_A3_reduced: 1 }
+
 export const SIN_UNITS_MESSAGE = /^CellML analysis: The unit of '.*' in 'sin\(.*\)' .* is not dimensionless\./
 
 /** A case's issue messages are the ones it's expected to give: none, or the A3 examples' units warnings. */
-export function expectKnownIssues(name: string, messages: readonly string[]): void {
-  const count = UNITS_INCONSISTENT[name] ?? 0
+export function expectKnownIssues(name: string, messages: readonly string[], known: Readonly<Record<string, number>> = UNITS_INCONSISTENT): void {
+  const count = known[name] ?? 0
   expect(messages, `${name}'s issues`).toHaveLength(count)
   for (const message of messages) expect(message).toMatch(SIN_UNITS_MESSAGE)
 }
