@@ -58,11 +58,17 @@ export {
 } from './cellml/model.js'
 export {
   EQUATION_GROUPS,
+  EQUATION_SECTIONS,
   NUMBER_UNITS,
   addEquations,
+  equationSections,
   leftSideKey,
+  leftSideVariable,
+  type AddEquationOptions,
   type CellMLEquation,
   type EquationGroup,
+  type EquationSection,
+  type EquationSectionKind,
 } from './cellml/equations.js'
 export {
   BondgraphFramework,

@@ -19,6 +19,7 @@ import type { LibCellML } from '@physiomelinks/cellml-units'
 import { IssueLog, type Issue } from '../issues.js'
 import type { BondgraphModel } from '../model/model.js'
 import { checkCellMLModel, validateCellMLModel, type CellMLChecks } from './check.js'
+import { equationSections, type EquationSection } from './equations.js'
 import { elementManifest, type ElementManifest } from './manifest.js'
 import { CELLML_MODEL_URI, annotation, metadataTurtle, type ElementAnnotation } from './metadata.js'
 import { buildCellMLModel, freeBuild, type CellMLModelBuild } from './model.js'
@@ -37,6 +38,8 @@ export interface CellMLResult {
   readonly checks: CellMLChecks
   /** Each units name the known units define differently, and the name the CellML gives those units instead. */
   readonly renamedUnits?: Readonly<Record<string, string>>
+  /** With `sections`, once the model is built: the equations' sections, in order, each with its equations' left-side variables. */
+  readonly sections?: readonly EquationSection[]
   readonly issues: readonly Issue[]
 }
 
@@ -53,6 +56,11 @@ export interface GenerateOptions {
   checks?: CellMLChecks
   /** Declare every variable `interface="public"`; `celldl2cellml()` doesn't, as BG-Tools doesn't. */
   publicInterfaces?: boolean
+  /**
+   * Write the equations in sections by role, ODEs last, with no comments, and
+   * return the sections; `celldl2cellml()` writes BG-Tools' groups, ODEs first.
+   */
+  sections?: boolean
 }
 
 /**
@@ -71,17 +79,19 @@ export function generateCellML(libcellml: LibCellML, model: BondgraphModel, opti
     ...(options.componentName === undefined ? {} : { componentName: options.componentName }),
     ...(options.knownUnits === undefined ? {} : { knownUnits: options.knownUnits }),
     ...(options.publicInterfaces === undefined ? {} : { publicInterfaces: options.publicInterfaces }),
+    ...(options.sections === undefined ? {} : { sections: options.sections }),
   })
   try {
     const elements = elementManifest(build, model)
+    const sections = options.sections ? { sections: equationSections(build.equations, model) } : {}
     const renamed = build.units.renamed.size === 0 ? {} : { renamedUnits: Object.fromEntries(build.units.renamed) }
-    if (log.issues.some((issue) => issue.severity === 'error')) return { elements, ...renamed, checks: 'none', issues: log.issues }
+    if (log.issues.some((issue) => issue.severity === 'error')) return { elements, ...renamed, ...sections, checks: 'none', issues: log.issues }
     const check = runChecks(libcellml, build.model, log, options.checks ?? 'full')
     const printer = new libcellml.Printer()
     try {
       const cellml = printer.printModel(build.model, false)
       const metadata = options.metadata ? { metadata: metadataTurtle(build, model, options.cellmlUri ?? CELLML_MODEL_URI) } : {}
-      return { cellml, ...metadata, annotation: annotation(build), elements, ...renamed, ...check, issues: log.issues }
+      return { cellml, ...metadata, annotation: annotation(build), elements, ...renamed, ...sections, ...check, issues: log.issues }
     } finally {
       printer.delete?.()
     }

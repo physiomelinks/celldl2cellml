@@ -60,6 +60,9 @@ const JUNCTION_KINDS: ReadonlyMap<string, ManifestKind> = new Map([
   [BGF.TransformNode, 'transform'],
 ])
 
+/** A junction's kind, from its type; `undefined` if it isn't a one, zero or transform node. */
+export const junctionKind = (type: string): ManifestKind | undefined => JUNCTION_KINDS.get(type)
+
 /** The manifest of a built model. Only variables written to the CellML are listed. */
 export function elementManifest(build: CellMLModelBuild, model: BondgraphModel): ElementManifest {
   const written = new Map<string, CellMLVariable>()
@@ -107,7 +110,7 @@ export function elementManifest(build: CellMLModelBuild, model: BondgraphModel):
 const labelOf = (source: BondgraphElement | BondgraphJunction): { label?: string } => (source.label === undefined ? {} : { label: source.label })
 
 /** An element's variables with their roles: its ports' first, then parameters, then the rest. */
-function* elementRoles(element: BondgraphElement): Iterable<[ModelVariable, VariableRole]> {
+export function* elementRoles(element: BondgraphElement): Iterable<[ModelVariable, VariableRole]> {
   for (const port of element.ports.values()) {
     yield [port.flow, 'flow']
     yield [port.potential, 'potential']
@@ -127,7 +130,7 @@ function* elementRoles(element: BondgraphElement): Iterable<[ModelVariable, Vari
 }
 
 /** A junction's variables with their roles: a node's own flow or potential, or a transform node's ratio and its ports' flows and potentials. */
-function* junctionRoles(junction: BondgraphJunction, kind: ManifestKind): Iterable<[ModelVariable, VariableRole]> {
+export function* junctionRoles(junction: BondgraphJunction, kind: ManifestKind): Iterable<[ModelVariable, VariableRole]> {
   for (const [name, variable] of junction.variables) {
     if (name === '') yield [variable, kind === 'one' ? 'flow' : 'potential']
     else if (name === TRANSFORM_RATIO_NAME) yield [variable, 'ratio']

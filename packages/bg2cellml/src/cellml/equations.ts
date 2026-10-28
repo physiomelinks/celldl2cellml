@@ -9,6 +9,11 @@
  * sorted by the text sympy gives the left side (`q_1`, `Derivative(q_1, t)`).
  * Each equation is its own `<math>`.
  *
+ * With `sections` (`convert()`), they come in sections by their role instead,
+ * with no comments (a host lays them out, as PhLynx does in a sidecar):
+ * potentials, port potentials, element flows, junction flows, any other
+ * relations, then the ODEs (`EQUATION_SECTIONS`). Empty sections are left out.
+ *
  * Differences from Python, on purpose:
  * - A number given units in BG-RDF's MathML (a UCUM code in `bgf:units`, or
  *   `cellml:units`; see `numberUnits`) keeps them, which Python ignores. One
@@ -25,8 +30,10 @@ import { UcumError } from '@physiomelinks/cellml-units'
 import { toMathML, variables, type AstNode, type Equation, type NumberNode } from '@physiomelinks/math-ast'
 
 import type { IssueLog } from '../issues.js'
+import type { ModelVariable } from '../model/elements.js'
 import type { EquationProvenance, ModelEquation } from '../model/equations.js'
 import type { BondgraphModel } from '../model/model.js'
+import { elementRoles, junctionKind, junctionRoles, type VariableRole } from './manifest.js'
 import type { CellMLModelBuild } from './model.js'
 
 /** The groups equations are written in, in order, with their comments. */
@@ -38,6 +45,34 @@ export const EQUATION_GROUPS = [
 
 export type EquationGroup = (typeof EQUATION_GROUPS)[number]['group']
 
+/**
+ * `convert()`'s sections, in order, by an equation's role: an element's
+ * constitutive relation for a potential or a flow, a junction's (or an
+ * element's acting as one) for a potential or a flow, anything else, then
+ * the ODEs. Titles are chemical when every element is.
+ */
+export const EQUATION_SECTIONS = [
+  { section: 'potentials', title: 'Potentials', chemical: 'Chemical potentials' },
+  { section: 'portPotentials', title: 'Port potentials', chemical: 'Reaction affinities' },
+  { section: 'elementFlows', title: 'Element flows', chemical: 'Reaction flux' },
+  { section: 'junctionFlows', title: 'Junction flows', chemical: 'Species flux' },
+  { section: 'other', title: 'Other relations', chemical: 'Other relations' },
+  { section: 'conservation', title: 'Conservation', chemical: 'Mass conservation' },
+] as const
+
+export type EquationSectionKind = (typeof EQUATION_SECTIONS)[number]['section']
+
+/** A section of `convert()`'s equations: its title, and each equation's left-side variable (an ODE's state), in order. */
+export interface EquationSection {
+  readonly title: string
+  readonly variables: readonly string[]
+}
+
+export interface AddEquationOptions {
+  /** Write the equations in sections by role (`EQUATION_SECTIONS`), with no comments, rather than in Python's groups. */
+  sections?: boolean
+}
+
 /** An equation as written into the CellML model. */
 export interface CellMLEquation {
   readonly equation: Equation
@@ -45,6 +80,8 @@ export interface CellMLEquation {
   /** The IRI of the element or junction it comes from. */
   readonly source: string
   readonly group: EquationGroup
+  /** Its section, when written in sections. */
+  readonly section?: EquationSectionKind
 }
 
 /** The units of numbers with none of their own. */
@@ -83,7 +120,7 @@ function groupOf(equation: ModelEquation): EquationGroup | undefined {
  * 6.2), returning them as written, in order. Problems are reported in `log`;
  * an equation with one is left out.
  */
-export function addEquations(build: CellMLModelBuild, model: BondgraphModel, log: IssueLog): CellMLEquation[] {
+export function addEquations(build: CellMLModelBuild, model: BondgraphModel, log: IssueLog, options: AddEquationOptions = {}): CellMLEquation[] {
   const known = new Set(build.variables.map((variable) => variable.name))
   const nameOf = (iri: string): string => (model.elements.get(iri) ?? model.junctions.get(iri))?.prettyName ?? iri
 
@@ -104,6 +141,8 @@ export function addEquations(build: CellMLModelBuild, model: BondgraphModel, log
     groups.get(group)!.push({ ...equation, group })
   }
 
+  if (options.sections) return writeSections(build, model, [...groups.values()].flat(), nameOf, log)
+
   const written: CellMLEquation[] = []
   for (const { group, description } of EQUATION_GROUPS) {
     const equations = groups.get(group)!.sort(byLeftSide)
@@ -120,6 +159,75 @@ export function addEquations(build: CellMLModelBuild, model: BondgraphModel, log
   }
   build.model.linkUnits()
   return written
+}
+
+/** Write the equations in sections, each sorted as Python sorts a group, with no comments. */
+function writeSections(
+  build: CellMLModelBuild,
+  model: BondgraphModel,
+  equations: readonly CellMLEquation[],
+  nameOf: (iri: string) => string,
+  log: IssueLog,
+): CellMLEquation[] {
+  const roles = variableRoles(model)
+  const sections = new Map<EquationSectionKind, CellMLEquation[]>(EQUATION_SECTIONS.map(({ section }) => [section, []]))
+  for (const equation of equations) {
+    const section = sectionOf(equation, roles)
+    sections.get(section)!.push({ ...equation, section })
+  }
+  const written: CellMLEquation[] = []
+  for (const sectioned of sections.values()) {
+    for (const equation of sectioned.sort(byLeftSide)) {
+      const text = writeEquation(build, equation, nameOf, log)
+      if (text === undefined) continue
+      build.component.appendMath(`${text}\n`)
+      written.push(equation)
+    }
+  }
+  build.model.linkUnits()
+  return written
+}
+
+/** Each variable's role, by its symbol: as the element manifest gives it, elements' first. */
+function variableRoles(model: BondgraphModel): Map<string, VariableRole> {
+  const roles = new Map<string, VariableRole>()
+  const add = (pairs: Iterable<[ModelVariable, VariableRole]>): void => {
+    for (const [variable, role] of pairs) if (!roles.has(variable.symbol)) roles.set(variable.symbol, role)
+  }
+  for (const element of model.elements.values()) add(elementRoles(element))
+  for (const junction of model.junctions.values()) {
+    const kind = junctionKind(junction.type)
+    if (kind !== undefined) add(junctionRoles(junction, kind))
+  }
+  return roles
+}
+
+/** An equation's section, by its role: what writes it, and what its left side is. */
+function sectionOf(equation: CellMLEquation, roles: ReadonlyMap<string, VariableRole>): EquationSectionKind {
+  const left = equation.equation.left
+  if (left.type === 'Derivative') return 'conservation'
+  const role = left.type === 'Identifier' ? roles.get(left.name) : undefined
+  const relation = equation.provenance === 'cr'
+  if (role === 'potential') return relation ? 'potentials' : 'portPotentials'
+  if (role === 'flow') return relation ? 'elementFlows' : 'junctionFlows'
+  return 'other'
+}
+
+/** An equation's left-side variable: the variable, or an ODE's state. */
+export function leftSideVariable(left: AstNode): string | undefined {
+  if (left.type === 'Identifier') return left.name
+  if (left.type === 'Derivative') return leftSideVariable(left.expression)
+  return undefined
+}
+
+/** The titled sections of equations written in sections, empty ones left out. Titles are chemical when every element of the model is. */
+export function equationSections(equations: readonly CellMLEquation[], model: BondgraphModel): EquationSection[] {
+  const elements = [...model.elements.values()]
+  const chemical = elements.length > 0 && elements.every((element) => element.domain.name === 'Chemical')
+  return EQUATION_SECTIONS.map(({ section, title, chemical: chemicalTitle }) => ({
+    title: chemical ? chemicalTitle : title,
+    variables: equations.filter((equation) => equation.section === section).map((equation) => leftSideVariable(equation.equation.left) ?? ''),
+  })).filter((section) => section.variables.length > 0)
 }
 
 /** One equation as a `<math>` element, every number with `cellml:units`. */

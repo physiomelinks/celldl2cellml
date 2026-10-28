@@ -67,14 +67,17 @@ describe('convert()', () => {
     expect(result.exception).toBeUndefined()
   })
 
-  it('gives generateCellML\'s CellML with public interfaces, and celldl2cellml\'s otherwise', async () => {
+  it('gives generateCellML\'s CellML with public interfaces in sections, and celldl2cellml\'s otherwise', async () => {
     const source = readSource(rc)
     const model = BondgraphModel.fromTurtle(converter.framework!, runtime, source, rc.baseIri)
-    const generated = generateCellML(runtime.libcellml, model, { metadata: true, cellmlUri: cellmlUriFor(rc.baseIri), publicInterfaces: true })
+    const options = { metadata: true, cellmlUri: cellmlUriFor(rc.baseIri), publicInterfaces: true }
+    const generated = generateCellML(runtime.libcellml, model, { ...options, sections: true })
+    const odesFirst = generateCellML(runtime.libcellml, model, options)
     const result = await converter.convert(source, { sourceUri: rc.baseIri, rdfSource: true, metadata: true })
     const output = await converter.celldl2cellml(source, { sourceUri: rc.baseIri, rdfSource: true, metadata: true })
     expect(result.cellml).toBe(generated.cellml)
-    expect(result.cellml!.replaceAll(' interface="public"', '')).toBe(output.cellml)
+    expect(result.sections).toEqual(generated.sections)
+    expect(odesFirst.cellml!.replaceAll(' interface="public"', '')).toBe(output.cellml)
     expect(result.metadata).toBe(output.metadata)
   })
 
