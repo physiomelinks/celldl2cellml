@@ -7,7 +7,8 @@
  * algebraics (other constitutive relations, and the equations of elements
  * acting as junctions), then junction algebraics. Within a group they're
  * sorted by the text sympy gives the left side (`q_1`, `Derivative(q_1, t)`).
- * Each equation is its own `<math>`.
+ * Each equation is its own `<math>`. With `odesLast` (`convert()`), the ODEs
+ * come last instead, after both algebraic groups, as a reader expects.
  *
  * Differences from Python, on purpose:
  * - A number given units in BG-RDF's MathML (a UCUM code in `bgf:units`, or
@@ -37,6 +38,14 @@ export const EQUATION_GROUPS = [
 ] as const
 
 export type EquationGroup = (typeof EQUATION_GROUPS)[number]['group']
+
+/** The groups in `convert()`'s order: the algebraics, then the ODEs. */
+const ODES_LAST_GROUPS = [EQUATION_GROUPS[1], EQUATION_GROUPS[2], EQUATION_GROUPS[0]] as const
+
+export interface AddEquationOptions {
+  /** Write the element ODEs after the algebraics rather than first, as Python does. */
+  odesLast?: boolean
+}
 
 /** An equation as written into the CellML model. */
 export interface CellMLEquation {
@@ -83,7 +92,7 @@ function groupOf(equation: ModelEquation): EquationGroup | undefined {
  * 6.2), returning them as written, in order. Problems are reported in `log`;
  * an equation with one is left out.
  */
-export function addEquations(build: CellMLModelBuild, model: BondgraphModel, log: IssueLog): CellMLEquation[] {
+export function addEquations(build: CellMLModelBuild, model: BondgraphModel, log: IssueLog, options: AddEquationOptions = {}): CellMLEquation[] {
   const known = new Set(build.variables.map((variable) => variable.name))
   const nameOf = (iri: string): string => (model.elements.get(iri) ?? model.junctions.get(iri))?.prettyName ?? iri
 
@@ -105,7 +114,7 @@ export function addEquations(build: CellMLModelBuild, model: BondgraphModel, log
   }
 
   const written: CellMLEquation[] = []
-  for (const { group, description } of EQUATION_GROUPS) {
+  for (const { group, description } of options.odesLast ? ODES_LAST_GROUPS : EQUATION_GROUPS) {
     const equations = groups.get(group)!.sort(byLeftSide)
     const mathml: string[] = []
     for (const equation of equations) {

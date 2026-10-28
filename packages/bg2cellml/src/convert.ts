@@ -4,7 +4,8 @@
  * `celldl2cellml()`, it returns the CellML whenever it can be printed, with
  * any warnings, gives every issue its severity, stage and `elementId`, and
  * declares every variable `interface="public"`, so the component can be
- * connected to other components as it is.
+ * connected to other components as it is. Its ODEs come after its algebraic
+ * equations.
  */
 
 import type { UnitSystemId } from '@physiomelinks/cellml-units'
@@ -184,6 +185,8 @@ export function convert(context: ConvertContext, source: string, options: Conver
       cellmlUri: options.cellmlUri ?? cellmlUriFor(baseUri),
       componentName,
       publicInterfaces: true,
+      // The algebraic equations first and the ODEs last, as a reader expects
+      odesLast: true,
       ...(options.knownUnits === undefined ? {} : { knownUnits: options.knownUnits }),
       ...(options.checks === undefined ? {} : { checks: options.checks }),
     })

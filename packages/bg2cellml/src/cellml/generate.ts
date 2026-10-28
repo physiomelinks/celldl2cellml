@@ -53,6 +53,8 @@ export interface GenerateOptions {
   checks?: CellMLChecks
   /** Declare every variable `interface="public"`; `celldl2cellml()` doesn't, as BG-Tools doesn't. */
   publicInterfaces?: boolean
+  /** Write the element ODEs after the algebraic equations; `celldl2cellml()` writes them first, as BG-Tools does. */
+  odesLast?: boolean
 }
 
 /**
@@ -71,6 +73,7 @@ export function generateCellML(libcellml: LibCellML, model: BondgraphModel, opti
     ...(options.componentName === undefined ? {} : { componentName: options.componentName }),
     ...(options.knownUnits === undefined ? {} : { knownUnits: options.knownUnits }),
     ...(options.publicInterfaces === undefined ? {} : { publicInterfaces: options.publicInterfaces }),
+    ...(options.odesLast === undefined ? {} : { odesLast: options.odesLast }),
   })
   try {
     const elements = elementManifest(build, model)
