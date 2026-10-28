@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   BG_RDF,
+  FORK_ADDITIONS,
   REPO_ROOT,
   compareResults,
   loadManifest,
@@ -20,7 +21,8 @@ describe('reference results', () => {
   it('were generated from the BG-RDF files in the bg-rdf submodule', () => {
     requireBgRdf()
     for (const [file, hash] of Object.entries(manifest.bgRdf.files)) {
-      expect(sha256(`${BG_RDF}${file}`), `bg-rdf/${file} has changed: regenerate the references`).toBe(hash)
+      // Or as the fork has it, adding to them (`FORK_ADDITIONS`)
+      expect(sha256(`${BG_RDF}${file}`), `bg-rdf/${file} has changed: regenerate the references`).toBe(FORK_ADDITIONS.files[file] ?? hash)
     }
   })
 

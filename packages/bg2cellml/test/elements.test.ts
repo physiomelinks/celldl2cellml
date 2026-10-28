@@ -293,7 +293,7 @@ describe('loading elements', () => {
   it('reports a class with more than one template in the domain', () => {
     const model = modelFrom(':Re, :R_0', `:Re a bgf:Reaction ; bgf:hasDomain bgf:Chemical . ${resistor('R_0')}`)
     expect(messages(model)).toEqual([
-      'Element Re (#Re): bgf:Reaction in bgf:Chemical is ambiguous: it could be bgf:ChemicalReaction, bgf:NKETransporter. Give the template instead.',
+      'Element Re (#Re): bgf:Reaction in bgf:Chemical is ambiguous: it could be bgf:ChemicalReaction, bgf:NKETransporter, bgf:SaturatingChemicalReaction. Give the template instead.',
     ])
     expect([...model.elements.keys()]).toEqual([`${BASE}#R_0`])
   })

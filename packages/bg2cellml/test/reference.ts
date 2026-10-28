@@ -246,6 +246,34 @@ export function loadPythonFramework(manifest: Manifest = loadManifest()): Python
   return JSON.parse(readFileSync(`${REFERENCE_DIR}${manifest.framework.reference}`, 'utf8')) as PythonFramework
 }
 
+/**
+ * What physiomelinks/BG-RDF, the fork the bg-rdf submodule follows, adds to
+ * the BG-RDF files the references came from (CellDL/BG-RDF v2026-04-12):
+ * Finbar Argus's constitutive laws, transformer and gyrator nodes, naming
+ * rules and element styles. It only adds, and the examples are unchanged, so
+ * the references still hold; the Python bg2cellml 0.11.2 can't load these
+ * files (it can't read `<root/>`), so they can't be regenerated from them.
+ */
+export const FORK_ADDITIONS = {
+  commit: '3318ae8b0f6e977a6b21e7094992c53cdd5d0032',
+  /** Each changed file's hash at `commit`. */
+  files: {
+    'schema/ontology.ttl': 'c5416ed4e9047e70081d95a454c11d3223d446135e83aa2d7e1ed43cd68982bf',
+    'templates/chemical.ttl': '9370cee365410293bf651ea0c084223524d2e680aba5a5f2537de77c32623f04',
+    'templates/hydraulic.ttl': 'e05370c547dff0817944a9f9dd45391262a8dd788c15dc01a6d001cfe52d79ff',
+  } as Readonly<Record<string, string>>,
+  elementTemplates: ['BernoulliHydraulicResistor', 'SaturatingChemicalConcentration', 'SaturatingChemicalReaction'],
+  compositeTemplates: ['BernoulliHydraulicResistanceNode', 'SaturatingChemicalReactionNode', 'SaturatingChemicalStorageNode'],
+  /** Junction structures: the composites, and the transform node's two kinds. */
+  junctions: [
+    'BernoulliHydraulicResistanceNode',
+    'GyratorNode',
+    'SaturatingChemicalReactionNode',
+    'SaturatingChemicalStorageNode',
+    'TransformerNode',
+  ],
+} as const
+
 export function sha256(path: string): string {
   return createHash('sha256').update(readFileSync(path)).digest('hex')
 }

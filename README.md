@@ -35,7 +35,7 @@ To work on one package, use `yarn workspace @physiomelinks/math-ast test:watch`.
 
 Releases use [Changesets](https://github.com/changesets/changesets): add one with `yarn changeset` alongside a change. [RELEASING.md](RELEASING.md) covers versions, changelogs and publishing to npm.
 
-`bg-rdf` is a git submodule of [CellDL/BG-RDF](https://github.com/CellDL/BG-RDF), pinned to a release tag. Tests load the framework from `bg-rdf/schema/ontology.ttl` and `bg-rdf/templates/`, and use `bg-rdf/examples/` as test models. The packages don't bundle it: at run time the host application supplies the framework.
+`bg-rdf` is a git submodule of [physiomelinks/BG-RDF](https://github.com/physiomelinks/BG-RDF), our fork of [CellDL/BG-RDF](https://github.com/CellDL/BG-RDF), pinned to a commit. The fork adds Finbar Argus's templates and terms (saturating laws, a Bernoulli resistor, transformer and gyrator nodes, naming rules) and takes in upstream's changes from time to time. Tests load the framework from `bg-rdf/schema/ontology.ttl` and `bg-rdf/templates/`, and use `bg-rdf/examples/` as test models. The packages don't bundle it: at run time the host application supplies the framework.
 
 [`examples/browser`](examples/browser) is a private workspace, never published: a Vite page that runs the converter in a browser with oxigraph's web build and libcellml.js, with a Playwright check in Chromium, Firefox and WebKit (`yarn workspace @physiomelinks/browser-check test:browsers`). Its README records the browsers checked and the download size against Pyodide's.
 
