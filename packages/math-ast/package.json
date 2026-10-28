@@ -1,7 +1,7 @@
 {
   "name": "@physiomelinks/math-ast",
   "description": "A small expression tree for Content MathML: read, build, compare, substitute, tidy and write equations.",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "license": "Apache-2.0",
   "author": {
     "name": "Hugh Sorby",
