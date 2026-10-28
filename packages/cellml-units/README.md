@@ -106,6 +106,7 @@ rescaleFactor('mol-1', 'cellular')       // 1e-15
 
 - Each mol, L, J and C symbol, with any prefix, becomes the system's; `eq` and `osm` are amounts. Other symbols and the code's layout are kept.
 - A code whose scale doesn't change is returned as given, with a factor of 1, so potentials keep their names.
+- A pressure (`Pa` and the units made of it, such as `kPa`, `mm[Hg]` and `bar`) is written as the system's energy per volume: `rescaleUnits('kPa.s/L', 'cellular')` is `{ code: '(fJ.pL-1).s/pL', factor: 1e-9 }`, and `Pa`, which is fJ/pL, stays as it is.
 - Other symbols the system would scale, such as `A`, `F` or `N` in Cellular, throw a `UcumError` with `reason` `unit-system`.
 - SI unprefixes: `rescaleUnits('mmol/s', 'si')` is `{ code: 'mol/s', factor: 1e-3 }`.
 

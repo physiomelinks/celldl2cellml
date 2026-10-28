@@ -31,6 +31,10 @@ export const BGF = {
   OneNode: bgf('OneNode'),
   ZeroNode: bgf('ZeroNode'),
   TransformNode: bgf('TransformNode'),
+  /** A transform node that says it is a transformer, even between domains (physiomelinks/BG-RDF). */
+  TransformerNode: bgf('TransformerNode'),
+  /** A transform node that says it is a gyrator, even within a domain (physiomelinks/BG-RDF). */
+  GyratorNode: bgf('GyratorNode'),
   // Variable types
   FlowVariable: bgf('FlowVariable'),
   PotentialVariable: bgf('PotentialVariable'),

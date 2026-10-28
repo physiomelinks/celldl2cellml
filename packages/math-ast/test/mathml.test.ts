@@ -52,8 +52,9 @@ const bgRdfMathml = ['templates', 'examples'].flatMap((dir) =>
 )
 
 describe('BG-RDF MathML', () => {
-  it('finds the 14 template relations and 2 example values', () => {
-    expect(bgRdfMathml.filter(([name]) => name.startsWith('templates/'))).toHaveLength(14)
+  it('finds the 17 template relations and 2 example values', () => {
+    // CellDL/BG-RDF's 14, and physiomelinks/BG-RDF's saturating reaction and store and Bernoulli resistor
+    expect(bgRdfMathml.filter(([name]) => name.startsWith('templates/'))).toHaveLength(17)
     expect(bgRdfMathml.filter(([name]) => name.startsWith('examples/'))).toHaveLength(2)
   })
 

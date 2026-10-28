@@ -23,6 +23,7 @@ import {
   plus,
   substitute,
   times,
+  variables,
   type AstNode,
   type Equation,
   type IdentifierNode,
@@ -53,14 +54,37 @@ interface EquationContext {
   readonly junctions: ReadonlyMap<string, BondgraphJunction>
 }
 
+export interface EquationOptions {
+  /**
+   * Write an element acting as a junction (a source, a composite store or
+   * reaction) in terms of its neighbours' flow and potential variables, such
+   * as `v_q_S1_c = -v_Rx_R1_c`, rather than their constitutive relations'
+   * right sides, as Python does (`-(kappa_Rx_R1_c * (...))`), which computes
+   * each rate twice. Each neighbour's relation defines the variable, so the
+   * equations are equivalent. `convert()` does; `celldl2cellml()` doesn't.
+   */
+  readonly flowVariables?: boolean
+  /**
+   * Solve a transform node's equation for its own port variable where its
+   * left side is a neighbour's variable that another equation already
+   * defines, as Finbar Argus's BG-Tools (feat/constitutive-laws) does: a
+   * transformer `u_C_m = TF * u_TF_0` beside a capacitor, whose relation
+   * defines `u_C_m`, becomes `u_TF_0 = u_C_m / TF`, so each variable is
+   * defined once and the model is an ODE rather than a DAE. Python 0.11.2
+   * doesn't; `convert()` does.
+   */
+  readonly solveTransforms?: boolean
+}
+
 /**
  * Every equation, in Python's order: for each element its constitutive
  * relation then its own equations, then each junction's.
  */
-export function buildEquations(context: EquationContext): ModelEquation[] {
-  const terms = new NodeTerms(context)
+export function buildEquations(context: EquationContext, options: EquationOptions = {}): ModelEquation[] {
+  const terms = new NodeTerms(context, options.flowVariables ?? false)
   for (const element of context.elements.values()) element.equations.push(...elementEquations(element, terms, context))
   for (const junction of context.junctions.values()) junction.equations.push(...junctionEquations(junction, terms, context))
+  if (options.solveTransforms) solveTransforms(context)
 
   const equations: ModelEquation[] = []
   for (const element of context.elements.values()) {
@@ -81,22 +105,32 @@ export function buildEquations(context: EquationContext): ModelEquation[] {
  */
 class NodeTerms {
   readonly #context: EquationContext
+  readonly #variables: boolean
   readonly #reported = new Set<string>()
 
-  constructor(context: EquationContext) {
+  constructor(context: EquationContext, variables: boolean) {
     this.#context = context
+    this.#variables = variables
   }
 
-  /** The element's flow expression from its relation, if the node is an element's port and it has one; otherwise the flow. */
+  /**
+   * The element's flow expression from its relation, if the node is an
+   * element's port and it has one (or with `flowVariables`, the flow variable
+   * the relation defines); otherwise the flow.
+   */
   flowExpression(id: string): AstNode | undefined {
     const node = this.#context.network.node(id)!
-    return (node.port !== undefined ? node.element?.flowExpression : undefined) ?? this.flow(id)
+    const element = node.port !== undefined ? node.element : undefined
+    if (element?.flowExpression !== undefined && this.#variables) return ci(element.flow!.symbol)
+    return element?.flowExpression ?? this.flow(id)
   }
 
   /** The potential expression, likewise. */
   potentialExpression(id: string): AstNode | undefined {
     const node = this.#context.network.node(id)!
-    return (node.port !== undefined ? node.element?.potentialExpression : undefined) ?? this.potential(id)
+    const element = node.port !== undefined ? node.element : undefined
+    if (element?.potentialExpression !== undefined && this.#variables) return ci(element.potential!.symbol)
+    return element?.potentialExpression ?? this.potential(id)
   }
 
   /** A port's flow, or a one node's. */
@@ -338,4 +372,56 @@ function junctionEquations(junction: BondgraphJunction, terms: NodeTerms, contex
     }
   }
   return equations
+}
+
+//==============================================================================
+
+/** `EquationOptions.solveTransforms`: each transform node's equations solved for its own variables where they must be. */
+function solveTransforms(context: EquationContext): void {
+  const definedBy = new Map<string, number>()
+  const define = (equation: Equation): void => {
+    if (equation.left.type === 'Identifier') definedBy.set(equation.left.name, (definedBy.get(equation.left.name) ?? 0) + 1)
+  }
+  for (const element of context.elements.values()) {
+    for (const equation of [...(element.constitutiveRelation ?? []), ...element.equations]) define(equation)
+  }
+  for (const junction of context.junctions.values()) junction.equations.forEach(define)
+
+  for (const junction of context.junctions.values()) {
+    if (junction.type !== BGF.TransformNode || junction.ownVariables.size === 0) continue
+    const own = new Set([...junction.ownVariables].map((variable) => variable.symbol))
+    junction.equations.forEach((equation, index) => {
+      const left = equation.left
+      // Only a neighbour's variable that something else defines too
+      if (left.type !== 'Identifier' || own.has(left.name) || (definedBy.get(left.name) ?? 0) < 2) return
+      const unknowns = variables(equation.right).filter((name) => own.has(name))
+      if (unknowns.length !== 1 || (definedBy.get(unknowns[0]!) ?? 0) > 0) return
+      const solved = solveFor(equation, unknowns[0]!)
+      if (solved === undefined) return
+      junction.equations[index] = solved
+      definedBy.set(left.name, definedBy.get(left.name)! - 1)
+      definedBy.set(unknowns[0]!, 1)
+    })
+  }
+}
+
+/** `x = a * y` or `x = y / a` or `x = a / y` solved for `y`, which appears once; `undefined` for other forms. */
+function solveFor(equation: Equation, name: string): Equation | undefined {
+  const { left, right } = equation
+  const isName = (node: AstNode): boolean => node.type === 'Identifier' && node.name === name
+  if (right.type === 'Multiply') {
+    const index = right.children.findIndex(isName)
+    const others = right.children.filter((_, i) => i !== index)
+    if (index < 0 || others.some((child) => variables(child).includes(name))) return undefined
+    return canonicalise(eq(ci(name), divide(left, others.length === 1 ? others[0]! : times(...others)))) as Equation
+  }
+  if (right.type === 'Divide') {
+    if (isName(right.numerator) && !variables(right.denominator).includes(name)) {
+      return canonicalise(eq(ci(name), times(left, right.denominator))) as Equation
+    }
+    if (isName(right.denominator) && !variables(right.numerator).includes(name)) {
+      return canonicalise(eq(ci(name), divide(right.numerator, left))) as Equation
+    }
+  }
+  return undefined
 }

@@ -61,6 +61,13 @@ export interface ConvertOptions {
    * and values given in other units are converted into them.
    */
   unitSystem?: UnitSystemId
+  /**
+   * Name variables by the model's own rules and names, BG-RDF's
+   * `bgf:NamingRule` and `bgf:VariableName` (physiomelinks/BG-RDF). The
+   * element manifest gives the new names, and each renamed variable's bond
+   * graph name as `bondgraph`. On unless `false`.
+   */
+  naming?: boolean
 }
 
 export interface ConversionResult {
@@ -158,7 +165,14 @@ export function convert(context: ConvertContext, source: string, options: Conver
   const issues: Issue[] = []
   try {
     const bgRdf = options.rdfSource ? source : extractBgRdf(source, context.runtime.domParser)
-    const loadOptions = options.unitSystem === undefined ? {} : { unitSystem: options.unitSystem }
+    // Sources and composites in terms of their neighbours' flow variables, not their rate expressions again,
+    // and transform nodes defining their own variables rather than their neighbours' again
+    const loadOptions = {
+      flowVariables: true,
+      solveTransforms: true,
+      naming: options.naming ?? true,
+      ...(options.unitSystem === undefined ? {} : { unitSystem: options.unitSystem }),
+    }
     const model = BondgraphModel.fromTurtle(framework, context.runtime, bgRdf, baseUri, loadOptions)
     if (model.iri !== '') modelIri = model.iri
     unitSystem = model.unitSystem

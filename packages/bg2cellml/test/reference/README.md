@@ -4,6 +4,8 @@ Results from the Python [bg2cellml](https://github.com/CellDL/BG-Tools) 0.11.2, 
 
 **Don't edit these files.** Regenerate them with [`tools/reference/generate.py`](../../../../tools/reference/).
 
+They come from CellDL/BG-RDF v2026-04-12. The `bg-rdf` submodule now follows [physiomelinks/BG-RDF](https://github.com/physiomelinks/BG-RDF), which only adds to those files and leaves the examples as they were, so the references still hold. Python 0.11.2 can't load the fork's templates (it can't read `<root/>`), so they can't be regenerated from it. `FORK_ADDITIONS` in [`../reference.ts`](../reference.ts) records the fork's file hashes and what it adds, and the tests compare the framework with Python's plus those additions.
+
 ## Files
 
 | File | Contents |

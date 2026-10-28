@@ -11,7 +11,7 @@ import {
   mathml,
   messages,
 } from './framework-fixtures.js'
-import { loadPythonFramework } from './reference.js'
+import { FORK_ADDITIONS, loadPythonFramework } from './reference.js'
 
 const python = loadPythonFramework()
 let framework: BondgraphFramework
@@ -22,6 +22,8 @@ beforeAll(async () => {
 })
 
 const short = (iri: string | null | undefined): string => (iri == null ? 'nothing' : fragment(iri))
+/** Python's IRIs and the fork's additions, sorted. */
+const withFork = (python: readonly string[], added: readonly string[]): string[] => [...python, ...added.map(bgf)].sort()
 
 describe('BG-RDF junctions and composites', () => {
   it('load with no issues', () => {
@@ -29,7 +31,7 @@ describe('BG-RDF junctions and composites', () => {
   })
 
   it('have the junction structures Python has, including the composites and bgf:JunctionStructure', () => {
-    expect([...framework.junctions.keys()]).toEqual(Object.keys(python.junctions))
+    expect([...framework.junctions.keys()].sort()).toEqual(withFork(Object.keys(python.junctions), FORK_ADDITIONS.junctions))
     for (const theirs of Object.values(python.junctions)) {
       const ours = framework.junction(theirs.iri)!
       // Python holds the label as the symbol, falling back to the IRI's fragment
@@ -40,7 +42,7 @@ describe('BG-RDF junctions and composites', () => {
   })
 
   it('have the composites Python has, each with its element template', () => {
-    expect([...framework.compositeTemplates.keys()]).toEqual(Object.keys(python.compositeTemplates))
+    expect([...framework.compositeTemplates.keys()].sort()).toEqual(withFork(Object.keys(python.compositeTemplates), FORK_ADDITIONS.compositeTemplates))
     for (const theirs of Object.values(python.compositeTemplates)) {
       const ours = framework.compositeTemplates.get(theirs.iri)!
       expect(ours.template.iri).toBe(theirs.template)
@@ -64,9 +66,16 @@ describe('elementTemplate()', () => {
     'Reaction Hydraulic': ['OldOsmosis', 'OsmoticTransporter'],
   }
 
+  // The fork's templates make more choices, where Python's framework had one or two
+  const FORK_CHOICES: Record<string, string[]> = {
+    'Reaction Chemical': ['SaturatingChemicalReaction'],
+    'QuantityStore Chemical': ['SaturatingChemicalConcentration'],
+    'Resistance Hydraulic': ['BernoulliHydraulicResistor'],
+  }
+
   it.each(
     python.lookups.byClassAndDomain
-      .filter((l) => !(`${short(l.elementClass)} ${short(l.domain)}` in AMBIGUOUS))
+      .filter((l) => !(`${short(l.elementClass)} ${short(l.domain)}` in AMBIGUOUS || `${short(l.elementClass)} ${short(l.domain)}` in FORK_CHOICES))
       .map((l) => [short(l.elementClass), short(l.domain), short(l.template), l]),
   )('finds a %s in %s as Python does: %s', (_class, _domain, _template, lookup) => {
     expect(framework.elementTemplate(lookup.elementClass, lookup.domain)?.iri ?? null).toBe(lookup.template)
@@ -77,12 +86,22 @@ describe('elementTemplate()', () => {
     const pythonChoice = python.lookups.byClassAndDomain.find((l) => l.elementClass === elementClass && l.domain === domain)!.template
     expect(pythonChoice).toBe(bgf(choices.at(-1)!))
     expect(framework.elementTemplate(elementClass, domain)).toBeUndefined()
-    expect(framework.templatesOfClass(elementClass, domain).map((t) => t.iri)).toEqual(choices.map(bgf))
+    expect(framework.templatesOfClass(elementClass, domain).map((t) => t.iri)).toEqual(withFork(choices.map(bgf), FORK_CHOICES[key] ?? []))
   })
+
+  it.each(Object.entries(FORK_CHOICES).filter(([key]) => !(key in AMBIGUOUS)))(
+    "finds nothing for a %s, which the fork's %s makes ambiguous",
+    (key, added) => {
+      const [elementClass, domain] = key.split(' ').map(bgf) as [string, string]
+      const pythonChoice = python.lookups.byClassAndDomain.find((l) => l.elementClass === elementClass && l.domain === domain)!.template!
+      expect(framework.elementTemplate(elementClass, domain)).toBeUndefined()
+      expect(framework.templatesOfClass(elementClass, domain).map((t) => t.iri)).toEqual(withFork([pythonChoice], added))
+    },
+  )
 
   it('says why a class and domain finds nothing', () => {
     expect(framework.templateIssue(bgf('Reaction'), bgf('Chemical'))).toBe(
-      'bgf:Reaction in bgf:Chemical is ambiguous: it could be bgf:ChemicalReaction, bgf:NKETransporter. Give the template instead.',
+      'bgf:Reaction in bgf:Chemical is ambiguous: it could be bgf:ChemicalReaction, bgf:NKETransporter, bgf:SaturatingChemicalReaction. Give the template instead.',
     )
     expect(framework.templateIssue(bgf('Resistance'), bgf('Chemical'))).toBe('bgf:Resistance has no template in bgf:Chemical')
     expect(framework.templatesOfClass(bgf('Resistance'), bgf('Chemical'))).toEqual([])

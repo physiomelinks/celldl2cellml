@@ -12,8 +12,9 @@ import {
   mathml,
   messages,
 } from './framework-fixtures.js'
-import { loadPythonFramework, type PythonElementTemplate, type PythonVariable } from './reference.js'
+import { FORK_ADDITIONS, loadPythonFramework, type PythonElementTemplate, type PythonVariable } from './reference.js'
 import { pythonEquation } from './python-math.js'
+import { bgf } from '../src/rdf/namespaces.js'
 
 const python = loadPythonFramework()
 let framework: BondgraphFramework
@@ -41,7 +42,27 @@ function expectVariable(ours: VariableDefinition | undefined, theirs: PythonVari
 describe('BG-RDF element templates', () => {
   it('all load with no issues', () => {
     expect(messages(framework)).toEqual([])
-    expect([...framework.elementTemplates.keys()]).toEqual(Object.keys(python.elementTemplates))
+    const expected = [...Object.keys(python.elementTemplates), ...FORK_ADDITIONS.elementTemplates.map(bgf)].sort()
+    expect([...framework.elementTemplates.keys()].sort()).toEqual(expected)
+  })
+
+  // physiomelinks/BG-RDF's templates, which the Python bg2cellml 0.11.2 can't load
+  it.each([
+    ['SaturatingChemicalReaction', BGF.Reaction, bgf('Chemical'), ['kappa', 'sigma'], ['RT', 'kappa', 'sigma', 'u_f', 'u_r', 'v']],
+    ['SaturatingChemicalConcentration', BGF.QuantityStore, bgf('Chemical'), ['K', 'k_sat'], ['K', 'RT', 'k_sat', 'q', 't', 'u', 'v']],
+    ['BernoulliHydraulicResistor', BGF.Resistance, bgf('Hydraulic'), ['B', 'R'], ['B', 'R', 'u', 'v']],
+  ])("has the fork's %s", (name, elementClass, domain, parameters, names) => {
+    const template = framework.elementTemplates.get(bgf(name))!
+    expect(template.elementClass).toBe(elementClass)
+    expect(template.domain.iri).toBe(domain)
+    expect([...template.parameters.keys()].sort()).toEqual(parameters)
+    expect(variables(...template.constitutiveRelation!).sort()).toEqual(names)
+  })
+
+  it("has the fork's composites, each of its element template", () => {
+    expect(framework.compositeTemplates.get(bgf('SaturatingChemicalStorageNode'))?.template.iri).toBe(bgf('SaturatingChemicalConcentration'))
+    expect(framework.compositeTemplates.get(bgf('SaturatingChemicalReactionNode'))?.template.iri).toBe(bgf('SaturatingChemicalReaction'))
+    expect(framework.compositeTemplates.get(bgf('BernoulliHydraulicResistanceNode'))?.template.iri).toBe(bgf('BernoulliHydraulicResistor'))
   })
 
   describe.each(Object.values(python.elementTemplates).map((t): [string, PythonElementTemplate] => [fragment(t.iri), t]))(
