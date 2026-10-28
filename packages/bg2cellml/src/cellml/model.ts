@@ -264,8 +264,8 @@ export interface BuildOptions {
   knownUnits?: string | readonly string[]
   /** Declare every variable `interface="public"`, so the component can be connected to others. */
   publicInterfaces?: boolean
-  /** Write the element ODEs after the algebraic equations, rather than first as Python does. */
-  odesLast?: boolean
+  /** Write the equations in sections by role, ODEs last, with no comments, rather than in Python's groups (`convert()`). */
+  sections?: boolean
 }
 
 /**
@@ -294,7 +294,7 @@ export function buildCellMLModel(libcellml: LibCellML, model: BondgraphModel, lo
 
     const equations: CellMLEquation[] = []
     const build: CellMLModelBuild = { model: cellml, component, componentName, variables, units, equations }
-    equations.push(...addEquations(build, model, log, { odesLast: options.odesLast ?? false }))
+    equations.push(...addEquations(build, model, log, { sections: options.sections ?? false }))
     for (const [original, renamed] of units.renamed) {
       log.reportIssue({
         message: `Units ${original} are named ${renamed}, as the known units ${original} are different`,

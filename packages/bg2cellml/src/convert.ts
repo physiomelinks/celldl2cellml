@@ -4,14 +4,15 @@
  * `celldl2cellml()`, it returns the CellML whenever it can be printed, with
  * any warnings, gives every issue its severity, stage and `elementId`, and
  * declares every variable `interface="public"`, so the component can be
- * connected to other components as it is. Its ODEs come after its algebraic
- * equations.
+ * connected to other components as it is. Its equations come in sections
+ * by role, the ODEs last, with no comments; `sections` lists them.
  */
 
 import type { UnitSystemId } from '@physiomelinks/cellml-units'
 
 import { extractBgRdf } from './celldl.js'
 import { RUNNABLE_MODEL_TYPES, type CellMLChecks } from './cellml/check.js'
+import type { EquationSection } from './cellml/equations.js'
 import { generateCellML } from './cellml/generate.js'
 import type { ElementManifest } from './cellml/manifest.js'
 import { cellmlUriFor } from './cellml/metadata.js'
@@ -102,6 +103,13 @@ export interface ConversionResult {
    * couldn't be built. `toViewerAnnotations()` makes `@celldl/viewer` annotations of it.
    */
   readonly elements: ElementManifest
+  /**
+   * The equations' sections, in the order the CellML has them, each with its
+   * title and its equations' left-side variables (an ODE's state), as
+   * named in the CellML; empty if the model couldn't be built. Empty sections are
+   * left out. A host can lay the CellML out with them, as PhLynx does.
+   */
+  readonly sections: readonly EquationSection[]
   /** `renamed`: each units name `knownUnits` defines differently, and the name the CellML gives those units instead. */
   readonly units: { readonly renamed: Readonly<Record<string, string>> }
   readonly issues: readonly Issue[]
@@ -185,8 +193,8 @@ export function convert(context: ConvertContext, source: string, options: Conver
       cellmlUri: options.cellmlUri ?? cellmlUriFor(baseUri),
       componentName,
       publicInterfaces: true,
-      // The algebraic equations first and the ODEs last, as a reader expects
-      odesLast: true,
+      // In sections by role, the ODEs last, as a reader expects
+      sections: true,
       ...(options.knownUnits === undefined ? {} : { knownUnits: options.knownUnits }),
       ...(options.checks === undefined ? {} : { checks: options.checks }),
     })
@@ -199,6 +207,7 @@ export function convert(context: ConvertContext, source: string, options: Conver
         ...(generated.elements === undefined ? {} : { elements: generated.elements }),
         ...(generated.modelType === undefined ? {} : { modelType: generated.modelType }),
         ...(generated.renamedUnits === undefined ? {} : { units: { renamed: generated.renamedUnits } }),
+        ...(generated.sections === undefined ? {} : { sections: generated.sections }),
         ...(generated.metadata === undefined ? {} : { metadata: generated.metadata }),
         checks: generated.checks,
       },
@@ -216,11 +225,12 @@ const iriField = (modelIri: string | undefined, unitSystem: UnitSystemId | undef
   ...(unitSystem === undefined ? {} : { unitSystem }),
 })
 
-type ResultFields = Omit<ConversionResult, 'ok' | 'runnable' | 'checks' | 'elements' | 'units' | 'issues' | 'errors' | 'warnings' | 'generator'> & {
+type ResultFields = Omit<ConversionResult, 'ok' | 'runnable' | 'checks' | 'elements' | 'sections' | 'units' | 'issues' | 'errors' | 'warnings' | 'generator'> & {
   /** The Analyser was asked for, so `runnable` is known. */
   readonly analyse: boolean
   readonly checks?: CellMLChecks
   readonly elements?: ElementManifest
+  readonly sections?: readonly EquationSection[]
   readonly units?: ConversionResult['units']
 }
 
@@ -234,6 +244,7 @@ function result({ analyse, ...fields }: ResultFields, issues: readonly Issue[]):
     runnable,
     checks: 'none',
     elements: {},
+    sections: [],
     units: { renamed: {} },
     ...fields,
     issues,

@@ -53,6 +53,7 @@ describe('createConversionHandler', () => {
     expect(reply).toMatchObject({ type: 'result', seq: 1, result: { ok: true, runnable: true, checks: 'full' } })
     if (reply?.type !== 'result') throw new Error('No result')
     expect(reply.result.cellml).toContain('<component name="main" id="main">')
+    expect(reply.result.sections.at(-1)?.title).toMatch(/Conservation/i)
     expect(reply.timings.convert).toBeGreaterThan(0)
     expect(structuredClone(reply)).toEqual(reply)
 
