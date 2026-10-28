@@ -24,7 +24,7 @@ beforeAll(async () => {
 })
 
 /** Codes the Cellular preset can't rescale: derived units of charge or energy other than V. */
-const UNSCALABLE = new Set(['Ohm', 'F', 'A', 'H', 'kPa', 'kOhm', 'uF', 'mm[Hg]', 'cm[H2O]'])
+const UNSCALABLE = new Set(['Ohm', 'F', 'A', 'H', 'kOhm', 'uF'])
 
 describe('unit systems', () => {
   it('has the SI and Cellular presets', () => {
@@ -75,6 +75,20 @@ describe('unit systems', () => {
       'pL_per_fmol',
       'pL',
     ])
+  })
+
+  it("writes pressures as Cellular's energy per volume", () => {
+    expect(rescaleUnits('kPa.s2/L2', 'cellular')).toEqual({ code: '(fJ.pL-1).s2/pL2', factor: 1e-21 })
+    expect(rescaleUnits('kPa.s/L', 'cellular')).toEqual({ code: '(fJ.pL-1).s/pL', factor: 1e-9 })
+    // fJ/pL is a pascal, so a code in Pa keeps it
+    expect(rescaleUnits('Pa2', 'cellular')).toEqual({ code: 'Pa2', factor: 1 })
+    expect(rescaleUnits('/kPa', 'cellular')).toEqual({ code: '/(fJ.pL-1)', factor: 1e-3 })
+    expect(rescaleUnits('kPa', 'si')).toEqual({ code: 'kPa', factor: 1 })
+    for (const code of ['kPa.s2/L2', 'Pa2', '/kPa', 'mm[Hg]', 'cm[H2O]/s', 'bar']) {
+      const { code: scaled, factor } = rescaleUnits(code, 'cellular')
+      expect(compatible(libcellml, code, scaled), code).toBe(true)
+      expect(convertValue(libcellml, 1, code, scaled), `${code} -> ${scaled}`).toBeCloseTo(factor, 12)
+    }
   })
 
   it("throws for codes Cellular can't rescale by substitution, and for unknown systems", () => {

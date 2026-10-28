@@ -55,7 +55,9 @@ const BASE_KINDS: ReadonlyMap<string, UnitKind> = new Map([
 /**
  * Other CellML units made of energy, charge or amount, as powers of each.
  * A code using one can't be rescaled by substitution unless the system
- * leaves it unscaled, as Cellular leaves volt (fJ/fC).
+ * leaves it unscaled, as Cellular leaves volt (fJ/fC). Pressures (pascal and
+ * the units made of it, such as kPa and mm[Hg]) are the exception: each is
+ * written as energy per volume (`PRESSURE`).
  */
 const DERIVED_KINDS: ReadonlyMap<string, Partial<Record<UnitKind, number>>> = new Map(
   Object.entries({
@@ -79,6 +81,9 @@ const DERIVED_KINDS: ReadonlyMap<string, Partial<Record<UnitKind, number>>> = ne
     coulomb: { charge: 1 },
   }),
 )
+
+/** A pascal is 1e-3 J/L: pressures are written as the system's energy per its volume. */
+const PRESSURE = { units: 'pascal', power: -3 } as const
 
 /** Each power of ten's UCUM prefix symbol. */
 const PREFIX_SYMBOLS: ReadonlyMap<number, string> = new Map([...UCUM_PREFIXES].map(([symbol, name]) => [PREFIX_POWERS.get(name)!, symbol]))
@@ -112,6 +117,10 @@ export interface RescaledUnits {
  * - A value `x` in `code` is `x × factor` in the new code: 1 mol is 1e15 fmol.
  * - SI maps prefixed symbols to unprefixed ones: `mmol` is `mol`, with a factor of 1e-3.
  *
+ * - A pressure is written as the system's energy per volume: `kPa.s/L` is
+ *   `(fJ.pL-1).s/pL` in Cellular, with a factor of 1e3, and `mm[Hg]` is
+ *   `(fJ.pL-1)` with a factor of 133.322e3.
+ *
  * Throws a `UcumError` for a code it can't read, and (with `reason`
  * `unit-system`) for one with other symbols the system scales, such as `A`
  * or `N` in Cellular: write those in mol, L, J and C.
@@ -121,10 +130,19 @@ export function rescaleUnits(code: string, system: UnitSystem | UnitSystemId): R
   const units = parseUcum(code)
 
   let shift = 0
+  // A pressure's factor besides powers of ten, as mm[Hg]'s 133322
+  let multiplier = 1
+  const pressures = prefixes.energy !== prefixes.volume
   for (const symbol of units.symbols) {
     const kind = baseKind(symbol)
     if (kind !== undefined) {
       shift += (prefixes[kind] - (symbol.prefix ?? 0)) * symbol.exponent
+      continue
+    }
+    if (pressures && symbol.atom?.units === PRESSURE.units) {
+      // 1 kPa is 1e3 Pa, 1 J/L, 1e3 fJ/pL
+      shift += (prefixes.energy - prefixes.volume - (symbol.prefix ?? 0) - PRESSURE.power) * symbol.exponent
+      multiplier *= symbol.atom.factor ** symbol.exponent
       continue
     }
     const kinds = symbol.atom === undefined ? undefined : DERIVED_KINDS.get(symbol.atom.units)
@@ -137,16 +155,24 @@ export function rescaleUnits(code: string, system: UnitSystem | UnitSystemId): R
       })
     }
   }
-  if (shift === 0) return { code, factor: 1 }
+  if (shift === 0 && multiplier === 1) return { code, factor: 1 }
 
+  const prefixed = (kind: UnitKind, exponent: number): string => `${PREFIX_SYMBOLS.get(prefixes[kind]) ?? ''}${KIND_SYMBOLS[kind]}${exponent === 1 ? '' : exponent}`
   const rewritten = code.replace(/\{[^{}]*\}|(?:\[[^[\]]*\]|[A-Za-z0-9_%])+(?:[+-]\d+)?/g, (token) => {
     if (token.startsWith('{') || /^\d+$/.test(token)) return token
     const symbol = resolveSymbol(token)
-    const kind = symbol === null ? undefined : baseKind(symbol)
+    if (symbol === null) return token
+    const exponent = token.slice(symbol.label.length)
+    if (pressures && symbol.atom?.units === PRESSURE.units) {
+      const power = exponent === '' ? 1 : Number(exponent)
+      return `(${prefixed('energy', power)}.${prefixed('volume', -power)})`
+    }
+    const kind = baseKind(symbol)
     if (kind === undefined) return token
-    return `${PREFIX_SYMBOLS.get(prefixes[kind]) ?? ''}${KIND_SYMBOLS[kind]}${token.slice(symbol!.label.length)}`
+    return `${PREFIX_SYMBOLS.get(prefixes[kind]) ?? ''}${KIND_SYMBOLS[kind]}${exponent}`
   })
-  return { code: rewritten, factor: Number(`1e${-shift}`) }
+  const factor = Number(`1e${-shift}`)
+  return { code: rewritten, factor: multiplier === 1 ? factor : Number((multiplier * factor).toPrecision(15)) }
 }
 
 /** A UCUM code in a unit system's units; see `rescaleUnits`. */
