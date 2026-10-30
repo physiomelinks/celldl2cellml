@@ -1,5 +1,13 @@
 # @physiomelinks/bg2cellml
 
+## 0.6.2
+
+### Patch Changes
+
+- Credit David Brooks as the author, with Hugh Sorby and Claude (Anthropic) as contributors, since the package is an AI-assisted translation of the original Python `bg2cellml`.
+- @physiomelinks/cellml-units@0.6.2
+  - @physiomelinks/math-ast@0.6.2
+
 ## 0.6.1
 
 ### Patch Changes
