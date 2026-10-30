@@ -4,9 +4,20 @@
   "version": "0.6.1",
   "license": "Apache-2.0",
   "author": {
-    "name": "Hugh Sorby",
-    "email": "h.sorby@auckland.ac.nz"
+    "name": "David Brooks",
+    "email": "d.brooks@auckland.ac.nz",
   },
+  "contributors": [
+    {
+      "name": "Claude (Anthropic)",
+      "url": "https://claude.ai",
+      "role": "AI Assistant"
+    },
+    {
+      "name": "Hugh Sorby",
+      "email": "h.sorby@auckland.ac.nz"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/physiomelinks/celldl2cellml.git",

@@ -3,10 +3,24 @@
   "description": "Generate CellML 2.0 from BG-RDF bond graph models, in TypeScript",
   "private": true,
   "license": "Apache-2.0",
-  "author": {
-    "name": "Hugh Sorby",
-    "email": "h.sorby@auckland.ac.nz"
-  },
+  "contributors": [
+    {
+      "name": "Finbar Argus",
+      "email": "finbar.argus@auckland.ac.nz"
+    },
+    {
+      "name": "David Brooks",
+      "email": "d.brooks@auckland.ac.nz",
+    },
+    {
+    "name": "Jarrah Dowrick",
+    "email": "j.dowrick@auckland.ac.nz"
+    },
+    {
+      "name": "Hugh Sorby",
+      "email": "h.sorby@auckland.ac.nz"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/physiomelinks/celldl2cellml.git"
