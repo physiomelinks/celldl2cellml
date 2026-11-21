@@ -70,8 +70,10 @@ export interface EquationOptions {
    * defines, as Finbar Argus's BG-Tools (feat/constitutive-laws) does: a
    * transformer `u_C_m = TF * u_TF_0` beside a capacitor, whose relation
    * defines `u_C_m`, becomes `u_TF_0 = u_C_m / TF`, so each variable is
-   * defined once and the model is an ODE rather than a DAE. Python 0.11.2
-   * doesn't; `convert()` does.
+   * defined once and the model is an ODE rather than a DAE. A source's own
+   * potential or flow is given, so it counts as defined: a transformer
+   * `u_Se_V = TF * u_TF_0` into a voltage source becomes
+   * `u_TF_0 = u_Se_V / TF`. Python 0.11.2 doesn't; `convert()` does.
    */
   readonly solveTransforms?: boolean
 }
@@ -376,6 +378,9 @@ function junctionEquations(junction: BondgraphJunction, terms: NodeTerms, contex
 
 //==============================================================================
 
+/** The element classes whose own variable is given rather than computed: a potential source's potential, a flow source's flow. */
+const SOURCE_CLASSES = new Set<string>([BGF.FlowSource, BGF.PotentialSource])
+
 /** `EquationOptions.solveTransforms`: each transform node's equations solved for its own variables where they must be. */
 function solveTransforms(context: EquationContext): void {
   const definedBy = new Map<string, number>()
@@ -384,6 +389,11 @@ function solveTransforms(context: EquationContext): void {
   }
   for (const element of context.elements.values()) {
     for (const equation of [...(element.constitutiveRelation ?? []), ...element.equations]) define(equation)
+  }
+  // A source's own potential or flow is given: by its value when no relation defines it
+  for (const element of context.elements.values()) {
+    const given = element.intrinsicVariable?.symbol
+    if (given !== undefined && SOURCE_CLASSES.has(element.elementClass) && !definedBy.has(given)) definedBy.set(given, 1)
   }
   for (const junction of context.junctions.values()) junction.equations.forEach(define)
 

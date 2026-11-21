@@ -1,0 +1,58 @@
+@prefix bgf: <https://bg-rdf.org/ontologies/bondgraph-framework#> .
+@prefix cdt: <https://w3id.org/cdt/> .
+@prefix tpl: <https://bg-rdf.org/templates/> .
+
+@prefix : <#> .
+
+# S1 -> Rx R1 -> S2, with a voltage source V acting on both sides of the reaction through a
+# transformer each: a carrier whose forward and reverse rates both depend on the membrane potential.
+# V -> TF_f -> R1 adds TF_f * V (500 J/mol) to the forward affinity; R1 -> TF_r -> V adds V / TF_r
+# (500 J/mol) to the reverse affinity. The two are equal, so the equilibrium is unchanged
+# (K_S1 q_S1 = K_S2 q_S2: q_S1 = 1.4 mol, q_S2 = 0.7 mol) and every rate is exp(500 / RT) times faster.
+# convert() should solve both transformers for their own variables: the source's potential is given.
+# Simulate for 20 seconds at 0.01 second steps.
+
+:model
+    a bgf:BondgraphModel ;
+    bgf:usesTemplate tpl:chemical.ttl, tpl:electrical.ttl ;
+    bgf:hasBondElement :S1, :S2, :R1, :V ;
+    bgf:hasJunctionStructure :TF_f, :TF_r .
+
+:S1
+    a bgf:ChemicalStorageNode ;
+    bgf:hasSymbol "q" ; bgf:hasSpecies "S1" ; bgf:hasLocation "c" ;
+    bgf:hasValue "2 mol"^^cdt:ucum ;
+    bgf:parameterValue [ bgf:varName "K" ; bgf:hasValue "1 mol-1"^^cdt:ucum ] .
+
+:S2
+    a bgf:ChemicalStorageNode ;
+    bgf:hasSymbol "q" ; bgf:hasSpecies "S2" ; bgf:hasLocation "c" ;
+    bgf:hasValue "0.1 mol"^^cdt:ucum ;
+    bgf:parameterValue [ bgf:varName "K" ; bgf:hasValue "2 mol-1"^^cdt:ucum ] .
+
+:R1
+    a bgf:ChemicalReactionNode ;
+    bgf:hasSymbol "Rx" ; bgf:hasSpecies "R1" ; bgf:hasLocation "c" ;
+    bgf:parameterValue [ bgf:varName "kappa" ; bgf:hasValue "0.5 mol/s"^^cdt:ucum ] .
+
+:V
+    a bgf:VoltageSource ;
+    bgf:hasSymbol "Se" ; bgf:hasSpecies "V" ; bgf:hasLocation "m" ;
+    bgf:hasValue "0.01 J/C"^^cdt:ucum .
+
+:TF_f
+    a bgf:TransformerNode ;
+    bgf:hasSymbol "TF" ; bgf:hasSpecies "f" ;
+    bgf:hasValue "50000 C/mol"^^cdt:ucum .
+
+:TF_r
+    a bgf:TransformerNode ;
+    bgf:hasSymbol "TF" ; bgf:hasSpecies "r" ;
+    bgf:hasValue "2e-5 mol/C"^^cdt:ucum .
+
+:S1.R1 bgf:hasSource :S1 ; bgf:hasTarget :R1 .
+:R1.S2 bgf:hasSource :R1 ; bgf:hasTarget :S2 .
+:V.TF_f bgf:hasSource :V ; bgf:hasTarget :TF_f .
+:TF_f.R1 bgf:hasSource :TF_f ; bgf:hasTarget :R1 .
+:R1.TF_r bgf:hasSource :R1 ; bgf:hasTarget :TF_r .
+:TF_r.V bgf:hasSource :TF_r ; bgf:hasTarget :V .

@@ -50,6 +50,8 @@ function equations(cellml: string): string[] {
         return `${text(node.minuend)} - ${text(node.subtrahend)}`
       case 'Multiply':
         return node.children.map(text).join(' * ')
+      case 'Divide':
+        return `${text(node.numerator)} / ${text(node.denominator)}`
       case 'Equal':
         return `${text(node.left)} = ${text(node.right)}`
       default:
@@ -80,6 +82,29 @@ describe('flow variables', () => {
     expect(written).toEqual(expect.arrayContaining(['v_E_E = v_R2 - v_R1', 'v_C_C = v_R1 - v_R2', 'v_P_P = v_R2 + v_R3', 'v_S_S = -(v_R1 + v_R3)']))
     // A composite reaction's ports take the stores' potentials, not their relations
     expect(written).toEqual(expect.arrayContaining(['u_f_R1 = u_E_E + u_S_S', 'u_r_R2 = u_E_E + u_P_P']))
+  })
+
+  it('solves a transformer into a voltage source for its own potential: the source is given', async () => {
+    // V -> TF_f -> R1 and R1 -> TF_r -> V: the membrane potential acts on both sides of the reaction
+    const result = await converter.convert(source(`${MODELS}flows/voltage_source_reaction.ttl`), { sourceUri: SOURCE_URI, rdfSource: true })
+    expect(result.issues).toEqual([])
+    const written = equations(result.cellml!)
+    const defined = written.map((equation) => equation.split(' = ')[0]!).filter((left) => !left.startsWith('<'))
+    // Each variable is defined once, and the source's potential by its value alone
+    expect(new Set(defined).size).toBe(defined.length)
+    expect(defined).not.toContain('u_Se_V_m')
+    expect(written).toContain('u_TF_r_0 = u_Se_V_m / TF_r')
+    expect(written).toContain('u_TF_f_1 = TF_f * u_Se_V_m')
+    // and each transformer's flow from the reaction's, which its relation defines
+    expect(written).toContain('v_TF_f_0 = TF_f * v_Rx_R1_c')
+    expect(written).toContain('v_TF_r_1 = v_Rx_R1_c / TF_r')
+
+    const run = simulate(loc, result.cellml!, { start: 0, end: 20, steps: 2000, recordedEvery: 2000, relativeTolerance: 1e-10, absoluteTolerance: 1e-12 })
+    // Both sides gain 500 J/mol (50000 C/mol * 0.01 J/C, and 0.01 J/C / 2e-5 mol/C), so the equilibrium K_S1 q_S1 = K_S2 q_S2 stays
+    expect(Number(run.states['q_S1_c']!.at(-1))).toBeCloseTo(1.4, 9)
+    expect(Number(run.states['q_S2_c']!.at(-1))).toBeCloseTo(0.7, 9)
+    // and the rate is exp(500 / RT) times the reaction's alone: 0.5 mol/s * (2 - 0.2) at the start
+    expect(Number(run.rates['q_S2_c']![0])).toBeCloseTo(0.5 * 1.8 * Math.exp(500 / 2578.73058), 9)
   })
 
   const CASES: [string, string, SimulationSettings][] = [
