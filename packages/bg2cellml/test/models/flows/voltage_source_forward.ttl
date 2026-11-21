@@ -1,0 +1,48 @@
+@prefix bgf: <https://bg-rdf.org/ontologies/bondgraph-framework#> .
+@prefix cdt: <https://w3id.org/cdt/> .
+@prefix tpl: <https://bg-rdf.org/templates/> .
+
+@prefix : <#> .
+
+# S1 -> Rx R1 -> S2, with a voltage source V acting on the forward side of the reaction through a
+# transformer: V -> TF -> R1 adds TF * V (500 J/mol) to the forward affinity, so the forward rate is
+# exp(500 / RT) times the reaction's own and the model's behaviour depends on RT.
+# v = kappa (exp(500/RT) K_S1 q_S1 - K_S2 q_S2) = 0.5 (2 exp(500/RT) - 0.2) mol/s at the start.
+
+:model
+    a bgf:BondgraphModel ;
+    bgf:usesTemplate tpl:chemical.ttl, tpl:electrical.ttl ;
+    bgf:hasBondElement :S1, :S2, :R1, :V ;
+    bgf:hasJunctionStructure :TF .
+
+:S1
+    a bgf:ChemicalStorageNode ;
+    bgf:hasSymbol "q" ; bgf:hasSpecies "S1" ; bgf:hasLocation "c" ;
+    bgf:hasValue "2 mol"^^cdt:ucum ;
+    bgf:parameterValue [ bgf:varName "K" ; bgf:hasValue "1 mol-1"^^cdt:ucum ] .
+
+:S2
+    a bgf:ChemicalStorageNode ;
+    bgf:hasSymbol "q" ; bgf:hasSpecies "S2" ; bgf:hasLocation "c" ;
+    bgf:hasValue "0.1 mol"^^cdt:ucum ;
+    bgf:parameterValue [ bgf:varName "K" ; bgf:hasValue "2 mol-1"^^cdt:ucum ] .
+
+:R1
+    a bgf:ChemicalReactionNode ;
+    bgf:hasSymbol "Rx" ; bgf:hasSpecies "R1" ; bgf:hasLocation "c" ;
+    bgf:parameterValue [ bgf:varName "kappa" ; bgf:hasValue "0.5 mol/s"^^cdt:ucum ] .
+
+:V
+    a bgf:VoltageSource ;
+    bgf:hasSymbol "Se" ; bgf:hasSpecies "V" ; bgf:hasLocation "m" ;
+    bgf:hasValue "0.01 J/C"^^cdt:ucum .
+
+:TF
+    a bgf:TransformerNode ;
+    bgf:hasSymbol "TF" ; bgf:hasSpecies "f" ;
+    bgf:hasValue "50000 C/mol"^^cdt:ucum .
+
+:S1.R1 bgf:hasSource :S1 ; bgf:hasTarget :R1 .
+:R1.S2 bgf:hasSource :R1 ; bgf:hasTarget :S2 .
+:V.TF bgf:hasSource :V ; bgf:hasTarget :TF .
+:TF.R1 bgf:hasSource :TF ; bgf:hasTarget :R1 .

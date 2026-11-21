@@ -98,6 +98,7 @@ export {
   BondgraphElement,
   BondgraphJunction,
   BondgraphModel,
+  type ModelConstantValue,
   GYRATOR_EQUATIONS,
   JUNCTION_TYPES,
   ModelVariable,

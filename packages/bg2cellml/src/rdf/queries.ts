@@ -144,6 +144,20 @@ export const modelUnitSystemQuery = (model: string): string => `
         <${model}> pml:unitSystem ?system .
     }`
 
+/**
+ * A model's `bgf:constantValue`s: the values it gives to constants of its physical domains, such as the
+ * chemical domain's `RT` at the model's temperature, with the domain when it says which (`bgf:forDomain`).
+ */
+export const modelConstantValuesQuery = (model: string): string => `
+    SELECT DISTINCT ?name ?value ?domain
+    WHERE {
+        <${model}> bgf:constantValue ?constant .
+        ?constant
+            bgf:varName ?name ;
+            bgf:hasValue ?value .
+        OPTIONAL { ?constant bgf:forDomain ?domain }
+    }`
+
 export const BONDGRAPH_BONDS = `
     SELECT DISTINCT ?uri ?source ?target
     WHERE {

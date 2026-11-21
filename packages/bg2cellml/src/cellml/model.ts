@@ -38,7 +38,7 @@ import { cleanName, type Value, type VariableDefinition } from '../framework/var
 import type { IssueLog } from '../issues.js'
 import type { BondgraphElement, ModelVariable } from '../model/elements.js'
 import type { BondgraphJunction } from '../model/junctions.js'
-import type { BondgraphModel } from '../model/model.js'
+import type { BondgraphModel, ModelConstantValue } from '../model/model.js'
 import { prettyUri } from '../model/names.js'
 
 /** The one component's name unless another is given, as in Python. */
@@ -313,13 +313,37 @@ function collectVariables(libcellml: LibCellML, model: BondgraphModel, log: Issu
   const fixed = new Map<string, Candidate>()
   fixed.set(VOI_NAME, { name: VOI_NAME, kind: 'voi', ucum: VOI_UNITS, label: `the variable of integration ${VOI_NAME}` })
 
+  // The model's own value of a constant (`bgf:constantValue`) replaces the template's
+  const constantValues: readonly ModelConstantValue[] = model.constantValues ?? []
+  const used = new Set<ModelConstantValue>()
+  const given = (constant: VariableDefinition, element: BondgraphElement): Value | undefined => {
+    const own = constantValues.find((value) => value.name === constant.name && (value.domain === undefined || value.domain === element.domain.iri))
+    if (own === undefined) return undefined
+    used.add(own)
+    if (own.value.units !== undefined && !compatible(libcellml, own.value.units, constant.units)) {
+      log.reportIssue({
+        message: `The model's value of constant ${constant.name} is in ${own.value.units}, which can't be converted to ${constant.units}, the units of ${prettyUri(element.domain.iri)}'s`,
+        stage: 'units',
+        subject: model.iri,
+      })
+      return undefined
+    }
+    return own.value
+  }
+
   for (const element of model.elements.values()) {
     for (const constant of element.domain.constants) {
-      const candidate = constantCandidate(constant, element)
+      const own = given(constant, element)
+      const candidate = constantCandidate(own === undefined ? constant : { ...constant, value: own }, element)
       const known = fixed.get(constant.name)
       if (known === undefined) fixed.set(constant.name, candidate)
       else checkSame(libcellml, known, candidate, log)
     }
+  }
+  for (const value of constantValues) {
+    if (used.has(value)) continue
+    const where = value.domain === undefined ? 'a domain of the model\'s elements' : prettyUri(value.domain)
+    log.report(`The model gives a value to constant ${value.name}, which isn't a constant of ${where}`, model.iri)
   }
 
   const found = new Map<string, Candidate>()

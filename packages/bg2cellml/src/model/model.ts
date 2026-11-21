@@ -34,7 +34,8 @@ import type { BondgraphFramework } from '../framework/framework.js'
 import { DEFAULT_UNIT_SYSTEM, Rescaler, UNIT_SYSTEM_IRIS, UNIT_SYSTEM_PREDICATE, unitSystemForIri } from '../framework/unit-system.js'
 import { IssueLog, documentOf } from '../issues.js'
 import { RdfGraph, type OxigraphModule } from '../rdf/graph.js'
-import { BONDGRAPH_MODEL, modelUnitSystemQuery } from '../rdf/queries.js'
+import { DeclarationError, readValue, type Value } from '../framework/variables.js'
+import { BONDGRAPH_MODEL, modelConstantValuesQuery, modelUnitSystemQuery } from '../rdf/queries.js'
 import { buildNetwork, inferBonds, loadBonds, type BondgraphBond, type NetworkNode } from './bonds.js'
 import { assignDomains } from './domains.js'
 import { assignElementVariables } from './element-variables.js'
@@ -99,6 +100,15 @@ export interface ModelElement {
   readonly label?: string
 }
 
+/** A value a model gives to a constant of a physical domain (`bgf:constantValue`), in place of the template's. */
+export interface ModelConstantValue {
+  /** The constant's name in its domain, such as `RT`. */
+  readonly name: string
+  readonly value: Value
+  /** The domain's IRI when the model says which (`bgf:forDomain`); otherwise every domain with a constant of the name. */
+  readonly domain?: string
+}
+
 export class BondgraphModel {
   readonly log = new IssueLog('model')
   /** `''` if the source has no single `bgf:BondgraphModel`. */
@@ -106,6 +116,8 @@ export class BondgraphModel {
   readonly label?: string
   /** The unit system the model is built in: the option's, the model's `pml:unitSystem`, or SI; `undefined` until found. */
   readonly unitSystem?: UnitSystemId
+  /** The model's own values of its domains' constants (`bgf:constantValue`), such as `RT` at its temperature. */
+  readonly constantValues: ModelConstantValue[] = []
   /** By IRI, in IRI order. */
   readonly elements = new Map<string, BondgraphElement>()
   /** By IRI. */
@@ -150,6 +162,7 @@ export class BondgraphModel {
       return model
     }
     if (!model.#findModel()) return model
+    model.#findConstantValues()
     model.log.document = documentOf(model.iri)
     const system = model.#findUnitSystem(options.unitSystem)
     if (system === undefined) return model
@@ -238,6 +251,27 @@ export class BondgraphModel {
     }
     if (system !== undefined) (this as { unitSystem: UnitSystemId }).unitSystem = system
     return system
+  }
+
+  /** The model's `bgf:constantValue`s. A constant (in a domain) may have only one value. */
+  #findConstantValues(): void {
+    const seen = new Set<string>()
+    for (const row of this.graph.select(modelConstantValuesQuery(this.iri))) {
+      const name = row.get('name')!.value
+      const domain = row.get('domain')?.value
+      const key = `${domain ?? ''} ${name}`
+      if (seen.has(key)) {
+        this.log.report(`Model <${this.iri}> gives constant ${name} more than one value`, this.iri)
+        continue
+      }
+      seen.add(key)
+      try {
+        this.constantValues.push({ name, value: readValue(row.get('value')!, `constant ${name}`), ...(domain === undefined ? {} : { domain }) })
+      } catch (error) {
+        if (!(error instanceof DeclarationError)) throw error
+        this.log.report(`${error.message}, for constant ${name} of model <${this.iri}>`, this.iri)
+      }
+    }
   }
 
   /** The source's one `bgf:BondgraphModel`, as Python's `__load_rdf`. */

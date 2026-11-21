@@ -70,6 +70,21 @@ An issue's `elementId` is its subject's IRI fragment, such as a CellDL diagram's
 
 `result.elements` is the element manifest, keyed the same way (by IRI for an element outside the source): each element's and junction's `{ iri, kind, symbol, template?, label?, primary?, variables }`, where `kind` is `element`, `one`, `zero` or `transform`, and each variable written to the CellML is `{ name, role, ucum, units, bondgraph? }` with `role` one of `flow`, `potential`, `quantity`, `parameter`, `ratio` or `other`. A variable two elements share, such as a one node's flow that a transform node's port takes, is listed for both. `primary` is a one or zero node's own variable, a transform node's ratio, an element's intrinsic variable (a capacitor's `q`, a source's potential or flow), or else its first port's flow. `toViewerAnnotations(result.elements)` turns it into `@celldl/viewer` annotations, `{ [svgId]: { label, primary, variables, tooltip } }`, with a tooltip line such as `v_1 (flow, C/s)` for each variable unless `{ tooltip }` gives another.
 
+### Domain constants
+
+A physical domain's constants come from its template: the chemical domain's `RT` is 2578.73058 J/mol, 310 K. A model at another temperature gives its own value with `bgf:constantValue`, and `convert()` and `celldl2cellml()` write that value in place of the template's:
+
+```turtle
+:model a bgf:BondgraphModel ;
+    bgf:constantValue [ bgf:varName "RT" ; bgf:hasValue "2560.712 J/mol"^^cdt:ucum ] .
+```
+
+- The value is converted to the constant's units, and rescaled with the model's unit system.
+- `bgf:forDomain bgf:Chemical` on the value says which domain's constant it is, for a name more than one domain has.
+- A constant no domain of the model's elements has, a value in units that are not the constant's, and two values of one constant are reported as errors.
+
+`model.constantValues` lists them.
+
 ### Naming rules
 
 A model can name its variables its own way with physiomelinks/BG-RDF's `bgf:NamingRule` and `bgf:VariableName`, which `convert()` applies (`naming: false` turns them off) and `celldl2cellml()`, like Python 0.11.2, ignores. The rules are Finbar Argus's (BG-Tools `variable_names.py`), as the CellDL Editor's Variables panel previews them:
